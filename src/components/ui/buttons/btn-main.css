@@ -7,8 +7,8 @@
   padding: 0.9rem 1.6rem;
   border: 0;
   border-radius: 0.5rem;
-  color: var(--nt-700);
-  background-color: var(--p-400);
+  color: var(--nt-050);
+  background-color: var(--sc-500);
   font: inherit;
   font-size: 1.5rem;
   font-weight: 500;
@@ -17,11 +17,12 @@
 }
 
 .btn-main:hover {
-  background-color: var(--p-500);
+  background-color: var(--sc-400);
+  color: var(--nt-050);
 }
 
 .btn-main:focus-visible {
-  outline: 2px solid var(--p-400);
+  outline: 2px solid var(--sc-500);
   outline-offset: 2px;
 }
 

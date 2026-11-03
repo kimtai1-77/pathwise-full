@@ -1,10 +1,11 @@
+
 import { useState } from 'react'
 import { supabase } from '@/lib/supabaseClient.js'
 import { safeNextPath } from '@/lib/safe-next-path.js'
 import { CardContent } from '@/components/ui/card-content'
 import { CardHeader } from '@/components/ui/card-header'
 import { BtnMain } from '@/components/ui/buttons/btn-main'
-import './styles/login-form.css'
+import './styles/LoginForm.css'
 
 export default function LoginForm({ onLoginSuccess, onSignUpClick, onForgotPasswordClick }) {
     const [email, setEmail] = useState('')

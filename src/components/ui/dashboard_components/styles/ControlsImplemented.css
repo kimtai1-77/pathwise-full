@@ -1,0 +1,77 @@
+
+.controls-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.controls-cont {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  padding: 24px 0 28px;
+}
+
+.controls-status-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+.controls-heading {
+  margin: 0;
+  color: var(--nt-050);
+}
+
+.controls-evidence-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background-color: var(--p-800);
+  border: 1px solid var(--p-600);
+  border-radius: 4px;
+  color: var(--p-100);
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.controls-evidence-btn:hover {
+  background-color: var(--p-700);
+  border-color: var(--p-300);
+}
+
+.controls-evidence-btn svg {
+  width: 26px;
+  height: 26px;
+  fill: var(--p-200);
+  flex-shrink: 0;
+}
+
+.msp-dashboard .controls-heading {
+  color: var(--nt-900);
+}
+
+.msp-dashboard .controls-evidence-btn {
+  border-color: var(--p-200);
+  background: var(--p-050);
+  color: var(--success-500);
+}
+
+.msp-dashboard .controls-evidence-btn:hover {
+  border-color: var(--p-300);
+  background: var(--p-50);
+}
+
+.msp-dashboard .controls-evidence-btn svg {
+  fill: var(--success-500);
+}
+
+@media (max-width: 785px) {
+  .controls-cont {
+    padding: 20px 0 24px;
+  }
+}

@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pathwise Systems - ACSC Essential Eight Compliance Engine</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- React & React DOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- Babel Compiler for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #070a12;
+      color: #f1f5f9;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-teal-500 selection:text-slate-950 min-h-screen flex flex-col">
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo, useEffect } = React;
+
+    const INITIAL_STRATEGIES = [
+      {
+        id: 'e8-1',
+        code: 'E8-01',
+        name: 'Patch Applications',
+        category: 'Cyber Threat Prevention',
+        levelReq: 'LEVEL 1 REQ',
+        scorePercent: 25,
+        status: 'non_compliant',
+        missingPoints: [
+          'Critical application patches (Browser, Office, PDF readers) pending > 48 hours.',
+          'Application vulnerability scanner not configured for automated weekly runs.',
+          'Outdated third-party software repositories identified on 14 endpoints.'
+        ],
+        howToFixPoints: [
+          'Configure centralized application patch manager (e.g., Intune / SCCM / NinjaOne).',
+          'Deploy missing vendor security updates for web browsers and productivity tools.',
+          'Automate vulnerability assessment scripts across all domain-joined assets.'
+        ],
+        evidence: null
+      },
+      {
+        id: 'e8-[#03]',
+        code: 'E8-03',
+        name: 'Configure MS Office Macro Settings',
+        category: 'Malware Vector Defense',
+        levelReq: 'LEVEL 1 REQ',
+        scorePercent: 100,
+        status: 'compliant',
+        missingPoints: [],
+        howToFixPoints: [],
+        evidence: {
+          id: 'ev-098',
+          fileName: 'GPO_Office_Macro_Block_Export.png',
+          fileSize: '840 KB',
+          uploadedBy: 'Alex Smith (Technician)',
+          uploadedByRole: 'technician',
+          createdAt: '2026-10-10 02:30 PM',
+          status: 'approved',
+          reviewedBy: 'SecOps Admin / Sarah Connor',
+          note: 'Group Policy verified across Active Directory domain policy.',
+          rejectionReason: null
+        }
+      },
+      {
+        id: 'e8-5',
+        code: 'E8-05',
+        name: 'Restrict Administrative Privileges',
+        category: 'Privilege Access Management',
+        levelReq: 'LEVEL 1 REQ',
+        scorePercent: 50,
+        status: 'pending_review',
+        missingPoints: [
+          'Domain admin accounts used for daily workstation logon tasks.',
+          'Lack of Privileged Access Management (PAM) solution or LAPS deployment.'
+        ],
+        howToFixPoints: [
+          'Implement LAPS across all workstations and standalone servers.',
+          'Restrict domain admin credentials from logging into non-domain controllers.'
+        ],
+        evidence: {
+          id: 'ev-104',
+          fileName: 'LAPS_Deployment_Status_Report.csv',
+          fileSize: '1.1 MB',
+          uploadedBy: 'Alex Smith (Technician)',
+          uploadedByRole: 'technician',
+          createdAt: '2026-10-12 11:45 AM',
+          status: 'pending_review',
+          reviewedBy: null,
+          note: 'LAPS GPO applied to 120 endpoints. Password rotation verified.',
+          rejectionReason: null
+        }
+      },
+      {
+        id: 'e8-6',
+        code: 'E8-06',
+        name: 'Patch Operating Systems',
+        category: 'Vulnerability Remediation',
+        levelReq: 'LEVEL 1 REQ',
+        scorePercent: 100,
+        status: 'compliant',
+        missingPoints: [],
+        howToFixPoints: [],
+        evidence: {
+          id: 'ev-088',
+          fileName: 'OS_Patch_Status_October.pdf',
+          fileSize: '3.1 MB',
+          uploadedBy: 'Alex Smith (Technician)',
+          uploadedByRole: 'technician',
+          createdAt: '2026-10-09 04:00 PM',
+          status: 'approved',
+          reviewedBy: 'SecOps Admin / Sarah Connor',
+          note: 'All endpoints running current Windows 11 23H2 Cumulative Update.',
+          rejectionReason: null
+        }
+      },
+      {
+        id: 'e8-7',
+        code: 'E8-07',
+        name: 'Multi-Factor Authentication',
+        category: 'Identity & Access Control',
+        levelReq: 'LEVEL 1 REQ',
+        scorePercent: 100,
+        status: 'compliant',
+        missingPoints: [],
+        howToFixPoints: [],
+        evidence: {
+          id: 'ev-077',
+          fileName: 'Entra_MFA_ConditionalAccess_Policy.pdf',
+          fileSize: '1.8 MB',
+          uploadedBy: 'Alex Smith (Technician)',
+          uploadedByRole: 'technician',
+          createdAt: '2026-10-08 11:20 AM',
+          status: 'approved',
+          reviewedBy: 'SecOps Admin / Sarah Connor',
+          note: '100% MFA enforcement on all cloud logins.',
+          rejectionReason: null
+        }
+      }
+    ];
+
+    function App() {
+      const [strategies, setStrategies] = useState(INITIAL_STRATEGIES);
+      const [selectedLevel, setSelectedLevel] = useState('Level 1 Baseline');
+      const [activeRole, setActiveRole] = useState('supervisor'); // 'technician' | 'supervisor'
+      const [searchQuery, setSearchQuery] = useState('');
+      const [statusFilter, setStatusFilter] = useState('ALL');
+      const [selectedStrategyId, setSelectedStrategyId] = useState(null);
+
+      // Drawer states
+      const [uploadFile, setUploadFile] = useState(null);
+      const [uploadNote, setUploadNote] = useState('');
+      const [rejectionInput, setRejectionInput] = useState('');
+      const [showRejectBox, setShowRejectBox] = useState(false);
+      const [toastMessage, setToastMessage] = useState(null);
+
+      useEffect(() => {
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      });
+
+      const selectedStrategy = useMemo(() => {
+        return strategies.find(s => s.id === selectedStrategyId) || null;
+      }, [strategies, selectedStrategyId]);
+
+      const stats = useMemo(() => {
+        const total = strategies.length;
+        const compliant = strategies.filter(s => s.status === 'compliant').length;
+        const score = Math.round((compliant / total) * 100);
+        return { total, compliant, score };
+      }, [strategies]);
+
+      const filteredStrategies = useMemo(() => {
+        return strategies.filter(s => {
+          const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                s.code.toLowerCase().includes(searchQuery.toLowerCase());
+          const matchesStatus = statusFilter === 'ALL' || s.status === statusFilter;
+          return matchesSearch && matchesStatus;
+        });
+      }, [strategies, searchQuery, statusFilter]);
+
+      const triggerToast = (msg) => {
+        setToastMessage(msg);
+        setTimeout(() => setToastMessage(null), 4000);
+      };
+
+      const handleSimulatedFileUpload = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploadFile({
+          name: file.name,
+          size: (file.size / (1024 * 1024)).toFixed(2) + ' MB'
+        });
+      };
+
+      const handleSubmitEvidence = () => {
+        if (!uploadFile || !selectedStrategyId) return;
+
+        const newEvidence = {
+          id: `ev-${Math.floor(1000 + Math.random() * 9000)}`,
+          fileName: uploadFile.name,
+          fileSize: uploadFile.size,
+          uploadedBy: activeRole === 'technician' ? 'Alex Smith (Field Tech)' : 'SecOps Admin (Supervisor)',
+          uploadedByRole: activeRole,
+          createdAt: new Date().toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' }),
+          status: 'pending_review',
+          reviewedBy: null,
+          note: uploadNote || 'Manual evidence file uploaded for compliance verification.',
+          rejectionReason: null
+        };
+
+        setStrategies(prev => prev.map(s => {
+          if (s.id === selectedStrategyId) {
+            return {
+              ...s,
+              status: 'pending_review',
+              evidence: newEvidence
+            };
+          }
+          return s;
+        }));
+
+        setUploadFile(null);
+        setUploadNote('');
+        triggerToast('Evidence submitted. Status updated to Pending Review (Draft).');
+      };
+
+      const handleApproveEvidence = () => {
+        if (!selectedStrategyId) return;
+
+        setStrategies(prev => prev.map(s => {
+          if (s.id === selectedStrategyId && s.evidence) {
+            return {
+              ...s,
+              status: 'compliant',
+              scorePercent: 100,
+              missingPoints: [],
+              howToFixPoints: [],
+              evidence: {
+                ...s.evidence,
+                status: 'approved',
+                reviewedBy: activeRole === 'supervisor' ? 'SecOps Admin / Sarah Connor' : 'Alex Smith (Technician)'
+              }
+            };
+          }
+          return s;
+        }));
+
+        triggerToast('Evidence Approved! Strategy updated to 100% Compliant.');
+      };
+
+      const handleRejectEvidence = () => {
+        if (!selectedStrategyId || !rejectionInput.trim()) return;
+
+        setStrategies(prev => prev.map(s => {
+          if (s.id === selectedStrategyId && s.evidence) {
+            return {
+              ...s,
+              status: 'non_compliant',
+              evidence: {
+                ...s.evidence,
+                status: 'rejected',
+                reviewedBy: 'SecOps Admin / Sarah Connor',
+                rejectionReason: rejectionInput
+              }
+            };
+          }
+          return s;
+        }));
+
+        setRejectionInput('');
+        setShowRejectBox(false);
+        triggerToast('Evidence rejected. Returned to field technician with feedback.');
+      };
+
+      return (
+        <div className="min-h-screen bg-[#070a12] text-slate-100 font-sans antialiased flex flex-col">
+          
+          {/* Header Navigation */}
+          <header className="border-b border-slate-800/80 bg-[#0a0e1a] px-6 py-3.5 flex items-center justify-between sticky top-0 z-30 shadow-xl">
+            <div className="flex items-center space-x-3">
+              <div className="bg-[#14b8a6] p-2 rounded-xl text-slate-950 shadow-lg shadow-teal-500/20">
+                <i data-lucide="shield-check" className="w-5 h-5 stroke-[2.5]"></i>
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="font-black text-lg text-white tracking-wider">PATHWISE</span>
+                  <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 bg-teal-500/10 text-[#14b8a6] border border-teal-500/30 rounded-full">
+                    ENTERPRISE
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 font-medium">ACSC Essential Eight Compliance Engine</p>
+              </div>
+            </div>
+
+            {/* Maturity Level Tabs */}
+            <div className="hidden md:flex items-center bg-[#111728] p-1 rounded-xl border border-slate-800">
+              {['Level 1 Baseline', 'Level 2 Target', 'Level 3 Advanced'].map((tab) => {
+                const isActive = selectedLevel === tab;
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setSelectedLevel(tab)}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      isActive
+                        ? 'bg-[#14b8a6] text-slate-950 shadow-md shadow-teal-500/20 font-bold'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Role Switcher */}
+            <div className="flex items-center space-x-3 bg-[#111728] pl-3 pr-2 py-1.5 rounded-xl border border-slate-800">
+              <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-[#14b8a6]">
+                {activeRole === 'supervisor' ? 'SO' : 'TECH'}
+              </div>
+              <div className="text-left hidden sm:block">
+                <span className="text-xs font-bold text-white block leading-tight">
+                  {activeRole === 'supervisor' ? 'SecOps Admin' : 'Field Tech'}
+                </span>
+                <span className="text-[10px] text-slate-500 block">pathwise.io</span>
+              </div>
+
+              <div className="pl-2 border-l border-slate-800">
+                <button
+                  onClick={() => setActiveRole(activeRole === 'supervisor' ? 'technician' : 'supervisor')}
+                  className="text-[10px] font-bold px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-[#14b8a6] border border-teal-500/30 rounded-lg flex items-center space-x-1"
+                >
+                  <span>Role: {activeRole === 'supervisor' ? 'Supervisor' : 'Tech'}</span>
+                  <i data-lucide="chevron-down" className="w-3 h-3"></i>
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Dashboard Body */}
+          <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-6 space-y-6">
+
+            {/* Hero Scorecard Banner */}
+            <div className="bg-[#0f1525] border border-slate-800/90 rounded-2xl p-6 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-2xl">
+              <div className="space-y-3 max-w-2xl">
+                <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800">
+                  <span className="w-2 h-2 rounded-full bg-[#14b8a6] animate-pulse"></span>
+                  <span className="text-xs font-semibold text-slate-300">Active Assessment Workspace</span>
+                </div>
+
+                <h1 className="text-3xl font-extrabold text-white tracking-tight">
+                  Security Maturity Scorecard
+                </h1>
+
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  Continuous monitoring against the Essential Eight cybersecurity framework. Track gap analyses, remediation steps, and operational posture in real time.
+                </p>
+              </div>
+
+              <div className="bg-[#131b2e] border border-slate-800/80 rounded-xl p-5 flex items-center space-x-5 min-w-[300px]">
+                <div className="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 42 42">
+                    <circle
+                      className="text-slate-800"
+                      strokeWidth="3.8"
+                      strokeDasharray="3 1"
+                      stroke="currentColor"
+                      fill="none"
+                      r="15.9155"
+                      cx="21"
+                      cy="21"
+                    />
+                    <circle
+                      className="text-[#14b8a6] transition-all duration-700"
+                      strokeDasharray={`${stats.score}, 100`}
+                      strokeDashoffset="0"
+                      strokeWidth="3.8"
+                      strokeLinecap="round"
+                      stroke="currentColor"
+                      fill="none"
+                      r="15.9155"
+                      cx="21"
+                      cy="21"
+                    />
+                  </svg>
+                  <div className="absolute text-center">
+                    <span className="text-base font-black text-white">{stats.score}%</span>
+                    <span className="block text-[8px] font-bold text-slate-400">SCORE</span>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">CURRENT MATURITY</p>
+                  <p className="text-xl font-black text-white">
+                    Level 1 <span className="text-xs font-normal text-slate-500">/ 3</span>
+                  </p>
+                  <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                    Enforcing Maturity Level 1 mitigation policies across endpoints.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Controls Filter Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+              <div className="flex items-center space-x-3">
+                <h2 className="text-xl font-extrabold text-white tracking-tight">Mitigation Strategies</h2>
+                <span className="text-xs font-semibold px-2.5 py-0.5 bg-slate-800 text-slate-300 rounded-full border border-slate-700">
+                  {strategies.length} Controls
+                </span>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search strategies or gaps..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="bg-[#0f1525] border border-slate-800 rounded-xl pl-4 pr-4 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 w-64"
+                  />
+                </div>
+
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="bg-[#0f1525] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-teal-500 cursor-pointer"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value="pending_review">In Review</option>
+                  <option value="compliant">Compliant</option>
+                  <option value="non_compliant">Non-Compliant</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Mitigation Strategies List */}
+            <div className="space-y-4">
+              {filteredStrategies.map((strategy) => {
+                const isCompliant = strategy.status === 'compliant' || strategy.scorePercent === 100;
+                const isPending = strategy.status === 'pending_review';
+
+                return (
+                  <div 
+                    key={strategy.id} 
+                    className="bg-[#0f1525] border border-slate-800/80 rounded-2xl p-6 transition-all hover:border-slate-700 shadow-lg"
+                  >
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                      
+                      {/* Left: 80px Circular Gauge & Titles */}
+                      <div className={`lg:col-span-3 flex items-center space-x-4 ${!isCompliant ? 'border-b lg:border-b-0 lg:border-r border-slate-800/80 pb-4 lg:pb-0 lg:pr-4' : 'lg:pr-2'}`}>
+                        <div className="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 42 42">
+                            <circle
+                              className="text-slate-800"
+                              strokeWidth="3.8"
+                              strokeDasharray="3 1.2"
+                              stroke="currentColor"
+                              fill="none"
+                              r="15.9155"
+                              cx="21"
+                              cy="21"
+                            />
+                            <circle
+                              className={isCompliant ? 'text-[#14b8a6]' : isPending ? 'text-amber-400' : 'text-rose-500'}
+                              strokeDasharray={`${strategy.scorePercent}, 100`}
+                              strokeWidth="3.8"
+                              strokeLinecap="round"
+                              stroke="currentColor"
+                              fill="none"
+                              r="15.9155"
+                              cx="21"
+                              cy="21"
+                            />
+                          </svg>
+                          <span className="absolute text-xs font-black text-white">{strategy.scorePercent}%</span>
+                        </div>
+
+                        <div>
+                          <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 bg-slate-900 text-slate-400 border border-slate-800 rounded">
+                            {strategy.levelReq}
+                          </span>
+                          <h3 className="text-base font-extrabold text-[#14b8a6] mt-1 leading-snug">
+                            {strategy.name}
+                          </h3>
+                          <p className="text-xs text-slate-400 font-medium">{strategy.category}</p>
+                        </div>
+                      </div>
+
+                      {/* 100% COMPLIANT CONDITIONALLY RENDERED ROW */}
+                      {isCompliant ? (
+                        <div className="lg:col-span-9 bg-teal-500/5 border border-teal-500/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2.5 bg-teal-500/10 text-[#14b8a6] border border-teal-500/30 rounded-xl">
+                              <i data-lucide="badge-check" className="w-6 h-6 stroke-[2.2]"></i>
+                            </div>
+                            <div>
+                              <p className="text-xs font-extrabold text-white flex items-center space-x-2">
+                                <span>Control Fully Implemented & Verified</span>
+                                <span className="text-[10px] bg-teal-500/20 text-[#14b8a6] font-mono px-2 py-0.5 rounded-full border border-teal-500/30">
+                                  Maturity L1 Satisfied
+                                </span>
+                              </p>
+                              <p className="text-xs text-slate-400 mt-0.5">
+                                Control requirements satisfied. Zero missing gaps or active remediation actions required.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center space-x-3 sm:border-l sm:border-slate-800 sm:pl-4">
+                            <button
+                              onClick={() => setSelectedStrategyId(strategy.id)}
+                              className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1.5"
+                            >
+                              <i data-lucide="file-text" className="w-3.5 h-3.5 text-[#14b8a6]"></i>
+                              <span>View Evidence</span>
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        /* NON-100% CONTROLS: Show WHAT'S MISSING, HOW TO FIX, and Start Fix button */
+                        <React.Fragment>
+                          {/* Middle: WHAT'S MISSING */}
+                          <div className="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-slate-800/80 pb-4 lg:pb-0 lg:px-4">
+                            <p className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center space-x-1.5 mb-2">
+                              <i data-lucide="shield-alert" className="w-3.5 h-3.5"></i>
+                              <span>WHAT'S MISSING</span>
+                            </p>
+                            <ul className="space-y-1.5 text-xs text-slate-300">
+                              {strategy.missingPoints.map((point, idx) => (
+                                <li key={idx} className="flex items-start space-x-2">
+                                  <span className="text-rose-500 font-bold">•</span>
+                                  <span className="leading-tight">{point}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {/* Right: HOW TO FIX & Action Button */}
+                          <div className="lg:col-span-5 flex flex-col justify-between space-y-4 lg:pl-2">
+                            <div>
+                              <p className="text-xs font-bold text-[#14b8a6] uppercase tracking-wider flex items-center space-x-1.5 mb-2">
+                                <i data-lucide="check-circle-2" className="w-3.5 h-3.5"></i>
+                                <span>HOW TO FIX</span>
+                              </p>
+                              <ul className="space-y-1.5 text-xs text-slate-300 max-h-24 overflow-y-auto pr-1">
+                                {strategy.howToFixPoints.map((fix, idx) => (
+                                  <li key={idx} className="flex items-start space-x-2">
+                                    <span className="text-[#14b8a6] font-bold">•</span>
+                                    <span className="leading-tight">{fix}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-2">
+                              <div>
+                                {isPending && (
+                                  <span className="inline-flex items-center space-x-1 text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20 text-xs">
+                                    <i data-lucide="clock" className="w-3.5 h-3.5"></i>
+                                    <span>In Review</span>
+                                  </span>
+                                )}
+                              </div>
+
+                              <button
+                                onClick={() => setSelectedStrategyId(strategy.id)}
+                                className={`px-5 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-2 shadow-lg ${
+                                  isPending && activeRole === 'supervisor'
+                                    ? 'bg-amber-400 text-slate-950 hover:bg-amber-300 shadow-amber-400/20'
+                                    : 'bg-[#14b8a6] text-slate-950 hover:bg-[#0d9488] hover:text-white shadow-teal-500/20'
+                                }`}
+                              >
+                                <span>{isPending && activeRole === 'supervisor' ? 'Review Fix Evidence' : 'Start Fix'}</span>
+                                <i data-lucide="chevron-right" className="w-4 h-4"></i>
+                              </button>
+                            </div>
+
+                          </div>
+                        </React.Fragment>
+                      )}
+
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+          </main>
+
+          {/* Slide-out Evidence Drawer */}
+          {selectedStrategy && (
+            <div className="fixed inset-0 z-50 overflow-hidden bg-slate-950/80 backdrop-blur-sm flex justify-end">
+              <div 
+                className="w-full max-w-2xl bg-[#0d1220] border-l border-slate-800 shadow-2xl h-full flex flex-col justify-between"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Drawer Header */}
+                <div className="p-6 border-b border-slate-800 bg-[#0f1525] flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="text-xs font-bold px-2 py-0.5 bg-slate-800 text-[#14b8a6] rounded border border-slate-700">
+                        {selectedStrategy.code}
+                      </span>
+                      <span className="text-xs font-semibold text-slate-400">{selectedStrategy.levelReq}</span>
+                    </div>
+                    <h2 className="text-2xl font-black text-white">{selectedStrategy.name}</h2>
+                    <p className="text-xs text-slate-400 mt-0.5">{selectedStrategy.category}</p>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setSelectedStrategyId(null);
+                      setUploadFile(null);
+                      setShowRejectBox(false);
+                    }}
+                    className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  >
+                    <i data-lucide="x" className="w-5 h-5"></i>
+                  </button>
+                </div>
+
+                {/* Drawer Content */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-6">
+
+                  <div className={`p-4 rounded-xl border flex items-center justify-between ${
+                    selectedStrategy.status === 'compliant' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' :
+                    selectedStrategy.status === 'pending_review' ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' :
+                    'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                  }`}>
+                    <div className="flex items-center space-x-3">
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-wider">Strategy Compliance State</p>
+                        <p className="text-sm font-semibold capitalize">
+                          {selectedStrategy.status === 'pending_review' ? 'Pending Review (Draft)' : selectedStrategy.status.replace('_', ' ')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-xs font-mono opacity-80">
+                      {selectedStrategy.evidence ? `Ref: ${selectedStrategy.evidence.id}` : 'No Evidence'}
+                    </span>
+                  </div>
+
+                  {/* Attached Evidence Card */}
+                  {selectedStrategy.evidence && (
+                    <div className="space-y-3">
+                      <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Attached Audit Evidence</h3>
+                      <div className="bg-[#111728] p-4 rounded-xl border border-slate-800 space-y-3">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="text-sm font-bold text-white">{selectedStrategy.evidence.fileName}</p>
+                            <p className="text-xs text-slate-400">
+                              {selectedStrategy.evidence.fileSize} • Uploaded by {selectedStrategy.evidence.uploadedBy}
+                            </p>
+                            <p className="text-[11px] text-slate-500 mt-0.5">{selectedStrategy.evidence.createdAt}</p>
+                          </div>
+
+                          <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                            selectedStrategy.evidence.status === 'pending_review' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
+                            selectedStrategy.evidence.status === 'approved' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' :
+                            'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                          }`}>
+                            {selectedStrategy.evidence.status}
+                          </span>
+                        </div>
+
+                        {selectedStrategy.evidence.note && (
+                          <p className="text-xs text-slate-300 bg-slate-950 p-2.5 rounded-lg border border-slate-800 italic">
+                            "{selectedStrategy.evidence.note}"
+                          </p>
+                        )}
+
+                        {selectedStrategy.evidence.rejectionReason && (
+                          <div className="bg-rose-500/10 border border-rose-500/30 p-3 rounded-lg text-xs text-rose-300 space-y-1">
+                            <p className="font-bold">Supervisor Feedback:</p>
+                            <p>{selectedStrategy.evidence.rejectionReason}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* File Drop Zone */}
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                      {selectedStrategy.evidence ? 'Replace Evidence File' : 'Upload Evidence File'}
+                    </h3>
+
+                    <div className="border-2 border-dashed border-slate-800 hover:border-teal-500/50 rounded-2xl p-6 text-center bg-[#111728]/50 hover:bg-[#111728] transition-all cursor-pointer">
+                      <input 
+                        type="file" 
+                        id="evidence-upload" 
+                        className="hidden" 
+                        onChange={handleSimulatedFileUpload} 
+                      />
+                      <label htmlFor="evidence-upload" className="cursor-pointer space-y-2 block">
+                        <i data-lucide="upload-cloud" className="w-8 h-8 text-[#14b8a6] mx-auto"></i>
+                        <div>
+                          <p className="text-xs font-semibold text-slate-200">
+                            {uploadFile ? uploadFile.name : 'Drag & drop exported report or screenshot here'}
+                          </p>
+                          <p className="text-[11px] text-slate-500 mt-0.5">Supports exports from NinjaOne, Datto, M365 (Max 25MB)</p>
+                        </div>
+                      </label>
+                    </div>
+
+                    {uploadFile && (
+                      <div className="space-y-3 bg-[#111728] p-4 rounded-xl border border-teal-500/30">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-slate-200">{uploadFile.name}</span>
+                          <span className="text-slate-400">{uploadFile.size}</span>
+                        </div>
+
+                        <textarea
+                          placeholder="Add technician submission notes..."
+                          value={uploadNote}
+                          onChange={(e) => setUploadNote(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                          rows={2}
+                        />
+
+                        <button
+                          onClick={handleSubmitEvidence}
+                          className="w-full py-2.5 bg-[#14b8a6] hover:bg-[#0d9488] text-slate-950 hover:text-white rounded-xl text-xs font-black transition-all shadow-md shadow-teal-500/20"
+                        >
+                          Submit Evidence (Sets Status to Pending Review)
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+
+                {/* Footer Actions */}
+                <div className="p-5 border-t border-slate-800 bg-[#0f1525]">
+                  {activeRole === 'technician' && (
+                    <div className="space-y-2">
+                      <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <span>Submitted for review. Awaiting supervisor approval.</span>
+                      </div>
+                      <button disabled className="w-full py-3 bg-slate-800 text-slate-500 rounded-xl text-xs font-bold cursor-not-allowed">
+                        Mark Complete (Disabled for Field Tech)
+                      </button>
+                    </div>
+                  )}
+
+                  {activeRole === 'supervisor' && (
+                    <div className="space-y-3">
+                      {selectedStrategy.status === 'pending_review' ? (
+                        <div>
+                          {!showRejectBox ? (
+                            <div className="grid grid-cols-2 gap-3">
+                              <button
+                                onClick={() => setShowRejectBox(true)}
+                                className="py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-xl text-xs font-bold"
+                              >
+                                Reject Evidence
+                              </button>
+                              <button
+                                onClick={handleApproveEvidence}
+                                className="py-2.5 bg-[#14b8a6] hover:bg-[#0d9488] text-slate-950 hover:text-white rounded-xl text-xs font-black shadow-lg shadow-teal-500/20"
+                              >
+                                Approve Evidence
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="space-y-2 bg-slate-950 p-3 rounded-xl border border-rose-500/30">
+                              <p className="text-xs font-bold text-rose-300">Rejection Reason:</p>
+                              <textarea
+                                value={rejectionInput}
+                                onChange={(e) => setRejectionInput(e.target.value)}
+                                placeholder="Specify reason for rejecting this evidence..."
+                                className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-rose-500"
+                                rows={2}
+                              />
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => setShowRejectBox(false)}
+                                  className="w-1/2 py-2 bg-slate-800 text-slate-300 rounded-lg text-xs font-semibold"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={handleRejectEvidence}
+                                  className="w-1/2 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold"
+                                >
+                                  Confirm Rejection
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : selectedStrategy.status === 'compliant' ? (
+                        <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs text-emerald-300 text-center font-bold">
+                          Control Fully Verified & Approved
+                        </div>
+                      ) : (
+                        <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-400 text-center">
+                          Awaiting initial evidence submission.
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* Toast */}
+          {toastMessage && (
+            <div className="fixed bottom-6 right-6 z-50 bg-[#0f1525] border border-teal-500/40 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3">
+              <span className="text-xs font-medium">{toastMessage}</span>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

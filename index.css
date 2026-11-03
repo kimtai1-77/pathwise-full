@@ -14,141 +14,137 @@ body {
 }
 
 :root {
-   --nt-050: #f2f2f1;
-   --nt-50: #e5e4e2;
-   --nt-100: #cbcac6;
-   --nt-200: #b1afa9;
-   --nt-300: #97958d;
-   --nt-400: #7d7a70;
-   --nt-500: #64625a;
-   --nt-600: #4b4943;
-   --nt-700: #32312d;
-   --nt-800: #191816;
+   --nt-050: #f4f3f1;
+   --nt-50:  #e4e2df;
+   --nt-100: #c9c5c0;
+   --nt-200: #aba49e;
+   --nt-300: #8c847e;
+   --nt-400: #6e655f;
+   --nt-500: #544c47;
+   --nt-600: #3d3632;
+   --nt-700: #292421;
+   --nt-800: #191614;
+   --nt-900: #0a0908;
 
+   --p-050: #f0f4f1;
+   --p-50:  #d9e3db;
+   --p-100: #b5c7b9;
+   --p-200: #8fa693;
+   --p-300: #67856d;
+   --p-400: #49664e;
+   --p-500: #374f3a;
+   --p-600: #273b2a;
+   --p-700: #19271c;
+   --p-800: #0f1811;
+   --p-900: #060a07;
 
-   --p-050: #fbf7e8;
-   --p-50: #f8f0d0;
-   --p-100: #f1e1a1;
-   --p-200: #e9d172;
-   --p-300: #e2c243;
-   --p-400: #dbb314;
-   --p-500: #af8f10;
-   --p-600: #836b0c;
-   --p-700: #584808;
-   --p-800: #2c2404;
+   --sc-050: #f5f0e6;
+   --sc-50:  #e6dbc4;
+   --sc-100: #ccb694;
+   --sc-200: #ad8f63;
+   --sc-300: #8c6e3f;
+   --sc-400: #6e5229;
+   --sc-500: #543e1e;
+   --sc-600: #3d2d14;
+   --sc-700: #291e0d;
+   --sc-800: #1a1208;
+   --sc-900: #0a0703;
 
+   --t-050: #f7f1ef;
+   --t-50:  #e8d7d2;
+   --t-100: #d1b1a7;
+   --t-200: #b38879;
+   --t-300: #916151;
+   --t-400: #734537;
+   --t-500: #573327;
+   --t-600: #40241b;
+   --t-700: #2c1812;
+   --t-800: #1a0f0a;
+   --t-900: #0a0604;
 
-   --sc-050: #ebeded;
-   --sc-50: #d7dcda;
-   --sc-100: #b0b9b6;
-   --sc-200: #889591;
-   --sc-300: #61726d;
-   --sc-400: #394f48;
-   --sc-500: #2e3f3a;
-   --sc-600: #222f2b;
-   --sc-700: #17201d;
-   --sc-800: #0b100e;
+   --warning-100: #fef0db;
+   --warning-200: #fbd398;
+   --warning-300: #f59e0b;
+   --warning-400: #d97706;
+   --warning-500: #78350f;
 
+   --error-100: #fee2e2;
+   --error-200: #fca5a5;
+   --error-300: #ef4444;
+   --error-400: #dc2626;
+   --error-500: #7f1d1d;
 
-   --t-050: #f8efeb;
-   --t-50: #f1ded6;
-   --t-100: #e3bdad;
-   --t-200: #d49d84;
-   --t-300: #c67c5b;
-   --t-400: #b85b32;
-   --t-500: #934928;
-   --t-600: #6e371e;
-   --t-700: #4a2414;
-   --t-800: #25120a;
-
-   --warning-100: #f3d9b8;
-   --warning-200: #e8b372;
-   --warning-300: #dc8c2b;
-   --warning-400: #d16611;
-   --warning-500: #a8500c;
-
-   --error-100: #f7d3cb;
-   --error-200: #e99f90;
-   --error-300: #db6b55;
-   --error-400: #cc381a;
-   --error-500: #a32c14;
-  
-   --success-100: #c8e8d8;
-   --success-200: #90d4b3;
-   --success-300: #57bf8e;
-   --success-400: #1ea969;
-   --success-500: #178653;
-
-   
-
-   --s--nt-050: #f7fafc;
-   --s--nt-50: #e2e8f0;
-   --s--nt-100: #cbd5e1;
-   --s--nt-200: #99a7b8;
-   --s--nt-300: #8290a2;
-   --s--nt-400: #64748b;
-   --s--nt-500: #475569;
-   --s--nt-600: #344154;
-   --s--nt-700: #263447;
-   --s--nt-800: #0b0f17;
-
-   --s--p-050: #ccfbf1;
-   --s--p-50: #99f6e4;
-   --s--p-100: #5eead4;
-   --s--p-200: #2dd4bf;
-   --s--p-300: #14b8a6;
-   --s--p-400: #0d9488;
-   --s--p-500: #0f766e;
-   --s--p-600: #115e59;
-   --s--p-700: #134e4a;
-   --s--p-800: #042f2e;
-
-   --s--sc-050: #f1f5f9;
-   --s--sc-50: #e2e8f0;
-   --s--sc-100: #cbd5e1;
-   --s--sc-200: #94a3b8;
-   --s--sc-300: #64748b;
-   --s--sc-400: #475569;
-   --s--sc-500: #344154;
-   --s--sc-600: #263447;
-   --s--sc-700: #131b29;
-   --s--sc-800: #101724;
-
-   --s--t-050: #cffafe;
-   --s--t-50: #a5f3fc;
-   --s--t-100: #67e8f9;
-   --s--t-200: #22d3ee;
-   --s--t-300: #06b6d4;
-   --s--t-400: #0891b2;
-   --s--t-500: #0e7490;
-   --s--t-600: #155e75;
-   --s--t-700: #164e63;
-   --s--t-800: #083344;
-
-   --s--warning-100: #fef3c7;
-   --s--warning-200: #fde68a;
-   --s--warning-300: #fcd34d;
-   --s--warning-400: #fbbf24;
-   --s--warning-500: #f59e0b;
-
-   --s--error-100: #fef2f2; 
-   --s--error-200: #fecaca; 
-   --s--error-300: #f87171; 
-   --s--error-400: #dc2626; 
-   --s--error-500: #b91c1c; 
-
-   --s--success-100: #d1fae5;
-   --s--success-200: #a7f3d0;
-   --s--success-300: #6ee7b7;
-   --s--success-400: #34d399;
-   --s--success-500: #059669;
-
+   --success-100: #e6f4ea;
+   --success-200: #a8d5b5;
+   --success-300: #34a853;
+   --success-400: #1e8e3e;
+   --success-500: #135523;
 }
 
-/*body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-main);
-  -webkit-font-smoothing: antialiased;
-} */
+body {
+   margin: 0;
+   background-color: var(--nt-050);
+   color: var(--nt-900);
+   font-family: "Sora", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+   font-size: 1.4rem;
+   line-height: 1.5;
+   -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--nt-600);
+    margin-bottom: 0.9em;
+}
+
+h1 {
+    font-size: 3.6rem;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+h2 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+h3 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+h4 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+h5 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.35;
+}
+
+h6 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+p {
+    font-size: 1.4rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--nt-800);
+    margin: 0 0 1.2em;
+}
+
+p.small, 
+.text-small {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--nt-600);
+}

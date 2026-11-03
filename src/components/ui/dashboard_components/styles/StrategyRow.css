@@ -1,168 +1,125 @@
-.strategy-card {
+.strategy-row-cont {
   display: flex;
-  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
   height: 360px;
-  overflow: hidden;
-  padding: 32px;
-  border: 1px solid var(--sc-100);
+  padding: 24px;
+  overflow: visible;
+  box-sizing: border-box;
+  background: var(--sc-800);
+  border: 1px solid var(--nt-700);
   border-radius: 16px;
-  background: linear-gradient(135deg, var(--nt-050), var(--sc-050));
-  box-shadow: none;
-  transition: border-color 160ms ease, transform 160ms ease;
 }
 
-.strategy-card:hover {
-  transform: translateY(-1px);
-  border-color: var(--sc-300);
-}
-
-.strategy-row {
-  position: relative;
-  display: flex;
-  flex-wrap: nowrap;
-  flex: 1;
-  min-height: 0;
-  align-items: center;
-  gap: 32px;
-  padding-bottom: 52px;
-}
-
-.strategy-name-section {
-  display: flex;
-  flex: 0.92 1 auto;
-  min-width: 0;
-  align-items: center;
-  gap: 24px;
-  padding: 8px 0;
-}
-
-.strategy-row > .strategy-column {
-  flex: 1 1 280px;
-  min-width: 0;
-}
-
-.strategy-name {
-  min-width: 0;
-}
-
-.strategy-name-label {
-  display: inline-block;
-  margin: 0 0 8px;
-  padding: 2px 10px;
-  border: 1px solid var(--sc-100);
-  border-radius: 6px;
-  background: var(--sc-050);
-  color: var(--sc-400);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.strategy-name h3 {
-  margin: 0;
-  color: var(--sc-700);
-  font-size: 18px;
-  line-height: 1.35;
-}
-
-.strategy-name p {
-  margin: 4px 0 0;
-  color: var(--sc-400);
-  font-size: 12px;
-}
-
-.strategy-row > .strategy-column.pcd-column-fixes {
-  margin-block: auto;
-}
-
-.strategy-row-actions {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  min-height: 42px;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 24px;
-  padding-top: 10px;
-}
-
-.strategy-row-actions small {
-  color: var(--warning-500);
-  font-size: 10px;
-}
-
-.strategy-row-actions button {
-  display: inline-flex;
-  min-height: 42px;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  margin-left: 0;
-  padding: 0 18px;
+.strategy-row-cont > .strategy-score-card {
+  flex: 0 0 25%;
+  min-width: 240px;
+  max-width: 360px;
+  background: transparent;
   border: 0;
-  border-radius: 7px;
-  background: var(--p-300);
-  color: var(--sc-800);
-  cursor: pointer;
-  font-size: 11px;
-  font-weight: 750;
+  border-radius: 0;
+  padding: 12px;
 }
 
-.strategy-row-actions button:hover {
-  background: var(--p-200);
+.strategy-row-cont > .missing-card-cont {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: visible;
 }
 
-.strategy-row-actions button.is-review {
-  background: var(--nt-50);
-  color: var(--sc-800);
-  border: 1px solid var(--nt-400);
+.strategy-row-cont .missing-card-text {
+  flex: 0 1 auto;
 }
 
-.strategy-row-actions button b {
-  font-size: 17px;
+.msp-dashboard .strategy-row-cont {
+  height: auto;
+  min-height: 0;
+  padding: 36px 0;
+  border: 0;
+  border-top: 1px solid var(--nt-200);
+  border-radius: 0;
+  background: transparent;
 }
 
-@media (max-width: 1120px) {
-  .strategy-card {
+.msp-dashboard .strategy-row-cont > .strategy-score-card {
+  background: transparent;
+}
+
+.msp-dashboard .strategy-score-value {
+  color: var(--nt-900);
+}
+
+.msp-dashboard .strategy-name {
+  color: var(--p-600);
+}
+
+.msp-dashboard .badge {
+  border-color: var(--nt-100);
+  background: var(--nt-050);
+  color: var(--nt-700);
+}
+
+@media (max-width: 1023px) {
+  .strategy-row-cont {
+    flex-direction: column;
     height: auto;
     min-height: 350px;
+    gap: 0;
+    padding: 16px 24px;
+    overflow: visible;
   }
 
-  .strategy-row {
-    gap: 22px;
+  .strategy-row-cont > .strategy-score-card {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    padding: 12px 8px 20px;
   }
 
-}
-
-@media (max-width: 700px) {
-  .strategy-card {
-    height: auto;
-    min-height: 0;
-    padding: 24px;
+  .strategy-row-cont > .missing-card-cont {
+    flex: 0 1 auto;
+    overflow: visible;
+    padding: 20px 8px 8px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
   }
 
-  .strategy-row {
-    padding-bottom: 0;
-    flex-direction: row;
-    gap: 17px;
+  .strategy-row-cont .missing-card-row {
+    align-items: center;
+    gap: 8px;
   }
 
-  .strategy-row > .strategy-column.pcd-column-fixes {
-    margin: 0;
+  .strategy-row-cont .missing-card-row-left {
+    min-width: 0;
+    flex-wrap: wrap;
+    padding-right: 0;
+    overflow-wrap: anywhere;
   }
 
-  .strategy-row-actions {
-    position: static;
-    min-height: 38px;
+  .strategy-row-cont .missing-card-name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .strategy-row-cont .empty-state-container {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .strategy-row-cont .empty-state-title-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .strategy-row-cont .empty-state-divider {
+    display: none;
+  }
+
+  .strategy-row-cont .empty-state-action {
     align-self: flex-end;
-    margin-top: -8px;
-    padding-top: 0;
-  }
-
-  .strategy-row-actions button {
-    min-height: 38px;
-    padding: 0 12px;
   }
 }

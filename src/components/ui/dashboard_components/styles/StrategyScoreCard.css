@@ -1,0 +1,115 @@
+
+.strategy-score-card {
+  display: flex;
+  flex: 1 1 320px;
+  min-width: 280px;
+  max-width: 100%;
+  align-items: center;
+  gap: 1.2rem;
+  background-color: var(--sc-700);
+  border: 1px solid var(--sc-400);
+  border-radius: 12px;
+  padding: 24px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.strategy-score-card:hover {
+  border-color: var(--sc-300);
+}
+
+.strategy-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.progress-ring-container {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  stroke: var(--nt-400);
+  stroke-dasharray: 4 5;
+}
+
+.progress-ring-fill {
+  transition: stroke-dashoffset 0.6s ease-in-out;
+}
+
+/* Tiered status variants for the progress stroke */
+.progress-ring-fill.high {
+  stroke: #2d633c;
+}
+
+.progress-ring-fill.medium {
+  stroke: var(--warning-400);
+}
+
+.progress-ring-fill.low {
+  stroke: var(--error-400);
+}
+
+.strategy-score-value {
+  position: absolute;
+  font-family: inherit;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--sc-050);
+}
+
+.strategy-card-cont {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.strategy-card-heading {
+  display: flex;
+  align-items: center;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background-color: var(--sc-800);
+  border: 1px solid var(--sc-500);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--sc-200);
+  text-transform: uppercase;
+}
+
+.strategy-name {
+  margin: 0;
+  font-weight: 600;
+  color: var(--p-400);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .strategy-score-card {
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .strategy-name {
+    font-size: 1.1rem;
+  }
+}

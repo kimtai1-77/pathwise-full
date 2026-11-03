@@ -1,0 +1,146 @@
+.invitee-login-page {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 2.4rem 1.6rem;
+  background-color: var(--nt-50);
+  background-image: radial-gradient(var(--sc-300) 1px, transparent 1px);
+  background-size: 24px 24px;
+  letter-spacing: 0;
+}
+
+.invitee-login-wrapper {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 52rem;
+  padding: 2.8rem;
+  text-align: left;
+  background-color: var(--nt-050);
+  border: 1px solid var(--nt-100);
+  border-radius: 0.8rem;
+}
+
+.invitee-login-wrapper .card-header {
+  margin-bottom: 2rem;
+}
+
+.invitee-login-context {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.invitee-login-context div {
+  min-width: 0;
+  padding: 1.2rem;
+  border: 1px solid var(--nt-200);
+  border-radius: 0.6rem;
+  background: var(--nt-50);
+}
+
+.invitee-login-context span,
+.invitee-login-context strong {
+  display: block;
+}
+
+.invitee-login-context span {
+  margin-bottom: 0.4rem;
+  color: var(--nt-500);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+
+.invitee-login-context strong {
+  overflow-wrap: anywhere;
+  color: var(--nt-900);
+  font-size: 1.4rem;
+}
+
+.invitee-login-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+ .invitee-login-email {
+  padding: 1.2rem;
+  border: 1px solid var(--nt-200);
+  border-radius: 0.5rem;
+  background: var(--nt-50);
+}
+
+.invitee-login-email span,
+.invitee-login-email strong {
+  display: block;
+}
+
+.invitee-login-email span {
+  margin-bottom: 0.5rem;
+  color: var(--nt-500);
+  font-size: 1.2rem;
+}
+
+.invitee-login-email strong {
+  overflow-wrap: anywhere;
+  color: var(--nt-900);
+  font-size: 1.4rem;
+}
+
+.invitee-login-password-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.invitee-login-error {
+  margin: 1.6rem 0 0;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--error-400) 32%, transparent);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--error-400) 8%, var(--nt-050));
+  color: var(--error-400);
+  font-size: 1.3rem;
+  line-height: 1.45;
+}
+
+.invitee-login-submit {
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.invitee-login-footer {
+  margin: 1.6rem 0 0;
+  color: var(--nt-800);
+  font-size: 1.3rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.invitee-login-footer a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+.invitee-login-footer a:hover {
+  color: var(--t-500);
+}
+
+@media (max-width: 600px) {
+  .invitee-login-page {
+    align-items: flex-start;
+    padding: 1.6rem;
+  }
+
+  .invitee-login-wrapper {
+    padding: 2rem;
+  }
+
+  .invitee-login-context,
+  .invitee-login-password-grid {
+    grid-template-columns: 1fr;
+  }
+}

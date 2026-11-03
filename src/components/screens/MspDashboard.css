@@ -1,0 +1,840 @@
+.msp-dashboard {
+  --nt-100: #ddd9d3;
+  min-height: 100vh;
+  background: var(--nt-050);
+  color: var(--nt-900);
+  font-family: inherit;
+  color-scheme: light;
+}
+
+.msp-dashboard p {
+  color: var(--nt-800);
+}
+
+.msp-dashboard .msp-dashboard-tenants-title,
+.msp-dashboard .msp-dashboard-strategies-title {
+  color: var(--nt-900);
+}
+
+.msp-dashboard .msp-dashboard-tenants-kicker,
+.msp-dashboard .msp-dashboard-strategies-kicker,
+.msp-dashboard .msp-dashboard-tenants-count,
+.msp-dashboard .msp-dashboard-strategies-count {
+  color: var(--nt-600);
+}
+
+.msp-dashboard-navbar {
+  border-bottom: 1px solid var(--sc-600);
+  background: var(--sc-800);
+}
+
+.msp-dashboard-navbar-wrapper {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  gap: 32px;
+  width: min(100%, 1600px);
+  margin: 0 auto;
+  padding: 12px 28px;
+}
+
+.msp-dashboard-navbar-brand {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 2px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.msp-dashboard-navbar-brand-name {
+  color: var(--success-200);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.msp-dashboard-navbar-brand-caption {
+  color: var(--nt-300);
+  font-size: 1.1rem;
+}
+
+.msp-dashboard-navbar-title {
+  margin: 0;
+  color: var(--nt-100);
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.msp-dashboard-navbar-status {
+  margin-left: auto;
+  color: var(--nt-300);
+  font-size: 1.2rem;
+}
+
+.msp-dashboard-main {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 20px;
+  width: min(100%, 1600px);
+  margin: 0 auto;
+  padding: 24px 28px 40px;
+  transition: grid-template-columns 220ms ease;
+}
+
+.msp-dashboard-main.is-sidebar-collapsed {
+  grid-template-columns: 64px minmax(0, 1fr);
+}
+
+.msp-dashboard-tenants-panel {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 20px;
+  align-self: start;
+  min-height: 280px;
+  padding: 20px 16px;
+  border: 1px solid var(--sc-600);
+  border-radius: 8px;
+  background: var(--sc-800);
+  transition: padding 220ms ease, background-color 180ms ease;
+}
+
+.msp-dashboard-tenants-panel.is-collapsed {
+  gap: 16px;
+  padding: 12px 8px;
+}
+
+.msp-dashboard-tenants-heading {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.msp-dashboard-tenants-heading-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  overflow-wrap: anywhere;
+}
+
+.msp-dashboard-sidebar-toggle {
+  position: relative;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--sc-600);
+  border-radius: 5px;
+  background: var(--sc-600);
+  color: var(--nt-200);
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.msp-dashboard-sidebar-toggle::after {
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  z-index: 20;
+  width: max-content;
+  max-width: 160px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: var(--nt-050);
+  color: var(--nt-600);
+  content: attr(data-tooltip);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) translateX(-4px);
+  transition: opacity 100ms ease, transform 100ms ease;
+  white-space: nowrap;
+}
+
+.msp-dashboard-sidebar-toggle:hover::after,
+.msp-dashboard-sidebar-toggle:focus-visible::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.msp-dashboard-sidebar-toggle:hover {
+  border-color: var(--sc-400);
+  background: var(--sc-600);
+  color: var(--nt-500);
+}
+
+.msp-dashboard-sidebar-toggle:focus-visible,
+.msp-dashboard-tenants-add:focus-visible,
+.msp-dashboard-tenants-item:focus-visible {
+  outline: 2px solid var(--success-200);
+  outline-offset: 2px;
+}
+
+.msp-dashboard-sidebar-toggle svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.msp-dashboard-sidebar-toggle svg path {
+  fill: currentColor;
+}
+
+.msp-dashboard[data-theme="light"] .msp-dashboard-sidebar-toggle {
+  border-color: var(--nt-200);
+  background: var(--nt-050);
+  color: #967449;
+}
+
+.msp-dashboard[data-theme="light"] .msp-dashboard-sidebar-toggle:hover {
+  border-color: #967449;
+  background: var(--success-050);
+  color: #543e1e;
+}
+
+.msp-dashboard-tenants-kicker,
+.msp-dashboard-strategies-kicker {
+  color: var(--nt-200);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.msp-dashboard-tenants-title,
+.msp-dashboard-strategies-title {
+  margin: 0;
+  color: var(--nt-050);
+  font-size: 1.8rem;
+  font-weight: 650;
+}
+
+.msp-dashboard-tenants-count,
+.msp-dashboard-strategies-count {
+  margin: 0;
+  color: var(--nt-300);
+  font-size: 1.2rem;
+}
+
+.msp-dashboard-tenants-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.msp-dashboard-tenants-label {
+  color: var(--nt-200);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.msp-dashboard-tenants-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--sc-500);
+  border-radius: 4px;
+  background: var(--sc-900);
+  color: var(--nt-050);
+}
+
+.msp-dashboard-tenants-input::placeholder {
+  color: var(--nt-400);
+}
+
+.msp-dashboard-tenants-add {
+  display: flex;
+  width: 100%;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--success-400);
+  border-radius: 5px;
+  background: var(--p-300);
+  color: var(--sc-900);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.msp-dashboard-tenants-add:hover {
+  background: var(--p-500);
+}
+
+.msp-dashboard-tenants-add-icon {
+  display: none;
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.msp-dashboard-tenants-search {
+  display: flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border-radius: 5px;
+  background: var(--nt-100);
+}
+
+.msp-dashboard-tenants-search:focus-within {
+  border-color: var(--success-200);
+}
+
+.msp-dashboard-tenants-search svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.msp-dashboard-tenants-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--nt-500);
+  font: inherit;
+  font-size: 1.2rem;
+}
+
+.msp-dashboard-tenants-search input::placeholder {
+  color: var(--nt-300);
+}
+
+.msp-dashboard-tenants-search input::-webkit-search-cancel-button {
+  display: none;
+  -webkit-appearance: none;
+}
+
+.msp-dashboard-tenants-search-clear {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: var(--nt-300);
+  stroke-width: 2;
+  stroke-linecap: round;
+  cursor: pointer;
+}
+
+.msp-dashboard-tenants-search-clear:hover {
+  stroke: var(--nt-900);
+}
+
+.msp-dashboard-tenants-empty {
+  margin: 8px 10px;
+  color: var(--nt-300);
+  font-size: 1.2rem;
+}
+
+.msp-dashboard-tenants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.msp-dashboard-tenants-item {
+  display: flex;
+  min-width: 0;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 0;
+  color: var(--nt-200);
+  text-align: left;
+  cursor: pointer;
+}
+
+.msp-dashboard-tenants-item:hover,
+.msp-dashboard-tenants-item.is-selected {
+  background: var(--sc-700);
+  color: var(--nt-050);
+}
+
+.msp-dashboard-tenants-item.is-selected {
+  border-left: 3px solid var(--sc-500);
+  padding-left: 7px;
+}
+
+.msp-dashboard-tenants-item-initial {
+  display: none;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--sc-500);
+  border-radius: 5px;
+  background: var(--sc-700);
+  color: var(--nt-100);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.msp-dashboard-tenants-item-name {
+  overflow-wrap: anywhere;
+}
+
+.msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-heading {
+  justify-content: center;
+}
+
+.msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-heading-copy,
+.msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-add-label,
+.msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-item-name {
+  display: none;
+}
+
+.msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-form {
+  align-items: center;
+}
+
+.msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-add {
+  width: 36px;
+  min-height: 36px;
+  padding: 0;
+}
+
+.msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-add-icon,
+.msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-item-initial {
+  display: flex;
+}
+
+.msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-item {
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-item.is-selected {
+  padding-left: 0;
+  border-left: 0;
+  background: transparent;
+}
+
+.msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-item.is-selected .msp-dashboard-tenants-item-initial {
+  background: color-mix(in srgb, var(--sc-500) 16%, var(--sc-700));
+  color: var(--nt-600);
+}
+
+.msp-dashboard-workspace {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.msp-dashboard-strategies {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.msp-dashboard-strategies-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.msp-dashboard-strategies-heading > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.msp-dashboard-strategies-list {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.msp-dashboard-footer {
+  border-top: 1px solid var(--sc-600);
+  background: var(--sc-800);
+}
+
+.msp-dashboard-footer-wrapper {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: min(100%, 1600px);
+  margin: 0 auto;
+  padding: 12px 28px;
+  color: var(--nt-300);
+  font-size: 1.1rem;
+}
+
+.msp-dashboard-footer-brand {
+  color: var(--nt-200);
+  font-weight: 600;
+}
+
+.msp-dashboard .profile-settings-security-action:not(.is-secondary),
+.msp-dashboard .profile-settings-submit {
+  color: var(--nt-050);
+}
+
+.msp-dashboard .level-cont.active {
+  color: var(--nt-050);
+}
+
+.msp-dashboard .msp-dashboard-tenants-add {
+  color: var(--p-400);
+  border-color: var(--p-400);
+  background: transparent;
+}
+
+.msp-dashboard .msp-dashboard-tenants-add:hover {
+  background: var(--nt-050);
+}
+
+.msp-dashboard .msp-dashboard-tenants-item:hover,
+.msp-dashboard .msp-dashboard-tenants-item.is-selected {
+  background: var(--nt-050);
+  color: var(--nt-900);
+}
+
+.msp-dashboard .msp-dashboard-sidebar-toggle:hover {
+  background: var(--nt-050);
+}
+
+.msp-dashboard .msp-dashboard-tenants-panel.is-collapsed .msp-dashboard-tenants-item.is-selected .msp-dashboard-tenants-item-initial {
+  background: none;
+}
+
+.msp-dashboard .org-add-overlay,
+.msp-dashboard .start-fix-drawer-overlay {
+  background-color: color-mix(in srgb, var(--nt-900) 28%, transparent);
+  backdrop-filter: blur(3px);
+}
+
+.msp-dashboard .org-add-dialog,
+.msp-dashboard .start-fix-drawer {
+  border-color: var(--nt-100);
+  background-color: var(--nt-050);
+  color: var(--nt-900);
+  box-shadow: 0 20px 50px color-mix(in srgb, var(--nt-900) 18%, transparent);
+}
+
+.msp-dashboard .org-add-header,
+.msp-dashboard .org-add-actions,
+.msp-dashboard .strategy-name-write {
+  border-color: var(--nt-100);
+}
+
+.msp-dashboard .org-add-eyebrow {
+  color: var(--success-500);
+}
+
+.msp-dashboard .org-add-header h2,
+.msp-dashboard .start-fix-drawer .strategy-name {
+  color: var(--nt-900);
+}
+
+.msp-dashboard .org-add-close,
+.msp-dashboard .org-add-form-group label,
+.msp-dashboard .org-add-cancel,
+.msp-dashboard .level-badge,
+.msp-dashboard .upload-subtext {
+  color: var(--nt-700);
+}
+
+.msp-dashboard .org-add-close:hover {
+  color: var(--nt-900);
+}
+
+.msp-dashboard .org-add-form-group input,
+.msp-dashboard .control-disclosure-toggle {
+  border-color: var(--nt-100);
+  background: var(--nt-050);
+  color: var(--nt-900);
+}
+
+.msp-dashboard .org-add-form-group input:focus {
+  border-color: var(--p-400);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--p-400) 18%, transparent);
+}
+
+.msp-dashboard .org-add-form-group input:disabled {
+  border-color: var(--nt-100);
+  background: var(--nt-50);
+  color: var(--nt-500);
+}
+
+.msp-dashboard .org-add-lookup {
+  border-color: var(--nt-100);
+  background: var(--nt-050);
+  color: var(--nt-800);
+}
+
+.msp-dashboard .org-add-lookup:hover:not(:disabled) {
+  border-color: var(--p-400);
+  color: var(--nt-900);
+}
+
+.msp-dashboard .org-add-error {
+  color: var(--error-500);
+}
+
+.msp-dashboard .org-add-cancel {
+  border-color: var(--nt-100);
+}
+
+.msp-dashboard .org-add-cancel:hover {
+  border-color: var(--nt-300);
+  color: var(--nt-900);
+}
+
+.msp-dashboard .org-add-submit {
+  border-color: var(--p-400);
+  background: var(--sc-500);
+  color: var(--nt-050);
+}
+
+.msp-dashboard .org-add-submit:hover:not(:disabled) {
+  border-color: var(--p-300);
+  background: var(--p-300);
+}
+
+.msp-dashboard .org-add-submit:disabled {
+  border-color: var(--nt-100);
+  background: var(--nt-50);
+  color: var(--nt-500);
+}
+
+.msp-dashboard .org-add-overlay button:focus-visible {
+  outline-color: var(--p-500);
+}
+
+.msp-dashboard .control-code {
+  border-color: color-mix(in srgb, var(--p-500) 28%, var(--sc-600));
+  background: color-mix(in srgb, var(--p-400) 10%, var(--nt-050));
+  color: var(--p-600);
+}
+
+.msp-dashboard .compliance-state-wrapper {
+  border-color: color-mix(in srgb, var(--error-500) 28%, transparent);
+  background: color-mix(in srgb, var(--error-100) 10%, var(--nt-050));
+}
+
+.msp-dashboard .compliance-state-header,
+.msp-dashboard .compliance-status-text,
+.msp-dashboard .evidence-flag {
+  color: var(--error-500);
+}
+
+.msp-dashboard .upload-heading {
+  color: var(--nt-700);
+}
+
+.msp-dashboard .upload-img {
+  border-color: var(--nt-100);
+  background: var(--nt-050);
+}
+
+.msp-dashboard .upload-inp:hover {
+  border-color: var(--p-400);
+}
+
+.msp-dashboard .upload-icon-box,
+.msp-dashboard .file-selected-name {
+  color: var(--p-600);
+}
+
+.msp-dashboard .upload-text {
+  color: var(--nt-900);
+}
+
+.msp-dashboard .control-name {
+  border-left-color: var(--p-400);
+  background: var(--nt-50);
+  color: var(--nt-800);
+}
+
+.msp-dashboard .control-disclosure-toggle {
+  color: var(--nt-800);
+}
+
+.msp-dashboard .control-disclosure-toggle:hover {
+  border-color: var(--p-400);
+}
+
+.msp-dashboard .msp-dashboard-main {
+  width: min(100%, 1520px);
+  gap: clamp(36px, 4vw, 64px);
+  padding: 48px clamp(28px, 4vw, 64px) 88px;
+}
+
+.msp-dashboard .msp-dashboard-tenants-panel {
+  min-height: 0;
+  padding: 12px 24px 12px 0;
+  border: 0;
+  border-right: 1px solid var(--nt-100);
+  border-radius: 0;
+  background: transparent;
+}
+
+.msp-dashboard .msp-dashboard-workspace {
+  gap: 48px;
+}
+
+.msp-dashboard .top-row-wrapper {
+  padding: 8px 0 36px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.msp-dashboard .overall-scorecard-cont {
+  padding: 12px 0 12px 36px;
+  border: 0;
+  border-left: 1px solid var(--nt-100);
+  border-radius: 0;
+  background: transparent;
+}
+
+.msp-dashboard .msp-dashboard-strategies {
+  gap: 28px;
+}
+
+.msp-dashboard .msp-dashboard-strategies-list {
+  gap: 0;
+}
+
+@media (max-width: 1023px) {
+  .msp-dashboard .msp-dashboard-main {
+    gap: 28px;
+    padding: 32px 24px 56px;
+  }
+
+  .msp-dashboard .overall-scorecard-cont {
+    padding: 24px 0 0;
+    border-top: 1px solid var(--nt-100);
+    border-left: 0;
+  }
+
+  .msp-dashboard-main {
+    grid-template-columns: minmax(180px, 28%) minmax(0, 1fr);
+    gap: 14px;
+    padding: 18px 16px 32px;
+  }
+
+  .msp-dashboard-main.is-sidebar-collapsed {
+    grid-template-columns: 60px minmax(0, 1fr);
+  }
+
+  .msp-dashboard-tenants-panel {
+    position: static;
+    padding: 16px 12px;
+  }
+
+}
+
+@media (max-width: 560px) {
+  .msp-dashboard .overall-scorecard-cont {
+    gap: 12px;
+  }
+
+  .msp-dashboard .overall-score {
+    width: 72px;
+  }
+
+  .msp-dashboard .overall-score-info {
+    flex: 1 1 0;
+  }
+
+  .msp-dashboard .maturity-level {
+    flex-wrap: wrap;
+  }
+
+  .msp-dashboard-navbar-wrapper {
+    min-height: 64px;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    padding: 12px 16px;
+  }
+
+  .msp-dashboard-navbar-title {
+    order: 3;
+    width: 100%;
+  }
+
+  .msp-dashboard-main {
+    grid-template-columns: minmax(130px, 36%) minmax(0, 1fr);
+    gap: 10px;
+    padding: 14px 10px 24px;
+  }
+
+  .msp-dashboard-main.is-sidebar-collapsed {
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+
+  .msp-dashboard-tenants-panel {
+    gap: 12px;
+    padding: 12px 8px;
+  }
+
+  .msp-dashboard-tenants-panel.is-collapsed {
+    gap: 10px;
+    padding: 8px 6px;
+  }
+
+  .msp-dashboard-sidebar-toggle {
+    width: 28px;
+    height: 28px;
+  }
+
+  .msp-dashboard-tenants-heading {
+    gap: 8px;
+  }
+
+  .msp-dashboard-tenants-title {
+    font-size: 1.55rem;
+    line-height: 1.15;
+  }
+
+  .msp-dashboard-tenants-heading-copy {
+    overflow-wrap: anywhere;
+  }
+
+  .msp-dashboard-strategies-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .msp-dashboard-strategies-list {
+    gap: 12px;
+  }
+
+  .msp-dashboard-footer-wrapper {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .msp-dashboard-main,
+  .msp-dashboard-tenants-panel,
+  .msp-dashboard-sidebar-toggle {
+    transition: none;
+  }
+}

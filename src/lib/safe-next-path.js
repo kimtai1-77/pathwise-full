@@ -1,3 +1,5 @@
+
+
 export const safeNextPath = (path, fallback = '/', origin) => {
     if (typeof path !== 'string' || !path.startsWith('/')) return fallback
 

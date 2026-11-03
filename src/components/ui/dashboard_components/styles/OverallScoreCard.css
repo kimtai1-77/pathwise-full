@@ -1,0 +1,80 @@
+
+.overall-scorecard-cont {
+  display: flex;
+  min-width: 0;
+  width: 100%;
+  align-items: center;
+  gap: 20px;
+  background-color: var(--sc-700);
+  border: 1px solid var(--sc-600);
+  border-radius: 6px;
+  padding: 18px;
+  color: var(--nt-100);
+  box-sizing: border-box;
+}
+
+.overall-score-info {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.maturity-heading {
+  margin: 0;
+  color: var(--nt-200);
+  text-transform: uppercase;
+}
+
+/* Level row: "Level 1 / 3" */
+.maturity-level {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 2px 0 4px;
+}
+
+.maturity-level b {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--nt-050);
+  line-height: 1.1;
+}
+
+.maturity-level small {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--nt-300);
+}
+
+/* Descriptive text */
+.maturity-level-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--nt-200);
+  max-width: 360px;
+  overflow-wrap: anywhere;
+}
+
+.msp-dashboard .overall-scorecard-cont {
+  background: transparent;
+  color: var(--nt-900);
+}
+
+.msp-dashboard .maturity-heading,
+.msp-dashboard .maturity-level small,
+.msp-dashboard .maturity-level-text {
+  color: var(--nt-700);
+}
+
+.msp-dashboard .maturity-level b {
+  color: var(--nt-700);
+}
+
+@media (max-width: 560px) {
+  .overall-scorecard-cont {
+    gap: 14px;
+    padding: 14px;
+  }
+}

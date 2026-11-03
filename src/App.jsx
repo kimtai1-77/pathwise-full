@@ -1,14 +1,20 @@
 import { useEffect, useState } from 'react'
-import LoginForm from "@/components/logging_in/login-form.jsx"
+import LoginForm from "@/components/logging_in/LoginForm.jsx"
 import SignUpForm from "@/components/logging_in/sign-up-form.jsx"
+import InviteeLoginForm from '@/components/logging_in/InviteeLoginForm.jsx'
 import ForgotPasswordForm from '@/components/logging_in/forgotPasswordForm.jsx'
 import UpdatePasswordForm from '@/components/logging_in/updatePasswordForm.jsx'
-import MspDash from '@/components/screens/mspDash.jsx'
+import MspDashboard from '@/components/screens/MspDashboard.jsx'
+import MspOwnerOnboarding from '@/components/screens/MspOwnerOnboarding.jsx'
+// import MspDash from '@/components/screens/MspDash.jsx'
 import { safeNextPath } from '@/lib/safe-next-path.js'
 import { supabase } from '@/lib/supabaseClient.js'
 import './App.css'
 
 function App() {
+  const onboardingPreview = new URLSearchParams(window.location.search).get('onboarding') === '1'
+  const inviteePreview = new URLSearchParams(window.location.search).get('invitee') === '1'
+  const invitationLink = new URLSearchParams(window.location.search).get('auth') === 'invitee'
   const [view, setView] = useState(() => {
     const auth = new URLSearchParams(window.location.search).get('auth')
     if (auth === 'confirmed') return 'sign-in'
@@ -17,6 +23,8 @@ function App() {
   })
   const [user, setUser] = useState(null)
   const [authReady, setAuthReady] = useState(false)
+  const [onboardingComplete, setOnboardingComplete] = useState(false)
+  const [inviteeSetupComplete, setInviteeSetupComplete] = useState(false)
 
   useEffect(() => {
     const url = new URL(window.location.href)
@@ -27,9 +35,16 @@ function App() {
     }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY') setView('update-password')
+      if (event === 'PASSWORD_RECOVERY' && !invitationLink) setView('update-password')
       if (event === 'SIGNED_OUT') setView('sign-in')
-      setUser(session?.user ?? null)
+      const nextUser = session?.user ?? null
+      setUser(nextUser)
+      setOnboardingComplete(nextUser
+        ? window.localStorage.getItem(`pathwise_msp_onboarding_complete:${nextUser.id}`) === 'true'
+        : false)
+      setInviteeSetupComplete(nextUser
+        ? window.localStorage.getItem(`pathwise_invitee_setup_complete:${nextUser.id}`) === 'true'
+        : false)
       setAuthReady(true)
     })
 
@@ -55,12 +70,30 @@ function App() {
     const { error } = await supabase.auth.signOut({ scope: 'local' })
     if (error) throw error
     setUser(null)
+    setOnboardingComplete(false)
+    setInviteeSetupComplete(false)
     setView('sign-in')
   }
 
   return (
       <div className='app-cont'>
-        {!authReady ? (
+        {onboardingPreview ? (
+          <MspOwnerOnboarding
+            user={{
+              id: 'onboarding-preview',
+              user_metadata: { msp_name: 'Acme Managed Services' },
+            }}
+            onComplete={() => {
+              window.history.replaceState(null, '', '/')
+              window.location.reload()
+            }}
+          />
+        ) : inviteePreview ? (
+          <InviteeLoginForm
+            invitation={{ invitation: true, msp_name: 'Acme Managed Services', msp_id: 'preview', role: 'technician' }}
+            onComplete={() => undefined}
+          />
+        ) : !authReady ? (
           <p role='status'>Loading your workspace...</p>
         ) : view === 'update-password' ? (
           <UpdatePasswordForm
@@ -70,8 +103,28 @@ function App() {
               setView('sign-in')
             }}
           />
+        ) : user && !inviteeSetupComplete && (invitationLink || user.user_metadata?.invitation === true) ? (
+          <InviteeLoginForm
+            user={user}
+            onComplete={(completedUser) => {
+              window.localStorage.setItem(`pathwise_invitee_setup_complete:${completedUser.id}`, 'true')
+              setInviteeSetupComplete(true)
+              setUser(completedUser)
+            }}
+            onSignInClick={(event) => {
+              event.preventDefault()
+              void supabase.auth.signOut()
+            }}
+          />
+        ) : user && inviteeSetupComplete && (invitationLink || user.user_metadata?.invitation === true) ? (
+          <MspDashboard user={user} onSignOut={handleSignOut} />
+        ) : user && !onboardingComplete ? (
+          <MspOwnerOnboarding
+            user={user}
+            onComplete={() => setOnboardingComplete(true)}
+          />
         ) : user ? (
-          <MspDash user={user} onSignOut={handleSignOut} />
+          <MspDashboard user={user} onSignOut={handleSignOut} />
         ) : view === 'forgot-password' ? (
           <ForgotPasswordForm onSignInClick={(event) => {
             event.preventDefault()

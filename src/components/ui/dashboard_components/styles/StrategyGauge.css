@@ -15,7 +15,7 @@
 
 .strategy-percentage circle {
   fill: none;
-  stroke: var(--sc-100);
+  stroke: var(--nt-100);
   stroke-width: 3.8;
   transition: stroke 220ms ease;
 }
@@ -37,7 +37,7 @@
   inset: 0;
   display: grid;
   place-items: center;
-  color: var(--sc-700);
+  color: var(--nt-800);
   font-size: 14px;
   font-weight: 800;
 }

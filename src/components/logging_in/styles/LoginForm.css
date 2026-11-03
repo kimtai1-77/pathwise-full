@@ -5,7 +5,9 @@
   width: 100%;
   place-items: center;
   padding: 2.4rem 1.6rem;
-  background-color: var(--sc-050);
+  background-color: var(--nt-50);
+  background-image: radial-gradient(var(--sc-300) 1px, transparent 1px);
+  background-size: 24px 24px;
   letter-spacing: 0;
 }
 

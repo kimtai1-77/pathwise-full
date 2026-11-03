@@ -1,8 +1,0 @@
-.overall-score{position:relative;width:120px;aspect-ratio:1;flex:0 0 auto}
-.overall-score svg{width:100%;height:100%;transform:rotate(-90deg)}
-.overall-score circle{fill:none;stroke-width:7}
-.overall-score-track{stroke:var(--sc-100)}
-.overall-score-progress{stroke:var(--p-400);stroke-linecap:round;transition:stroke-dashoffset 650ms ease}
-.overall-score>span{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.overall-score b{color:var(--sc-700);font-size:22px;line-height:1.1}
-.overall-score small{margin-top:4px;color:var(--sc-400);font-size:10px;text-transform:uppercase}

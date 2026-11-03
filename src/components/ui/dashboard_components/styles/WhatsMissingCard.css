@@ -1,0 +1,542 @@
+.missing-card-cont {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 1.2rem 2.4rem;
+  border-left: 1px solid var(--nt-500);
+  color: var(--nt-050);
+}
+
+.missing-card-heading {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+  color: var(--t-50);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.missing-card-heading > * {
+  margin: 0;
+  color: currentColor;
+  font-weight: 600;
+}
+
+.missing-card-heading svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.heading-icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.missing-card-text {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 260px;
+  margin: 0;
+  color: var(--nt-100);
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+.missing-card-text.is-expanded {
+  max-height: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.missing-card-text:not(.is-expanded) {
+  -webkit-mask-image: linear-gradient(to bottom, currentColor 0%, currentColor 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, currentColor 0%, currentColor 82%, transparent 100%);
+}
+
+.missing-card-expand {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 4px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--p-500);
+  font: inherit;
+  cursor: pointer;
+}
+
+.missing-card-expand::after {
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  content: '';
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 160ms ease;
+}
+
+.missing-card-expand[aria-expanded="true"]::after {
+  transform: translateY(2px) rotate(225deg);
+}
+
+.missing-card-expand:hover {
+  color: var(--p-400);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.missing-card-expand:focus-visible {
+  outline: 2px solid var(--p-400);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .missing-card-expand::after {
+    transition: none;
+  }
+}
+
+.missing-card-text-cont {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  list-style: none;
+}
+
+.missing-card-row {
+  --missing-card-actions-offset: 2rem;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  padding: 1.6rem 0;
+}
+
+.missing-card-row:last-child {
+  border-bottom: none;
+}
+
+.missing-card-row-left {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 1.6rem;
+  min-width: 0;
+  margin-right: var(--missing-card-actions-offset);
+}
+
+.missing-card-code {
+  flex: 0 0 auto;
+  color: var(--nt-100);
+  font-weight: 600;
+  font-size: 1.2rem;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.missing-card-name {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 0;
+  color: var(--nt-050);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.missing-card-name > span:first-child {
+  min-width: 0;
+}
+
+.missing-card-name p {
+  min-width: 0;
+  margin: 0;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+.missing-card-ism {
+    flex: 0 0 auto;
+    color: var(--nt-400);
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.missing-card-text-icon {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--p-700);
+  border-radius: 50%;
+  background-color: var(--p-900);
+  color: var(--p-200);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.missing-card-text-icon:hover {
+  border-color: var(--p-300);
+  background-color: var(--p-800);
+}
+
+.missing-card-text-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.empty-state-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--p-700);
+  border-radius: 10px;
+  background-color: var(--nt-800);
+}
+
+.empty-state-left {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 1rem;
+}
+
+.empty-state-icon-box {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--p-700);
+  border-radius: 8px;
+  background-color: var(--p-800);
+  color: var(--p-200);
+}
+
+.empty-state-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.empty-state-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.empty-state-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.empty-state-title-row h4 {
+  margin: 0;
+  color: var(--nt-050);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.empty-state-badge {
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--p-700);
+  border-radius: 9999px;
+  background-color: var(--p-800);
+  color: var(--p-200);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.empty-state-desc {
+  margin: 0;
+  color: var(--nt-300);
+  font-size: 0.825rem;
+}
+
+.empty-state-divider {
+  width: 1px;
+  height: 36px;
+  margin: 0 1.25rem;
+  background-color: var(--p-700);
+}
+
+.empty-state-action {
+  display: flex;
+  align-items: center;
+}
+
+.view-evidence-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--p-700);
+  border-radius: 9999px;
+  background-color: var(--nt-800);
+  color: var(--p-200);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.view-evidence-btn:hover {
+  border-color: var(--p-300);
+  background-color: var(--p-800);
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.control-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.control-actions .action-btn {
+  min-height: 3.2rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--nt-500);
+  border-radius: 4px;
+  background: var(--nt-800);
+  color: var(--nt-100);
+  cursor: pointer;
+}
+
+.fix-arrow-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  stroke-width: 2px;
+  stroke-linecap: round;
+}
+
+.control-actions .action-btn:hover {
+  border-color: var(--p-400);
+  color: var(--p-200);
+}
+
+.control-actions .action-btn:focus-visible {
+  outline: 2px solid var(--p-300);
+  outline-offset: 2px;
+}
+
+.missing-card-cont.loading,
+.missing-card-cont.all-compliant {
+  justify-content: center;
+}
+
+.msp-dashboard .missing-card-cont {
+  border-left-color: var(--nt-100);
+  color: var(--nt-900);
+}
+
+.msp-dashboard .missing-card-text,
+.msp-dashboard .missing-card-code,
+.msp-dashboard .missing-card-name {
+  color: var(--nt-900);
+}
+
+.msp-dashboard .missing-card-heading {
+  color: var(--error-500);
+}
+
+.msp-dashboard .missing-card-ism {
+  color: var(--nt-500);
+}
+
+.msp-dashboard .missing-card-text-icon {
+  border-color: color-mix(in srgb, var(--success-500) 35%, transparent);
+  background: color-mix(in srgb, var(--success-200) 11%, var(--nt-050));
+  color: var(--success-500);
+}
+
+.msp-dashboard .missing-card-text-icon:hover {
+  border-color: var(--success-500);
+  background: color-mix(in srgb, var(--success-200) 18%, var(--nt-050));
+}
+
+.msp-dashboard .empty-state-container {
+  border-color: color-mix(in srgb, var(--success-500) 24%, var(--sc-600));
+  background: var(--success-100);
+}
+
+.msp-dashboard .empty-state-icon-box {
+  border-color: color-mix(in srgb, var(--success-500) 28%, transparent);
+  background: color-mix(in srgb, var(--success-200) 12%, var(--nt-050));
+  color: var(--success-500);
+}
+
+.msp-dashboard .empty-state-title-row h4 {
+  color: var(--nt-900);
+}
+
+.msp-dashboard .empty-state-badge {
+  border-color: color-mix(in srgb, var(--success-500) 34%, transparent);
+  background: color-mix(in srgb, var(--success-200) 12%, var(--nt-050));
+  color: var(--success-500);
+}
+
+.msp-dashboard .empty-state-desc {
+  color: var(--nt-700);
+}
+
+.msp-dashboard .empty-state-divider {
+  background: var(--nt-100);
+}
+
+.msp-dashboard .view-evidence-btn {
+  border-color: color-mix(in srgb, var(--success-500) 34%, transparent);
+  background: var(--nt-050);
+  color: var(--success-500);
+}
+
+.msp-dashboard .view-evidence-btn:hover {
+  border-color: var(--success-500);
+  background: color-mix(in srgb, var(--success-200) 9%, var(--nt-050));
+}
+
+.msp-dashboard .control-actions .action-btn {
+  border-color: var(--nt-100);
+  background: var(--nt-050);
+  color: var(--nt-700);
+}
+
+.msp-dashboard .control-actions .action-btn:hover {
+  border-color: var(--p-400);
+  color: var(--p-600);
+}
+
+.admin-note-dialog {
+  width: min(90vw, 32rem);
+  max-height: 80vh;
+  padding: 1.5rem;
+  border: 1px solid var(--nt-500);
+  border-radius: 8px;
+  background: var(--sc-800);
+  color: var(--nt-050);
+}
+
+.admin-note-dialog::backdrop {
+  background: color-mix(in srgb, var(--nt-900) 60%, transparent);
+}
+
+.admin-note-dialog-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-note-dialog-code {
+  margin: 0 0 0.35rem;
+  color: var(--nt-200);
+  font-size: 1.2rem;
+}
+
+.admin-note-dialog h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.admin-note-dialog-heading button {
+  flex: 0 0 auto;
+}
+
+.admin-note-dialog-content {
+  margin: 1.25rem 0 0;
+  color: var(--nt-100);
+  font-size: 1.4rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 1023px) {
+  .missing-card-cont {
+    padding: 1.5rem 0.8rem 0.8rem;
+    border: 0;
+  }
+
+  .missing-card-row {
+    --missing-card-actions-offset: 0.8rem;
+    align-items: flex-start;
+  }
+
+  .missing-card-row-left {
+    flex-wrap: wrap;
+    min-width: 0;
+    padding-right: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .missing-card-name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .missing-card-name > span:first-child {
+    overflow-wrap: anywhere;
+  }
+
+  .control-actions {
+    gap: 0.4rem;
+  }
+
+  .control-actions .action-btn {
+    padding: 0.5rem 0.7rem;
+  }
+
+  .empty-state-container {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .empty-state-title-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .empty-state-divider {
+    display: none;
+  }
+
+  .empty-state-action {
+    align-self: flex-end;
+  }
+}

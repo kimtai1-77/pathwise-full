@@ -1,0 +1,422 @@
+
+.msp-onboarding {
+  width: 100%;
+  min-height: 560px;
+  max-height: calc(100dvh - 140px);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  gap: 18px;
+  padding: 32px 36px 28px;
+  border: 1px solid var(--nt-100);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--nt-900) 10%, transparent);
+}
+
+.msp-onboarding__panel {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.msp-onboarding__panel:focus {
+  outline: none;
+}
+
+.msp-onboarding__heading,
+.msp-onboarding__logo-step,
+.msp-onboarding__information,
+.msp-onboarding__staff-step,
+.msp-onboarding__progress,
+.msp-onboarding__actions {
+  width: min(520px, 100%);
+  margin-inline: auto;
+}
+
+.msp-onboarding__heading {
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.msp-onboarding__heading h1 {
+  margin: 0;
+  color: var(--nt-900);
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.msp-onboarding__logo-step {
+  display: grid;
+  gap: 12px;
+}
+
+.msp-onboarding__logo-picker {
+  min-height: 104px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  border: 1px dashed var(--nt-100);
+  border-radius: 8px;
+  background: var(--nt-050);
+  color: var(--nt-900);
+  cursor: pointer;
+  text-align: center;
+}
+
+.msp-onboarding__logo-picker img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.msp-onboarding__file-input {
+  display: none;
+}
+
+.msp-onboarding__optional {
+  margin: 12px 0;
+  color: var(--nt-700);
+  font-size: 13px;
+}
+
+.msp-onboarding__error {
+  margin: 0;
+  color: var(--error-500);
+  font-size: 13px;
+}
+
+.msp-onboarding__information > p:first-child {
+  margin-top: 0;
+  line-height: 1.5;
+}
+
+.msp-onboarding__tenant-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.msp-onboarding__secondary,
+.msp-onboarding__primary {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 5px;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.msp-onboarding__secondary {
+  border: 1px solid var(--nt-100);
+  background: transparent;
+  color: var(--nt-900);
+}
+
+.msp-onboarding__primary {
+  border: 1px solid var(--sc-400);
+  background: var(--sc-400);
+  color: var(--nt-050);
+}
+
+.msp-onboarding__primary:hover {
+  border-color: var(--sc-500);
+  background: var(--sc-500);
+}
+
+.msp-onboarding__primary:disabled {
+  border-color: var(--nt-100);
+  background: var(--nt-100);
+  color: var(--nt-400);
+  cursor: not-allowed;
+}
+
+.action-btns-cont {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.msp-onboarding__text-button,
+.msp-onboarding__skip,
+.msp-onboarding__add-invitation {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--nt-700);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.msp-onboarding__progress {
+  color: var(--nt-700);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.msp-onboarding__progress-track {
+  height: 3px;
+  margin-top: 8px;
+  overflow: hidden;
+  background: var(--nt-100);
+}
+
+.msp-onboarding__progress-track span {
+  display: block;
+  height: 100%;
+  background: var(--sc-400);
+  transition: width 180ms ease;
+}
+
+.msp-onboarding__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.msp-onboarding__actions .msp-onboarding__secondary {
+  margin-right: auto;
+}
+
+.msp-onboarding__staff-step {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+}
+
+.msp-onboarding__invitation-columns,
+.msp-onboarding__invitation-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px 36px;
+  gap: 8px;
+}
+
+.msp-onboarding__invitation-columns {
+  margin-bottom: 6px;
+  color: var(--nt-900);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.msp-onboarding__invitation-columns > span:nth-child(2) {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.msp-onboarding__invitation-row {
+  align-items: end;
+  margin-bottom: 10px;
+}
+
+.msp-onboarding__invitation-row input {
+  width: 100%;
+  height: 42px;
+  box-sizing: border-box;
+  padding: 0 11px;
+  border: 1px solid var(--nt-100);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--nt-900);
+  font: inherit;
+}
+
+.msp-onboarding__invitation-row input:focus,
+.msp-onboarding__role-button:focus-visible {
+  border-color: var(--nt-300);
+  outline: none;
+}
+
+.msp-onboarding__role-menu {
+  position: relative;
+}
+
+.msp-onboarding__role-button {
+  width: 100%;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 0 11px;
+  border: 1px solid var(--nt-100);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--nt-900);
+  font: inherit;
+  cursor: pointer;
+}
+
+.msp-onboarding__role-chevron {
+  width: 7px;
+  height: 7px;
+  border-right: 1px solid var(--nt-700);
+  border-bottom: 1px solid var(--nt-700);
+  transform: rotate(45deg) translateY(-2px);
+}
+
+.msp-onboarding__role-options {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  padding: 4px;
+  border: 1px solid var(--nt-100);
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--nt-900) 14%, transparent);
+}
+
+.msp-onboarding__role-options button {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--nt-900);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.msp-onboarding__role-options button:hover,
+.msp-onboarding__role-options button[aria-selected='true'] {
+  background: var(--nt-050);
+}
+
+.msp-onboarding__invitation-add {
+  padding-top: 2px;
+}
+
+.msp-onboarding__invitation-submit {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+.msp-onboarding__consent {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--nt-100);
+}
+
+.msp-onboarding__terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--nt-700);
+  font-size: 13px;
+}
+
+.msp-onboarding__terms input {
+  margin-top: 3px;
+}
+
+.msp-onboarding__terms button {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: var(--nt-900);
+  font: inherit;
+  cursor: pointer;
+}
+
+.msp-onboarding__role-info {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--nt-300);
+  border-radius: 50%;
+  font-size: 10px !important;
+  cursor: help;
+}
+
+.msp-onboarding__role-tooltip {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 10px);
+  left: 50%;
+  width: 280px;
+  display: none;
+  box-sizing: border-box;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--nt-100);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--nt-700);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+  transform: translateX(-50%);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--nt-900) 14%, transparent);
+}
+
+.msp-onboarding__role-tooltip strong {
+  color: var(--nt-900);
+}
+
+.msp-onboarding__role-info:hover .msp-onboarding__role-tooltip,
+.msp-onboarding__role-info:focus-visible .msp-onboarding__role-tooltip {
+  display: grid;
+}
+
+.msp-onboarding__remove-invitation {
+  width: 36px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.msp-onboarding__remove-invitation img {
+  width: 18px;
+  height: 18px;
+  filter: brightness(0) saturate(100%) invert(24%) sepia(10%) saturate(700%) hue-rotate(330deg);
+}
+
+.msp-onboarding__remove-invitation:hover img,
+.msp-onboarding__remove-invitation:focus-visible img {
+  filter: brightness(0) saturate(100%) invert(18%) sepia(78%) saturate(3800%) hue-rotate(345deg);
+}
+
+@media (max-width: 640px) {
+  .msp-onboarding {
+    min-height: calc(100dvh - 128px);
+    max-height: calc(100dvh - 128px);
+    padding: 24px 20px;
+  }
+
+  .msp-onboarding__actions {
+    flex-wrap: wrap;
+  }
+
+  .msp-onboarding__tenant-actions {
+    flex-direction: column;
+  }
+
+  .msp-onboarding__invitation-columns,
+  .msp-onboarding__invitation-row {
+    grid-template-columns: minmax(0, 1fr) 180px 36px;
+  }
+
+  .msp-onboarding__invitation-submit {
+    justify-content: stretch;
+  }
+
+  .msp-onboarding__invitation-submit .msp-onboarding__primary {
+    width: 100%;
+  }
+}

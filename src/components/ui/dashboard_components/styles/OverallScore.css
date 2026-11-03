@@ -1,0 +1,70 @@
+.overall-score {
+  position: relative;
+  width: 120px;
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+}
+
+.overall-score svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.overall-score circle {
+  fill: none;
+  stroke-width: 7;
+}
+
+.overall-score-progress {
+  stroke-linecap: round;
+  transition: stroke-dashoffset 650ms ease, stroke 400ms ease;
+}
+
+.overall-score.score-red .overall-score-progress {
+  stroke: var(--error-300); /* Red (< 50%) */
+}
+
+.overall-score.score-orange .overall-score-progress {
+  stroke: var(--warning-300); /* Orange (50% - 79%) */
+}
+
+.overall-score.score-green .overall-score-progress {
+  stroke: var(--success-200); /* Green (80%+) */
+}
+
+.overall-score > span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.overall-score b {
+  color: var(--nt-050);
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.overall-score small {
+  margin-top: 4px;
+  color: var(--nt-200);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.msp-dashboard .overall-score b {
+  color: var(--nt-900);
+}
+
+.msp-dashboard .overall-score small {
+  color: var(--nt-700);
+}
+
+.msp-dashboard .overall-score.score-red .overall-score-progress,
+.msp-dashboard .overall-score.score-orange .overall-score-progress,
+.msp-dashboard .overall-score.score-green .overall-score-progress {
+  stroke: var(--sc-400);
+}
