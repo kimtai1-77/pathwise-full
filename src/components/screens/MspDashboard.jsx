@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabaseClient.js';
 import { StrategyRow } from '@/components/ui/dashboard_components/StrategyRow.jsx';
 import { OrgAddingForm } from '@/components/ui/drawers/OrgAddingForm.jsx';
 import { DashNavbar } from '@/components/ui/dashboard_components/DashNavbar.jsx';
-import { ProfileSettingsDialog } from '@/components/ui/dashboard_components/ProfileSettingsDialog.jsx';
+import { OwnerProfileSettingsDialog } from '@/components/ui/dashboard_components/OwnerProfileSettingsDialog.jsx';
 import { MaturityLevelGuardDialog } from '@/components/ui/dashboard_components/MaturityLevelGuardDialog.jsx';
 import TopDashRow from '@/components/ui/dashboard_components/TopDashRow.jsx';
 import './MspDashboard.css';
@@ -413,7 +413,7 @@ export default function MspDashboard({ user, onSignOut }) {
       )}
 
       {profileSettingsOpen && (
-        <ProfileSettingsDialog
+        <OwnerProfileSettingsDialog
           user={user}
           role={profileRole}
           onClose={() => setProfileSettingsOpen(false)}
