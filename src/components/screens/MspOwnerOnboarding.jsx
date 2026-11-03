@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import logoMain from '@/assets/logos/logo_main_nbg.png'
-import MspOnboardingCarousel from '@/components/ui/dashboard_components/MspOnboardingcarousel.jsx'
+import MspOnboardingCarousel from '@/components/ui/dashboard_components/MspOnboardingCarousel.jsx'
 import TermsAndConditions from './TermsAndConditions.jsx'
 import './MspOwnerOnboarding.css'
 
