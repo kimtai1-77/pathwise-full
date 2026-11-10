@@ -1,4 +1,4 @@
-import OverallScoreGauge from './OverallScoreGauge.jsx'
+import OverallScoreGauge from './OverallScore.jsx'
 import './styles/DashboardSummary.css'
 
 export default function DashboardSummary({ score }) {

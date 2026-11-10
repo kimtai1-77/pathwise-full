@@ -1,7 +1,7 @@
 .card-content {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.8rem;
 }
 
 .card-content .subhead {
@@ -11,19 +11,73 @@
   color: var(--nt-800);
 }
 
+.card-content .required-indicator {
+  color: var(--error-400);
+}
+
+.card-content .required-accessible-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .card-content input {
   box-sizing: border-box;
-  height: 4.2rem;
+  height: 4.4rem;
   width: 100%;
-  padding: 0.8rem 1.1rem;
-  
+  padding: 0.8rem 1.2rem;
   border: 1px solid var(--nt-200);
   border-radius: 0.5rem;
-  
   font: inherit;
   font-size: 1.4rem;
   color: var(--nt-800);
   background-color: var(--nt-050);
+}
+
+.card-content-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.card-content-input-wrap.is-password input {
+  padding-right: 4.4rem;
+}
+
+.card-content-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.8rem;
+  display: grid;
+  width: 2.4rem;
+  height: 2.4rem;
+  place-items: center;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--nt-500);
+  cursor: pointer;
+}
+
+.card-content-password-toggle:hover {
+  color: var(--nt-800);
+}
+
+.card-content-password-toggle svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.card-content-password-toggle:focus-visible {
+  outline: 2px solid var(--sc-400);
+  outline-offset: 1px;
 }
 
 .card-content input::placeholder {
@@ -31,7 +85,7 @@
 }
 
 .card-content input:focus {
-  outline: none;
-  border-color: var(--p-400);
+  outline: var(--sc-400);
+  border-color: var(--sc-400);
   box-shadow: 0 0 0 0.2rem var(--p-100);
 }

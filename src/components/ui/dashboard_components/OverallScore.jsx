@@ -23,7 +23,7 @@ export default function OverallScore({ scores = [] }) {
       </svg>
       <span>
         <b>{score}%</b>
-        <small>Overall</small>
+        <small>Compliant</small>
       </span>
     </div>
   );

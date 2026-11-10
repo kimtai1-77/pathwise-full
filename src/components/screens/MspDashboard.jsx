@@ -2,10 +2,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient.js';
 import { StrategyRow } from '@/components/ui/dashboard_components/StrategyRow.jsx';
-import { OrgAddingForm } from '@/components/ui/drawers/OrgAddingForm.jsx';
+import { TenantAddingForm } from '@/components/ui/drawers/TenantAddingForm.jsx';
 import { DashNavbar } from '@/components/ui/dashboard_components/DashNavbar.jsx';
+import { OrgSettings } from '@/components/ui/dashboard_components/OrgSettings.jsx';
+import { OnboardingLightbox } from '@/components/ui/dashboard_components/OnboardingLightbox.jsx';
 import { OwnerProfileSettingsDialog } from '@/components/ui/dashboard_components/OwnerProfileSettingsDialog.jsx';
 import { MaturityLevelGuardDialog } from '@/components/ui/dashboard_components/MaturityLevelGuardDialog.jsx';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
 import TopDashRow from '@/components/ui/dashboard_components/TopDashRow.jsx';
 import './MspDashboard.css';
 
@@ -22,7 +25,7 @@ const strategyNames = [
 
 export default function MspDashboard({ user, onSignOut }) {
   const [tenants, setTenants] = useState([]);
-  const [selectedTenant, setSelectedTenant] = useState('');
+  const [selectedTenantId, setSelectedTenantId] = useState('');
   const [strategyScores, setStrategyScores] = useState({});
   const [activeMaturityLevel, setActiveMaturityLevel] = useState(1);
   const [blockedMaturityLevel, setBlockedMaturityLevel] = useState(null);
@@ -31,12 +34,24 @@ export default function MspDashboard({ user, onSignOut }) {
   const [tenantFormOpen, setTenantFormOpen] = useState(false);
   const [tenantError, setTenantError] = useState('');
   const [profileSettingsOpen, setProfileSettingsOpen] = useState(false);
+  const [orgSettingsOpen, setOrgSettingsOpen] = useState(false);
+  const [mspLogoUrl, setMspLogoUrl] = useState('');
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState('');
   const [profileRole, setProfileRole] = useState('');
   const [profileName, setProfileName] = useState('');
+  const [profileMspId, setProfileMspId] = useState('');
+  const [mspDisplayName, setMspDisplayName] = useState('');
   const [tenantsLoading, setTenantsLoading] = useState(false);
+  const [tenantsLoaded, setTenantsLoaded] = useState(false);
   const [tenantsError, setTenantsError] = useState('');
+  const showTenantSetupLightbox = profileRole === 'owner'
+    && tenantsLoaded
+    && !tenantsLoading
+    && !tenantsError
+    && tenants.length === 0;
+
+  useBodyScrollLock(showTenantSetupLightbox);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -46,13 +61,14 @@ export default function MspDashboard({ user, onSignOut }) {
     async function fetchProfileRole() {
       const { data, error } = await supabase
         .from('profiles')
-        .select('full_name, role')
+        .select('full_name, role, msp_id')
         .eq('id', user.id)
         .single();
 
       if (!isCancelled) {
         setProfileRole(error ? '' : data?.role || '');
         setProfileName(error ? '' : data?.full_name || '');
+        setProfileMspId(error ? '' : data?.msp_id || '');
       }
     }
 
@@ -64,31 +80,40 @@ export default function MspDashboard({ user, onSignOut }) {
   }, [user?.id]);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!profileMspId) return;
 
     let isCancelled = false;
 
     async function fetchTenants() {
       setTenantsLoading(true);
+      setTenantsLoaded(false);
       setTenantsError('');
 
       const { data, error } = await supabase
         .from('tenants')
-        .select('name')
-        .eq('msp_id', user.id)
+        .select('id, name, display_name')
+        .eq('msp_id', profileMspId)
         .order('created_at', { ascending: true });
 
       if (isCancelled) return;
 
       if (error) {
         setTenants([]);
-        setSelectedTenant('');
+        setSelectedTenantId('');
         setTenantsError('Unable to load tenants.');
       } else {
-        const tenantNames = (data || []).map((tenant) => tenant.name);
-        setTenants(tenantNames);
-        setSelectedTenant((currentTenant) => tenantNames.includes(currentTenant) ? currentTenant : tenantNames[0] || '');
+        const tenantRecords = (data || []).map((tenant) => ({
+          ...tenant,
+          display_name: tenant.display_name?.trim() || tenant.name,
+        }));
+        setTenants(tenantRecords);
+        setSelectedTenantId((currentTenantId) => (
+          tenantRecords.some((tenant) => tenant.id === currentTenantId)
+            ? currentTenantId
+            : tenantRecords[0]?.id || ''
+        ));
       }
+      setTenantsLoaded(true);
       setTenantsLoading(false);
     }
 
@@ -97,20 +122,70 @@ export default function MspDashboard({ user, onSignOut }) {
     return () => {
       isCancelled = true;
     };
-  }, [user?.id]);
+  }, [profileMspId]);
+
+  useEffect(() => {
+    if (!profileMspId) return;
+
+    let isCancelled = false;
+
+    async function fetchMspLogo() {
+      const { data: logo, error } = await supabase
+        .from('logos')
+        .select('file_path')
+        .eq('msp_id', profileMspId)
+        .maybeSingle();
+
+      if (isCancelled) return;
+      if (error || !logo?.file_path) {
+        setMspLogoUrl('');
+        return;
+      }
+
+      const { data: signedLogo, error: signedUrlError } = await supabase.storage
+        .from('logos')
+        .createSignedUrl(logo.file_path, 60 * 60);
+
+      if (!isCancelled) setMspLogoUrl(signedUrlError ? '' : signedLogo.signedUrl);
+    }
+
+    fetchMspLogo();
+    return () => { isCancelled = true; };
+  }, [profileMspId]);
+
+  useEffect(() => {
+    if (!profileMspId) return;
+
+    let isCancelled = false;
+    const fallbackName = user?.user_metadata?.display_name || user?.user_metadata?.msp_name || 'MSP';
+
+    async function fetchMspDisplayName() {
+      const { data, error } = await supabase
+        .from('msps')
+        .select('display_name, msp_name')
+        .eq('id', profileMspId)
+        .single();
+
+      if (isCancelled) return;
+      setMspDisplayName(error ? fallbackName : data?.display_name?.trim() || data?.msp_name || fallbackName);
+    }
+
+    fetchMspDisplayName();
+    return () => { isCancelled = true; };
+  }, [profileMspId, user?.user_metadata?.display_name, user?.user_metadata?.msp_name]);
 
   const handleStrategyScoreChange = useCallback((strategyName, score, maturityLevel) => {
     setStrategyScores((tenantScores) => ({
       ...tenantScores,
-      [selectedTenant]: {
-        ...tenantScores[selectedTenant],
+      [selectedTenantId]: {
+        ...tenantScores[selectedTenantId],
         [maturityLevel]: {
-          ...tenantScores[selectedTenant]?.[maturityLevel],
+          ...tenantScores[selectedTenantId]?.[maturityLevel],
           [strategyName]: score,
         },
       },
     }));
-  }, [selectedTenant]);
+  }, [selectedTenantId]);
 
   const handleMaturityLevelSelect = useCallback((requestedLevel) => {
     if (requestedLevel === 1) {
@@ -119,18 +194,20 @@ export default function MspDashboard({ user, onSignOut }) {
     }
 
     const prerequisiteLevel = requestedLevel - 1;
-    const prerequisiteScores = strategyScores[selectedTenant]?.[prerequisiteLevel] || {};
+    const prerequisiteScores = strategyScores[selectedTenantId]?.[prerequisiteLevel] || {};
     const isReady = strategyNames.every((strategyName) => prerequisiteScores[strategyName] === 100);
 
     if (isReady) setActiveMaturityLevel(requestedLevel);
     else setBlockedMaturityLevel(requestedLevel);
-  }, [selectedTenant, strategyScores]);
+  }, [selectedTenantId, strategyScores]);
 
-  const selectedTenantScores = strategyScores[selectedTenant]?.[activeMaturityLevel] || {};
+  const selectedTenant = tenants.find((tenant) => tenant.id === selectedTenantId);
+  const selectedTenantDisplayName = selectedTenant?.display_name || selectedTenant?.name || '';
+  const selectedTenantScores = strategyScores[selectedTenantId]?.[activeMaturityLevel] || {};
   const normalizedTenantSearch = tenantSearch.trim().toLowerCase();
   const visibleTenants = tenantsCollapsed
-    ? tenants.filter((tenant) => tenant === selectedTenant)
-    : tenants.filter((tenant) => tenant.toLowerCase().includes(normalizedTenantSearch));
+    ? tenants.filter((tenant) => tenant.id === selectedTenantId)
+    : tenants.filter((tenant) => tenant.display_name.toLowerCase().includes(normalizedTenantSearch));
 
   async function handleSignOut() {
     if (!onSignOut || signingOut) return;
@@ -146,42 +223,138 @@ export default function MspDashboard({ user, onSignOut }) {
     }
   }
 
-  function selectTenant(tenant) {
-    setSelectedTenant(tenant);
+  function selectTenant(tenantId) {
+    setSelectedTenantId(tenantId);
     setTenantSearch('');
     setTenantsCollapsed(true);
   }
 
-  async function addTenant(tenantName) {
+  async function addTenant(tenantName, tenantAbn = null) {
     const trimmedName = tenantName.trim();
+    const cleanAbn = tenantAbn?.replace(/[\s-]/g, '') || null;
     if (!trimmedName) {
       setTenantError('Enter a tenant name.');
       return;
     }
+    if (cleanAbn && !/^\d{11}$/.test(cleanAbn)) {
+      setTenantError('Enter a valid 11-digit ABN, or leave it blank.');
+      return;
+    }
 
-    const existingTenant = tenants.find(
-      (tenant) => tenant.toLowerCase() === trimmedName.toLowerCase()
-    );
+    const existingTenant = tenants.find((tenant) => (
+      tenant.name.toLowerCase() === trimmedName.toLowerCase()
+    ));
 
     if (existingTenant) {
-      selectTenant(existingTenant);
+      selectTenant(existingTenant.id);
       setTenantError('A tenant with this name already exists.');
       return;
     }
 
-    const { error } = await supabase
-      .from('tenants')
-      .insert({ msp_id: user.id, name: trimmedName });
-
-    if (error) {
-      setTenantError(error.code === '23505' ? 'A tenant with this name already exists.' : 'Unable to add tenant.');
+    if (!profileMspId) {
+      setTenantError('Unable to determine your MSP.');
       return;
     }
 
-    setTenants((currentTenants) => [...currentTenants, trimmedName]);
-    selectTenant(trimmedName);
+    const { data, error } = await supabase
+      .from('tenants')
+      .insert({ msp_id: profileMspId, name: trimmedName, display_name: trimmedName, abn: cleanAbn })
+      .select('id, name, display_name')
+      .single();
+
+    if (error) {
+      if (error.code === '42501') {
+        setTenantError("Sorry, only admins can add a tenant.");
+      } else if (error.code === '23505') {
+        setTenantError('A tenant with this name already exists.');
+      } else {
+        setTenantError('Unable to add tenant.');
+      }
+      return;
+    }
+
+    const newTenant = {
+      id: data.id,
+      name: data.name,
+      display_name: data.display_name?.trim() || data.name,
+    };
+    setTenants((currentTenants) => [...currentTenants, newTenant]);
+    selectTenant(newTenant.id);
     setTenantError('');
     setTenantFormOpen(false);
+  }
+
+  async function renameTenant(tenantId, requestedDisplayName) {
+    if (profileRole !== 'owner') {
+      return { success: false, error: 'Only MSP owners can rename tenants.' };
+    }
+
+    const nextDisplayName = requestedDisplayName.trim();
+    if (!tenantId || !profileMspId || !nextDisplayName) {
+      return { success: false, error: 'Enter a display name.' };
+    }
+
+    const { data, error } = await supabase
+      .from('tenants')
+      .update({ display_name: nextDisplayName })
+      .eq('id', tenantId)
+      .eq('msp_id', profileMspId)
+      .select('id, display_name')
+      .maybeSingle();
+
+    if (error) {
+      return {
+        success: false,
+        error: error.code === '23505'
+          ? 'A tenant with this display name already exists.'
+          : 'Unable to rename this tenant.',
+      };
+    }
+    if (!data) return { success: false, error: 'Tenant not found or you do not have permission.' };
+
+    setTenants((currentTenants) => currentTenants.map((tenant) => (
+      tenant.id === tenantId ? { ...tenant, display_name: data.display_name } : tenant
+    )));
+    return { success: true };
+  }
+
+  async function removeTenant(tenantId) {
+    if (profileRole !== 'owner') {
+      return { success: false, error: 'Only MSP owners can remove tenants.' };
+    }
+    if (!tenantId || !profileMspId) {
+      return { success: false, error: 'Unable to identify this tenant.' };
+    }
+
+    const { data, error } = await supabase.functions.invoke('delete-tenant', {
+      body: { tenant_id: tenantId },
+    });
+
+    if (error) {
+      let message = error.message || 'Unable to remove this tenant.';
+      if (error.context?.json) {
+        const details = await error.context.json().catch(() => null);
+        message = details?.error || message;
+      }
+      return { success: false, error: message };
+    }
+    if (!data?.ok) return { success: false, error: data?.error || 'Unable to remove this tenant.' };
+
+    const remainingTenants = tenants.filter((tenant) => tenant.id !== tenantId);
+    setTenants(remainingTenants);
+    setSelectedTenantId((currentTenantId) => (
+      currentTenantId === tenantId ? remainingTenants[0]?.id || '' : currentTenantId
+    ));
+    setStrategyScores((currentScores) => {
+      const nextScores = { ...currentScores };
+      delete nextScores[tenantId];
+      return nextScores;
+    });
+    setTenantSearch('');
+    setTenantsCollapsed(true);
+    setTenantError('');
+    if (remainingTenants.length === 0) setOrgSettingsOpen(false);
+    return { success: true };
   }
 
   return (
@@ -189,7 +362,9 @@ export default function MspDashboard({ user, onSignOut }) {
       <DashNavbar
         activeLevel={activeMaturityLevel}
         onLevelSelect={handleMaturityLevelSelect}
-        mspName={user?.user_metadata?.display_name || user?.user_metadata?.msp_name || 'MSP'}
+        mspName={mspDisplayName || user?.user_metadata?.display_name || user?.user_metadata?.msp_name || 'MSP'}
+        mspLogoUrl={mspLogoUrl}
+        onOrgSettings={['owner', 'msp_admin'].includes(profileRole) ? () => setOrgSettingsOpen(true) : undefined}
         onProfileEdit={() => setProfileSettingsOpen(true)}
         onSignOut={handleSignOut}
         signingOut={signingOut}
@@ -283,18 +458,18 @@ export default function MspDashboard({ user, onSignOut }) {
           <nav className="msp-dashboard-tenants-list" aria-label="Tenants">
             {visibleTenants.map((tenant) => (
               <button
-                className={`msp-dashboard-tenants-item${selectedTenant === tenant ? ' is-selected' : ''}`}
-                key={tenant}
+                className={`msp-dashboard-tenants-item${selectedTenantId === tenant.id ? ' is-selected' : ''}`}
+                key={tenant.id}
                 type="button"
-                aria-current={selectedTenant === tenant ? 'true' : undefined}
-                aria-label={tenant}
-                title={tenant}
-                onClick={() => selectTenant(tenant)}
+                aria-current={selectedTenantId === tenant.id ? 'true' : undefined}
+                aria-label={tenant.display_name}
+                title={tenant.display_name}
+                onClick={() => selectTenant(tenant.id)}
               >
                 <span className="msp-dashboard-tenants-item-initial" aria-hidden="true">
-                  {tenant.trim().charAt(0).toUpperCase()}
+                  {tenant.display_name.trim().charAt(0).toUpperCase()}
                 </span>
-                <span className="msp-dashboard-tenants-item-name">{tenant}</span>
+                <span className="msp-dashboard-tenants-item-name">{tenant.display_name}</span>
               </button>
             ))}
             {!tenantsCollapsed && tenantsLoading && (
@@ -311,7 +486,7 @@ export default function MspDashboard({ user, onSignOut }) {
 
         <section className="msp-dashboard-workspace" aria-label="Compliance overview">
           <TopDashRow
-            tenantName={selectedTenant}
+            tenantName={selectedTenantDisplayName}
             scores={Object.values(selectedTenantScores)}
           />
 
@@ -330,6 +505,10 @@ export default function MspDashboard({ user, onSignOut }) {
                 key="strategy-1"
                 strategyName="Patch Applications"
                 maturityLevel={activeMaturityLevel}
+                tenantId={selectedTenantId}
+                mspId={profileMspId}
+                userId={user?.id}
+                reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
               />
 
@@ -337,6 +516,10 @@ export default function MspDashboard({ user, onSignOut }) {
                 key="strategy-2"
                 strategyName="Patch Operating Systems"
                 maturityLevel={activeMaturityLevel}
+                tenantId={selectedTenantId}
+                mspId={profileMspId}
+                userId={user?.id}
+                reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
               />
 
@@ -344,6 +527,10 @@ export default function MspDashboard({ user, onSignOut }) {
                 key="strategy-3"
                 strategyName="Regular Backups"
                 maturityLevel={activeMaturityLevel}
+                tenantId={selectedTenantId}
+                mspId={profileMspId}
+                userId={user?.id}
+                reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
               />
 
@@ -351,6 +538,10 @@ export default function MspDashboard({ user, onSignOut }) {
                 key="strategy-4"
                 strategyName="Application Control"
                 maturityLevel={activeMaturityLevel}
+                tenantId={selectedTenantId}
+                mspId={profileMspId}
+                userId={user?.id}
+                reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
               />
 
@@ -358,6 +549,10 @@ export default function MspDashboard({ user, onSignOut }) {
                 key="strategy-5"
                 strategyName="Multi-Factor Authentication"
                 maturityLevel={activeMaturityLevel}
+                tenantId={selectedTenantId}
+                mspId={profileMspId}
+                userId={user?.id}
+                reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
               />
 
@@ -365,6 +560,10 @@ export default function MspDashboard({ user, onSignOut }) {
                 key="strategy-6"
                 strategyName="Restrict Administrative Privileges"
                 maturityLevel={activeMaturityLevel}
+                tenantId={selectedTenantId}
+                mspId={profileMspId}
+                userId={user?.id}
+                reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
               />
 
@@ -372,6 +571,10 @@ export default function MspDashboard({ user, onSignOut }) {
                 key="strategy-7"
                 strategyName="Restrict Microsoft Office Macros"
                 maturityLevel={activeMaturityLevel}
+                tenantId={selectedTenantId}
+                mspId={profileMspId}
+                userId={user?.id}
+                reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
               />
 
@@ -379,6 +582,10 @@ export default function MspDashboard({ user, onSignOut }) {
                 key="strategy-8"
                 strategyName="User Application Hardening"
                 maturityLevel={activeMaturityLevel}
+                tenantId={selectedTenantId}
+                mspId={profileMspId}
+                userId={user?.id}
+                reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
               />
             </div>
@@ -394,7 +601,7 @@ export default function MspDashboard({ user, onSignOut }) {
       </footer>
 
       {tenantFormOpen && (
-        <OrgAddingForm
+        <TenantAddingForm
           onClose={() => {
             setTenantFormOpen(false);
             setTenantError('');
@@ -415,9 +622,40 @@ export default function MspDashboard({ user, onSignOut }) {
       {profileSettingsOpen && (
         <OwnerProfileSettingsDialog
           user={user}
-          role={profileRole}
           onClose={() => setProfileSettingsOpen(false)}
           onProfileSaved={({ fullName }) => setProfileName(fullName)}
+        />
+      )}
+
+      {orgSettingsOpen && (
+        <OrgSettings
+          user={user}
+          role={profileRole}
+          mspId={profileMspId}
+          mspName={mspDisplayName || user?.user_metadata?.display_name || user?.user_metadata?.msp_name || 'MSP'}
+          displayName={mspDisplayName}
+          onClose={() => setOrgSettingsOpen(false)}
+          onDisplayNameUpdated={setMspDisplayName}
+          onAddTenant={() => {
+            setTenantError('');
+            setTenantFormOpen(true);
+          }}
+          onLogoUpdated={setMspLogoUrl}
+          tenants={tenants}
+          selectedTenantId={selectedTenantId}
+          onRenameTenant={renameTenant}
+          onRemoveTenant={removeTenant}
+          tenantsLoading={tenantsLoading}
+          tenantsError={tenantsError}
+        />
+      )}
+
+      {showTenantSetupLightbox && (
+        <OnboardingLightbox
+          onAddTenant={() => {
+            setTenantError('');
+            setTenantFormOpen(true);
+          }}
         />
       )}
     </div>

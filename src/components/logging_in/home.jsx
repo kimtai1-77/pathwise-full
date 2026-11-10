@@ -147,7 +147,7 @@ export default function Home({ user, onSignOut }) {
         <main className='home-content' id='overview'>
           <section className='home-page-heading' aria-labelledby='home-title'>
             <div>
-              <span className='home-overline'>ORGANIZATION OVERVIEW</span>
+              <span className='home-overline'>TENANT OVERVIEW</span>
               <h1 id='home-title'>Security posture</h1>
               <p>A clear view of your Essential Eight maturity, outstanding gaps, and next steps.</p>
             </div>

@@ -23,11 +23,11 @@ const authenticatedHandler = withSupabase({ auth: 'user' }, async (req, ctx) => 
 
   const { data: callerProfile, error: callerError } = await ctx.supabaseAdmin
     .from('profiles')
-    .select('msp_id, role')
+    .select('msp_id, role, deactivated_at')
     .eq('id', callerId)
     .single()
 
-  if (callerError || !callerProfile || callerProfile.role !== 'owner') {
+  if (callerError || !callerProfile || callerProfile.role !== 'owner' || callerProfile.deactivated_at) {
     return Response.json({ error: 'Only MSP owners can remove team members' }, { status: 403 })
   }
 
@@ -53,10 +53,10 @@ const authenticatedHandler = withSupabase({ auth: 'user' }, async (req, ctx) => 
   } else if (targetProfileId) {
     const { data: profile } = await ctx.supabaseAdmin
       .from('profiles')
-      .select('msp_id')
+      .select('msp_id, role')
       .eq('id', targetProfileId)
       .single()
-    if (!profile || profile.msp_id !== callerProfile.msp_id) {
+    if (!profile || profile.msp_id !== callerProfile.msp_id || profile.role === 'owner') {
       return Response.json({ error: 'Member not found in this MSP' }, { status: 404 })
     }
   }
@@ -74,18 +74,40 @@ const authenticatedHandler = withSupabase({ auth: 'user' }, async (req, ctx) => 
   }
 
   if (targetProfileId) {
-    const { error: profileDeleteError } = await ctx.supabaseAdmin
-      .from('profiles')
-      .delete()
-      .eq('id', targetProfileId)
-      .eq('msp_id', callerProfile.msp_id)
-    if (profileDeleteError) {
-      return Response.json({ error: 'Could not remove the member profile' }, { status: 500 })
+    const { data: deactivationResult, error: deactivationError } = await ctx.supabase.rpc(
+      'deactivate_msp_member',
+      { target_profile_id: targetProfileId },
+    )
+
+    if (deactivationError) {
+      console.error('Could not deactivate team member', deactivationError)
+      return Response.json({ error: 'Could not deactivate this user' }, { status: 500 })
     }
 
-    const { error: authDeleteError } = await ctx.supabaseAdmin.auth.admin.deleteUser(targetProfileId)
-    if (authDeleteError) {
-      return Response.json({ error: 'Profile removed, but the Auth user could not be removed' }, { status: 500 })
+    if (deactivationResult === 'pending_evidence') {
+      return Response.json(
+        { error: 'User has pending evidence. Please reject or approve it to proceed' },
+        { status: 409 },
+      )
+    }
+
+    if (deactivationResult === 'already_deactivated') {
+      return Response.json({ ok: true, alreadyDeactivated: true })
+    }
+
+    if (deactivationResult !== 'deactivated') {
+      return Response.json({ error: 'Could not deactivate this user' }, { status: 500 })
+    }
+
+    const { error: authBanError } = await ctx.supabaseAdmin.auth.admin.updateUserById(targetProfileId, {
+      ban_duration: '876000h',
+    })
+    if (authBanError) {
+      console.error('Member deactivated but Auth sign-in could not be blocked', authBanError)
+      return Response.json(
+        { error: 'User was deactivated, but sign-in could not be blocked. Contact support.' },
+        { status: 502 },
+      )
     }
   } else if (email) {
     const { data: userPage, error: listError } = await ctx.supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 })

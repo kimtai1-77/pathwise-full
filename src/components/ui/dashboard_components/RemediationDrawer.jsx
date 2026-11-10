@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js'
 import CommandReference from './CommandReference.jsx'
 import DrawerStatus from './DrawerStatus.jsx'
 import EvidenceCard from './EvidenceCard.jsx'
@@ -8,12 +9,13 @@ import RemediationChecklist from './RemediationChecklist.jsx'
 import './styles/RemediationDrawer.css'
 
 export default function RemediationDrawer({ strategy, role, file, note, rejection, rejecting, onClose, onFileChange, onNoteChange, onSubmit, onCopy, onRejectStart, onRejectChange, onRejectCancel, onRejectConfirm, onApprove }) {
+  useBodyScrollLock(Boolean(strategy))
+
   useEffect(() => {
     if (!strategy) return undefined
     const escape = (event) => { if (event.key === 'Escape') onClose() }
     document.addEventListener('keydown', escape)
-    document.body.style.overflow = 'hidden'
-    return () => { document.removeEventListener('keydown', escape); document.body.style.overflow = '' }
+    return () => document.removeEventListener('keydown', escape)
   }, [strategy, onClose])
 
   if (!strategy) return null

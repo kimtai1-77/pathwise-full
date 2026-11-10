@@ -96,22 +96,22 @@
   }
 
   .login-wrapper .card-header {
-    margin-bottom: 1.8rem;
+    margin-bottom: 2rem;
   }
 
   .login-fields {
-    gap: 1.4rem;
+    gap: 1.6rem;
   }
 
   .login-forgot {
-    margin-top: 1rem;
+    margin-top: 1.2rem;
   }
 
   .login-submit {
-    margin-top: 1.8rem;
+    margin-top: 2rem;
   }
 
   .login-footer {
-    margin-top: 1.4rem;
+    margin-top: 1.6rem;
   }
 }

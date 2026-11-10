@@ -1,4 +1,5 @@
 import logoMain from '@/assets/logos/logo_main.png'
+import { BtnMain } from '@/components/ui/buttons/btn-main.jsx'
 import './TermsAndConditions.css'
 
 export default function TermsAndConditions({ onClose }) {
@@ -55,7 +56,7 @@ export default function TermsAndConditions({ onClose }) {
         </article>
 
         <footer className="terms-page__footer">
-          <button type="button" className="terms-page__close" onClick={onClose}>Close</button>
+          <BtnMain className="terms-page__close" type="button" onClick={onClose}>Close</BtnMain>
         </footer>
       </div>
     </main>

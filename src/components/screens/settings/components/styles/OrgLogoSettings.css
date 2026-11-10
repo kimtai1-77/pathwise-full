@@ -1,0 +1,102 @@
+.org-logo-settings {
+  gap: 20px;
+}
+
+.org-logo-editor {
+  display: grid;
+  grid-template-columns: 152px minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+}
+
+.org-logo-current {
+  display: grid;
+  width: 152px;
+  height: 112px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--nt-100);
+  border-radius: 6px;
+  background: var(--nt-50);
+  color: var(--nt-600);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.org-logo-current img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+}
+
+.org-logo-actions {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.org-logo-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.org-logo-selected-file {
+  max-width: 100%;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--nt-700);
+  font-size: 12px;
+}
+
+.org-logo-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.org-logo-remove {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--error-500) 35%, transparent);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--error-500);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.org-logo-remove:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--error-100) 55%, transparent);
+}
+
+.org-logo-remove:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.org-logo-remove:focus-visible {
+  outline: 2px solid var(--error-500);
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .org-logo-editor {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .org-logo-action-row {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+}

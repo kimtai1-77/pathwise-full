@@ -1,35 +1,68 @@
 
 import { supabase } from '@/lib/supabaseClient';
 
-export async function uploadEvidenceFile({ file, fileHash, controlId, orgId, mspId, userId }) {
-  try {
-    // 1. Define unique storage path
-    const filePath = `${Date.now()}_${file.name}`;
+const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
+const ALLOWED_FILE_TYPES = new Set([
+  'application/pdf',
+  'text/csv',
+  'application/csv',
+  'text/plain',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'image/png',
+  'image/jpeg',
+]);
 
-    // 2. Upload binary to private Supabase Storage Bucket
+export async function uploadEvidenceFile({
+  file,
+  fileHash,
+  controlId,
+  tenantId,
+  mspId,
+  userId,
+  supersedesEvidenceId,
+}) {
+  if (!file || !fileHash || !controlId || !tenantId || !mspId || !userId) {
+    return { success: false, error: 'Missing required evidence upload details.' };
+  }
+
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    return { success: false, error: 'The file exceeds the 50 MiB upload limit.' };
+  }
+
+  if (!ALLOWED_FILE_TYPES.has(file.type)) {
+    return { success: false, error: 'This file type is not supported.' };
+  }
+
+  try {
+    const safeFileName = file.name.replace(/[\\/]/g, '_');
+    const filePath = `${mspId}/${crypto.randomUUID()}_${safeFileName}`;
+
     const { data: storageData, error: storageError } = await supabase.storage
       .from('compliance_evidence')
       .upload(filePath, file);
 
     if (storageError) throw storageError;
 
-    // 3. Insert row into PostgreSQL using your exact schema columns
+    const evidenceRecord = {
+      control_id: controlId,
+      tenant_id: tenantId,
+      msp_id: mspId,
+      file_name: file.name,
+      file_path: storageData.path,
+      file_type: file.type,
+      file_size_bytes: file.size,
+      description: null,
+      uploaded_by: userId,
+      file_hash: fileHash,
+    };
+
+    if (supersedesEvidenceId) {
+      evidenceRecord.supersedes_evidence_id = supersedesEvidenceId;
+    }
+
     const { data: dbData, error: dbError } = await supabase
       .from('evidence')
-      .insert([
-        {
-          control_id: controlId,
-          org_id: orgId,
-          msp_id: mspId,
-          file_name: file.name,
-          file_path: storageData.path,
-          file_type: file.type,
-          file_size_bytes: file.size,
-          description: null,
-          uploaded_by: userId,
-          file_hash: fileHash, // Passed directly from the parent
-        }
-      ])
+      .insert(evidenceRecord)
       .select()
       .single();
 

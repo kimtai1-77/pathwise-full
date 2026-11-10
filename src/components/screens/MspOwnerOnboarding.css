@@ -46,7 +46,7 @@
 @media (max-width: 640px) {
   .msp-owner-onboarding {
     justify-content: flex-start;
-    padding: 20px 18px 18px;
+    padding: 20px 20px 20px;
   }
 
   .msp-owner-onboarding__brand {

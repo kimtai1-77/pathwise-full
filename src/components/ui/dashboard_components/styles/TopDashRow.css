@@ -29,7 +29,7 @@
   padding: 4px 8px;
   border: 1px solid var(--p-50);
   border-radius: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   background: var(--nt-050);
 }
 
@@ -53,7 +53,7 @@
   50% {
     opacity: 1;
     background-color: color-mix(in srgb, var(--p-400) 50%, var(--t-400));
-    box-shadow: 0 0 9px color-mix(
+    box-shadow: 0 0 8px color-mix(
       in srgb,
       color-mix(in srgb, var(--p-400) 50%, var(--t-400)) 68%,
       transparent
@@ -75,7 +75,7 @@
 }
 
 .top-row-heading {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   color: var(--nt-050);
 }
 

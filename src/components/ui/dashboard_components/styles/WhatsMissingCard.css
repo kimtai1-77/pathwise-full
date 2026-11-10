@@ -15,8 +15,8 @@
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0 0 1.25rem;
+  gap: 0.4rem;
+  margin: 0 0 1.2rem;
   color: var(--t-50);
   font-size: 0.85rem;
   font-weight: 700;
@@ -86,8 +86,8 @@
 }
 
 .missing-card-expand::after {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-right: 1.5px solid currentColor;
   border-bottom: 1.5px solid currentColor;
   content: '';
@@ -107,7 +107,7 @@
 
 .missing-card-expand:focus-visible {
   outline: 2px solid var(--p-400);
-  outline-offset: 3px;
+  outline-offset: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -155,12 +155,96 @@
   margin: 0;
 }
 
+.missing-card-code-wrapper {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.missing-card-evidence-status-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 4px 0px;
+  border-radius: 12px;
+  background: var(--nt-050);
+}
+
+.missing-card-evidence-status-cont {
+  display: block;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  cursor: help;
+}
+
+.missing-card-evidence-status-cont:focus-visible {
+  outline: 2px solid var(--p-500);
+  outline-offset: 2px;
+}
+
+.missing-card-evidence-status-cont.is-pending {
+  border-color: var(--nt-200);
+  background: transparent;
+  color: var(--nt-400);
+}
+
+.missing-card-evidence-status-cont.is-rejected {
+  border-color: color-mix(in srgb, var(--error-400) 70%, var(--nt-050));
+  background: color-mix(in srgb, var(--error-100) 68%, var(--nt-050));
+  color: var(--error-400);
+}
+
+.missing-card-evidence-status-cont.is-approved {
+  border-color: color-mix(in srgb, var(--success-400) 70%, var(--nt-050));
+  background: color-mix(in srgb, var(--success-100) 75%, var(--nt-050));
+  color: var(--success-400);
+}
+
+.missing-card-evidence-status-cont.is-note {
+  border-color: color-mix(in srgb, var(--t-400) 70%, var(--nt-050));
+  background: color-mix(in srgb, var(--t-100) 38%, var(--nt-050));
+  color: var(--t-400);
+}
+
+.missing-card-evidence-tooltip {
+  position: fixed;
+  z-index: 3000;
+  max-width: 260px;
+  padding: 0.8rem 0.8rem;
+  transform: translate(-50%, -100%);
+  border: 1px solid var(--nt-100);
+  border-radius: 4px;
+  background: var(--nt-700);
+  color: var(--nt-050);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: normal;
+  pointer-events: none;
+}
+
+.missing-card-evidence-tooltip.is-below {
+  transform: translate(-50%, 0);
+}
+
+.missing-card-evidence-error-message {
+  flex: 0 0 auto;
+  margin: -0.8rem 0 0.8rem;
+  color: var(--error-400);
+  font-size: 0.8rem;
+}
+
 .missing-card-name {
   display: flex;
   flex: 1 1 auto;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.2rem;
   min-width: 0;
   color: var(--nt-050);
   font-size: 12px;
@@ -214,8 +298,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 0.5rem;
-  padding: 1rem 1.25rem;
+  margin-top: 0.4rem;
+  padding: 1.2rem 1.2rem;
   border: 1px solid var(--p-700);
   border-radius: 10px;
   background-color: var(--nt-800);
@@ -225,7 +309,7 @@
   display: flex;
   flex: 1;
   align-items: center;
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
 .empty-state-icon-box {
@@ -242,20 +326,20 @@
 }
 
 .empty-state-icon {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }
 
 .empty-state-content {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.4rem;
 }
 
 .empty-state-title-row {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.8rem;
 }
 
 .empty-state-title-row h4 {
@@ -266,7 +350,7 @@
 }
 
 .empty-state-badge {
-  padding: 0.15rem 0.6rem;
+  padding: 0.15rem 0.8rem;
   border: 1px solid var(--p-700);
   border-radius: 9999px;
   background-color: var(--p-800);
@@ -284,7 +368,7 @@
 .empty-state-divider {
   width: 1px;
   height: 36px;
-  margin: 0 1.25rem;
+  margin: 0 1.2rem;
   background-color: var(--p-700);
 }
 
@@ -296,8 +380,8 @@
 .view-evidence-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: 0.4rem;
+  padding: 0.4rem 1.2rem;
   border: 1px solid var(--p-700);
   border-radius: 9999px;
   background-color: var(--nt-800);
@@ -323,12 +407,12 @@
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.8rem;
 }
 
 .control-actions .action-btn {
   min-height: 3.2rem;
-  padding: 0.5rem 0.9rem;
+  padding: 0.4rem 0.8rem;
   border: 1px solid var(--nt-500);
   border-radius: 4px;
   background: var(--nt-800);
@@ -444,7 +528,7 @@
 .admin-note-dialog {
   width: min(90vw, 32rem);
   max-height: 80vh;
-  padding: 1.5rem;
+  padding: 1.6rem;
   border: 1px solid var(--nt-500);
   border-radius: 8px;
   background: var(--sc-800);
@@ -459,11 +543,11 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
 .admin-note-dialog-code {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.4rem;
   color: var(--nt-200);
   font-size: 1.2rem;
 }
@@ -478,7 +562,7 @@
 }
 
 .admin-note-dialog-content {
-  margin: 1.25rem 0 0;
+  margin: 1.2rem 0 0;
   color: var(--nt-100);
   font-size: 1.4rem;
   line-height: 1.5;
@@ -488,7 +572,7 @@
 
 @media (max-width: 1023px) {
   .missing-card-cont {
-    padding: 1.5rem 0.8rem 0.8rem;
+    padding: 1.6rem 0.8rem 0.8rem;
     border: 0;
   }
 
@@ -518,7 +602,7 @@
   }
 
   .control-actions .action-btn {
-    padding: 0.5rem 0.7rem;
+    padding: 0.4rem 0.8rem;
   }
 
   .empty-state-container {

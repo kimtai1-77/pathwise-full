@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { OrganisationSettings } from './components/OrganisationSettings.jsx';
 import { TeamSettings } from './components/TeamSettings.jsx';
+import { TenantSettings } from './components/TenantSettings.jsx';
 import { ComplianceSettings } from './components/ComplianceSettings.jsx';
 import { DataPrivacySettings } from './components/DataPrivacySettings.jsx';
 import './OwnerSettings.css';
@@ -8,6 +9,7 @@ import './OwnerSettings.css';
 const sections = [
   { id: 'organisation', label: 'Organisation' },
   { id: 'team', label: 'Team' },
+  { id: 'tenants', label: 'Tenants' },
   { id: 'compliance', label: 'Compliance' },
   { id: 'notifications', label: 'Notifications' },
   { id: 'security', label: 'Security' },
@@ -15,7 +17,14 @@ const sections = [
   { id: 'data', label: 'Data & Privacy' },
 ];
 
-export function OwnerSettings({ user, onClose }) {
+export function OwnerSettings({
+  user,
+  onClose,
+  tenants,
+  selectedTenant,
+  tenantsLoading,
+  tenantsError,
+}) {
   const [activeSection, setActiveSection] = useState('organisation');
 
   return (
@@ -45,6 +54,14 @@ export function OwnerSettings({ user, onClose }) {
         <div className="owner-settings-content">
           {activeSection === 'organisation' && <OrganisationSettings user={user} />}
           {activeSection === 'team' && <TeamSettings user={user} />}
+          {activeSection === 'tenants' && (
+            <TenantSettings
+              tenants={tenants}
+              selectedTenant={selectedTenant}
+              tenantsLoading={tenantsLoading}
+              tenantsError={tenantsError}
+            />
+          )}
           {activeSection === 'compliance' && <ComplianceSettings />}
           {activeSection === 'notifications' && <SimpleSettings section="Notifications" />}
           {activeSection === 'security' && <SimpleSettings section="Security" />}

@@ -1,0 +1,29 @@
+.org-settings-identity-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.org-display-name-settings {
+  gap: 20px;
+}
+
+.org-display-name-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.org-display-name-form .profile-settings-help,
+.org-display-name-form .profile-settings-message {
+  margin: 0;
+}
+
+.org-display-name-form .profile-settings-actions {
+  margin-top: 2px;
+}
+
+.org-settings-identity-content .org-logo-settings {
+  padding-top: 24px;
+  border-top: 1px solid var(--nt-100);
+}

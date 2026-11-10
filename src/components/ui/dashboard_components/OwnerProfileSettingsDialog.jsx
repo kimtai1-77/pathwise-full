@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient.js';
-import { TeamSettings } from '@/components/screens/settings/components/TeamSettings.jsx';
-import { OwnerControlsSettings } from '@/components/screens/settings/components/OwnerControlsSettings.jsx';
-import { DataPrivacySettings } from '@/components/screens/settings/components/DataPrivacySettings.jsx';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
 import './styles/OwnerProfileSettingsDialog.css';
 
-export function OwnerProfileSettingsDialog({ user, role, onClose, onProfileSaved }) {
+export function OwnerProfileSettingsDialog({
+  user,
+  onClose,
+  onProfileSaved,
+}) {
   const [activeTab, setActiveTab] = useState('profile');
   const [fullName, setFullName] = useState(user?.user_metadata?.full_name || user?.user_metadata?.name || '');
   const [email, setEmail] = useState(user?.email || '');
@@ -14,20 +16,7 @@ export function OwnerProfileSettingsDialog({ user, role, onClose, onProfileSaved
   const [isRevokingSessions, setIsRevokingSessions] = useState(false);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
-  const normalizedRole = role?.toLowerCase();
-  const isOwner = normalizedRole === 'owner';
-  const isMspAdmin = normalizedRole === 'msp_admin';
-  const canManageTeam = isOwner || isMspAdmin;
-  const ownerTabs = ['profile', 'team', 'compliance', 'notifications', 'security', 'billing', 'data'];
-  const ownerTabLabels = {
-    profile: 'Profile',
-    team: 'Team',
-    compliance: 'Compliance',
-    notifications: 'Notifications',
-    security: 'Security',
-    billing: 'Billing',
-    data: 'Data & Privacy',
-  };
+  useBodyScrollLock(true);
 
   useEffect(() => {
     const closeOnEscape = (event) => {
@@ -122,7 +111,7 @@ export function OwnerProfileSettingsDialog({ user, role, onClose, onProfileSaved
   return (
     <div className="profile-settings-overlay" onClick={onClose}>
       <section
-        className={`profile-settings-dialog${isOwner ? ' is-owner' : ''}${isMspAdmin ? ' is-msp-admin' : ''}`}
+        className="profile-settings-dialog"
         role="dialog"
         aria-modal="true"
         aria-labelledby="profile-settings-title"
@@ -131,7 +120,7 @@ export function OwnerProfileSettingsDialog({ user, role, onClose, onProfileSaved
         <header className="profile-settings-header">
           <div>
             <span className="profile-settings-eyebrow">ACCOUNT</span>
-            <h2 id="profile-settings-title">Settings</h2>
+            <h2 id="profile-settings-title">Profile settings</h2>
           </div>
           <button className="profile-settings-close" type="button" onClick={onClose} aria-label="Close settings">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -140,8 +129,8 @@ export function OwnerProfileSettingsDialog({ user, role, onClose, onProfileSaved
           </button>
         </header>
 
-        <div className="profile-settings-tabs" role="tablist" aria-label="Account settings">
-          {isOwner ? ownerTabs.map((tab) => (
+        <div className="profile-settings-tabs" role="tablist" aria-label="Profile settings">
+          {['profile', 'security'].map((tab) => (
             <button
               key={tab}
               id={`profile-settings-tab-${tab}`}
@@ -150,52 +139,11 @@ export function OwnerProfileSettingsDialog({ user, role, onClose, onProfileSaved
               role="tab"
               aria-selected={activeTab === tab}
               aria-controls="profile-settings-panel"
-              onClick={() => {
-                setActiveTab(tab);
-                clearFeedback();
-              }}
+              onClick={() => { setActiveTab(tab); clearFeedback(); }}
             >
-              {ownerTabLabels[tab]}
+              {tab === 'profile' ? 'Profile' : 'Security'}
             </button>
-          )) : (
-            <>
-              <button
-                id="profile-settings-tab-profile"
-                className={activeTab === 'profile' ? 'is-active' : ''}
-                type="button"
-                role="tab"
-                aria-selected={activeTab === 'profile'}
-                aria-controls="profile-settings-panel"
-                onClick={() => { setActiveTab('profile'); clearFeedback(); }}
-              >
-                Profile
-              </button>
-              {canManageTeam && (
-                <button
-                  id="profile-settings-tab-team"
-                  className={activeTab === 'team' ? 'is-active' : ''}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeTab === 'team'}
-                  aria-controls="profile-settings-panel"
-                  onClick={() => { setActiveTab('team'); clearFeedback(); }}
-                >
-                  Team
-                </button>
-              )}
-              <button
-                id="profile-settings-tab-security"
-                className={activeTab === 'security' ? 'is-active' : ''}
-                type="button"
-                role="tab"
-                aria-selected={activeTab === 'security'}
-                aria-controls="profile-settings-panel"
-                onClick={() => { setActiveTab('security'); clearFeedback(); }}
-              >
-                Security
-              </button>
-            </>
-          )}
+          ))}
         </div>
 
         <div
@@ -204,12 +152,7 @@ export function OwnerProfileSettingsDialog({ user, role, onClose, onProfileSaved
           role="tabpanel"
           aria-labelledby={`profile-settings-tab-${activeTab}`}
         >
-          {canManageTeam && activeTab === 'team' ? <TeamSettings user={user} role={normalizedRole} /> :
-          isOwner && activeTab === 'compliance' ? <OwnerControlsSettings section="Compliance" /> :
-          isOwner && activeTab === 'notifications' ? <OwnerControlsSettings section="Notifications" /> :
-          isOwner && activeTab === 'billing' ? <OwnerControlsSettings section="Billing" /> :
-          isOwner && activeTab === 'data' ? <DataPrivacySettings /> :
-          activeTab === 'profile' ? (
+          {activeTab === 'profile' ? (
             <form className="profile-settings-form" onSubmit={handleProfileSave}>
               <div className="profile-settings-section-heading">
                 <h3>Personal details</h3>

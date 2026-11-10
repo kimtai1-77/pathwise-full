@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import deleteIcon from '@/assets/icons/delete_forever.svg'
-import { OrgAddingForm } from '@/components/ui/drawers/OrgAddingForm.jsx'
+import { TenantAddingForm } from '@/components/ui/drawers/TenantAddingForm.jsx'
 import { supabase } from '@/lib/supabaseClient.js'
 import './styles/MspOnboardingCarousel.css'
 
@@ -278,7 +278,7 @@ export default function MspOnboardingCarousel({
       </div>
 
       {tenantDialogOpen && (
-        <OrgAddingForm
+        <TenantAddingForm
           onClose={() => {
             setTenantError('')
             setTenantDialogOpen(false)

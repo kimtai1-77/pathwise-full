@@ -1,7 +1,10 @@
 import { BtnMain } from '@/components/ui/buttons/btn-main.jsx'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js'
 import './styles/MaturityLevelGuardDialog.css'
 
 export function MaturityLevelGuardDialog({ requiredLevel, onClose }) {
+  useBodyScrollLock(true)
+
   const isLevelThree = requiredLevel === 3
   const title = `Level ${requiredLevel} compliance unavailable`
   const message = isLevelThree

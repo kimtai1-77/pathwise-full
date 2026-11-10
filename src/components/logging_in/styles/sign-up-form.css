@@ -40,11 +40,11 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: end;
-    gap: 1rem;
+    gap: 1.2rem;
 }
 
 .abn-lookup-button {
-    height: 4.2rem;
+    height: 4.4rem;
     padding: 0 1.2rem;
     border: 1px solid var(--p-400);
     border-radius: 0.5rem;
@@ -75,7 +75,7 @@
 
 .lookup-error {
     margin: -0.8rem 0 0;
-    padding: 0.9rem 1.1rem;
+    padding: 0.8rem 1.2rem;
     border: 1px solid color-mix(in srgb, var(--error-400) 32%, transparent);
     border-radius: 0.5rem;
     background: color-mix(in srgb, var(--error-400) 8%, var(--nt-050));
@@ -125,19 +125,24 @@
     }
 
   .main-wrapper .card-header {
-    margin-bottom: 1.8rem;
+    margin-bottom: 2rem;
   }
 
   .form-fields {
-    gap: 1.4rem;
+    gap: 1.6rem;
   }
 
   .signup-submit {
-    margin-top: 1.8rem;
+    margin-top: 0;
+  }
+
+  .signup-terms {
+    margin: 2rem 0 1.6rem;
+    padding: 1.2rem 0;
   }
 
   .signup-footer {
-    margin-top: 1.4rem;
+    margin-top: 1.6rem;
   }
 }
 
@@ -159,5 +164,40 @@
   font-size: 1.3rem;
   color: var(--error-400);
   margin-bottom: 2rem;
-  margin-top: -1rem;
+  margin-top: -1.2rem;
+}
+
+.signup-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  margin: 2.4rem 0 2rem;
+  padding: 1.6rem 0;
+  color: var(--nt-700);
+  font-size: 1.3rem;
+  line-height: 1.6;
+}
+
+.signup-terms input {
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  margin: 0.15rem 0 0;
+  accent-color: var(--sc-500);
+}
+
+.signup-terms-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sc-500);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.signup-terms-link:focus-visible {
+  outline: 2px solid var(--sc-400);
+  outline-offset: 2px;
 }

@@ -1,6 +1,7 @@
 .msp-dashboard {
   --nt-100: #ddd9d3;
   min-height: 100vh;
+  width: 100%;
   background: var(--nt-050);
   color: var(--nt-900);
   font-family: inherit;
@@ -144,7 +145,7 @@
   z-index: 20;
   width: max-content;
   max-width: 160px;
-  padding: 6px 8px;
+  padding: 8px 8px;
   border-radius: 4px;
   background: var(--nt-050);
   color: var(--nt-600);
@@ -180,8 +181,8 @@
 
 .msp-dashboard-sidebar-toggle svg {
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 .msp-dashboard-sidebar-toggle svg path {
@@ -237,8 +238,8 @@
 .msp-dashboard-tenants-input {
   width: 100%;
   min-width: 0;
-  min-height: 38px;
-  padding: 8px 10px;
+  min-height: 40px;
+  padding: 8px 12px;
   border: 1px solid var(--sc-500);
   border-radius: 4px;
   background: var(--sc-900);
@@ -252,11 +253,11 @@
 .msp-dashboard-tenants-add {
   display: flex;
   width: 100%;
-  min-height: 38px;
+  min-height: 40px;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border: 1px solid var(--success-400);
   border-radius: 5px;
   background: var(--p-300);
@@ -281,7 +282,7 @@
   min-height: 36px;
   align-items: center;
   gap: 8px;
-  padding: 0 10px;
+  padding: 0 12px;
   border-radius: 5px;
   background: var(--nt-100);
 }
@@ -317,8 +318,8 @@
 }
 
 .msp-dashboard-tenants-search-clear {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   flex: 0 0 auto;
   fill: none;
   stroke: var(--nt-300);
@@ -332,7 +333,7 @@
 }
 
 .msp-dashboard-tenants-empty {
-  margin: 8px 10px;
+  margin: 8px 12px;
   color: var(--nt-300);
   font-size: 1.2rem;
 }
@@ -349,7 +350,7 @@
   min-height: 40px;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border: 0;
   color: var(--nt-200);
   text-align: left;
@@ -364,13 +365,13 @@
 
 .msp-dashboard-tenants-item.is-selected {
   border-left: 3px solid var(--sc-500);
-  padding-left: 7px;
+  padding-left: 8px;
 }
 
 .msp-dashboard-tenants-item-initial {
   display: none;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
@@ -520,7 +521,7 @@
 .msp-dashboard .org-add-overlay,
 .msp-dashboard .start-fix-drawer-overlay {
   background-color: color-mix(in srgb, var(--nt-900) 28%, transparent);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px);
 }
 
 .msp-dashboard .org-add-dialog,
@@ -528,7 +529,7 @@
   border-color: var(--nt-100);
   background-color: var(--nt-050);
   color: var(--nt-900);
-  box-shadow: 0 20px 50px color-mix(in srgb, var(--nt-900) 18%, transparent);
+  box-shadow: 0 20px 52px color-mix(in srgb, var(--nt-900) 18%, transparent);
 }
 
 .msp-dashboard .org-add-header,
@@ -588,7 +589,7 @@
 }
 
 .msp-dashboard .org-add-error {
-  color: var(--error-500);
+  color: var(--error-400);
 }
 
 .msp-dashboard .org-add-cancel {
@@ -608,7 +609,7 @@
 
 .msp-dashboard .org-add-submit:hover:not(:disabled) {
   border-color: var(--p-300);
-  background: var(--p-300);
+  background: var(--sc-400);
 }
 
 .msp-dashboard .org-add-submit:disabled {
@@ -623,19 +624,8 @@
 
 .msp-dashboard .control-code {
   border-color: color-mix(in srgb, var(--p-500) 28%, var(--sc-600));
-  background: color-mix(in srgb, var(--p-400) 10%, var(--nt-050));
+  background-color: var(--p-050);
   color: var(--p-600);
-}
-
-.msp-dashboard .compliance-state-wrapper {
-  border-color: color-mix(in srgb, var(--error-500) 28%, transparent);
-  background: color-mix(in srgb, var(--error-100) 10%, var(--nt-050));
-}
-
-.msp-dashboard .compliance-state-header,
-.msp-dashboard .compliance-status-text,
-.msp-dashboard .evidence-flag {
-  color: var(--error-500);
 }
 
 .msp-dashboard .upload-heading {
@@ -730,8 +720,8 @@
 
   .msp-dashboard-main {
     grid-template-columns: minmax(180px, 28%) minmax(0, 1fr);
-    gap: 14px;
-    padding: 18px 16px 32px;
+    gap: 16px;
+    padding: 20px 16px 32px;
   }
 
   .msp-dashboard-main.is-sidebar-collapsed {
@@ -765,7 +755,7 @@
   .msp-dashboard-navbar-wrapper {
     min-height: 64px;
     flex-wrap: wrap;
-    gap: 6px 16px;
+    gap: 8px 16px;
     padding: 12px 16px;
   }
 
@@ -775,9 +765,9 @@
   }
 
   .msp-dashboard-main {
-    grid-template-columns: minmax(130px, 36%) minmax(0, 1fr);
-    gap: 10px;
-    padding: 14px 10px 24px;
+    grid-template-columns: minmax(132px, 36%) minmax(0, 1fr);
+    gap: 12px;
+    padding: 16px 12px 24px;
   }
 
   .msp-dashboard-main.is-sidebar-collapsed {
@@ -790,8 +780,8 @@
   }
 
   .msp-dashboard-tenants-panel.is-collapsed {
-    gap: 10px;
-    padding: 8px 6px;
+    gap: 12px;
+    padding: 8px 8px;
   }
 
   .msp-dashboard-sidebar-toggle {
@@ -815,7 +805,7 @@
   .msp-dashboard-strategies-heading {
     align-items: flex-start;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
   }
 
   .msp-dashboard-strategies-list {

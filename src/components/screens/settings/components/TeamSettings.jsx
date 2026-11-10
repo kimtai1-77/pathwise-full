@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { FunctionsHttpError } from '@supabase/supabase-js';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
 import { BtnSecondary } from '../../../ui/buttons/btn-secondary.jsx';
 import { supabase } from '../../../../lib/supabaseClient.js';
 
@@ -11,6 +12,10 @@ export function TeamSettings({ user, role }) {
   const [inviteBusy, setInviteBusy] = useState(false);
   const [inviteMessage, setInviteMessage] = useState('');
   const [inviteSuccess, setInviteSuccess] = useState(false);
+  const [reactivationCandidate, setReactivationCandidate] = useState(null);
+  const [isReactivatingMember, setIsReactivatingMember] = useState(false);
+  const [reactivationError, setReactivationError] = useState('');
+  const [reactivationSuccess, setReactivationSuccess] = useState(false);
   const [memberToRemove, setMemberToRemove] = useState(null);
   const [isRemovingMember, setIsRemovingMember] = useState(false);
   const [removeSuccess, setRemoveSuccess] = useState(false);
@@ -20,6 +25,7 @@ export function TeamSettings({ user, role }) {
   const [roleSaveError, setRoleSaveError] = useState('');
   const [members, setMembers] = useState([]);
   const [membersLoading, setMembersLoading] = useState(true);
+  useBodyScrollLock(Boolean(inviteOpen || reactivationCandidate || memberToRemove || roleMember));
 
   useEffect(() => {
     if (!inviteSuccess) return undefined;
@@ -32,6 +38,12 @@ export function TeamSettings({ user, role }) {
     const timeoutId = window.setTimeout(() => setRemoveSuccess(false), 3000);
     return () => window.clearTimeout(timeoutId);
   }, [removeSuccess]);
+
+  useEffect(() => {
+    if (!reactivationSuccess) return undefined;
+    const timeoutId = window.setTimeout(() => setReactivationSuccess(false), 3000);
+    return () => window.clearTimeout(timeoutId);
+  }, [reactivationSuccess]);
 
   const loadMembers = useCallback(async () => {
     if (!user?.id) return;
@@ -51,7 +63,8 @@ export function TeamSettings({ user, role }) {
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
-      .eq('msp_id', currentProfile.msp_id);
+      .eq('msp_id', currentProfile.msp_id)
+      .is('deactivated_at', null);
 
     if (error) {
       console.error('Could not load MSP profiles', error);
@@ -91,6 +104,7 @@ export function TeamSettings({ user, role }) {
           .from('profiles')
           .select('*')
           .eq('msp_id', currentProfile.msp_id)
+          .is('deactivated_at', null)
           .then(({ data, error }) => {
             if (cancelled) return;
             if (error) {
@@ -156,6 +170,16 @@ export function TeamSettings({ user, role }) {
         let message = error.message;
         if (error instanceof FunctionsHttpError) {
           const result = await error.context.json().catch(() => null);
+          if (result?.code === 'USER_DEACTIVATED' && typeof result.profile_id === 'string') {
+            setInviteOpen(false);
+            setReactivationError('');
+            setReactivationCandidate({
+              profileId: result.profile_id,
+              email: inviteEmail.trim(),
+              role: inviteRole,
+            });
+            return;
+          }
           message = result?.error ?? message;
         }
         setInviteMessage(message);
@@ -184,28 +208,58 @@ export function TeamSettings({ user, role }) {
     setIsRemovingMember(true);
     setRemoveError('');
 
-    const { data: deletedProfiles, error } = await supabase
-      .from('profiles')
-      .delete()
-      .eq('id', memberToRemove.id)
-      .select('id');
-
-    setIsRemovingMember(false);
+    const { error } = await supabase.functions.invoke('remove-member', {
+      body: { profile_id: memberToRemove.id },
+    });
 
     if (error) {
-      console.error('Could not remove team member profile', error);
-      setRemoveError(error.message || 'Could not remove this user. Please try again.');
+      let message = error.message;
+      if (error instanceof FunctionsHttpError) {
+        const result = await error.context.json().catch(() => null);
+        message = result?.error ?? message;
+      }
+      console.error('Could not deactivate team member', error);
+      setRemoveError(message || 'Could not deactivate this user. Please try again.');
+      setIsRemovingMember(false);
       return;
     }
 
-    if (!deletedProfiles?.length) {
-      setRemoveError('Supabase did not remove this profile. Check the owner role and DELETE policy.');
-      return;
-    }
-
+    setIsRemovingMember(false);
     setMemberToRemove(null);
     await loadMembers();
     setRemoveSuccess(true);
+  }
+
+  async function confirmReactivateMember() {
+    if (!reactivationCandidate) return;
+
+    setIsReactivatingMember(true);
+    setReactivationError('');
+
+    const { error } = await supabase.functions.invoke('reactivate-member', {
+      body: {
+        profile_id: reactivationCandidate.profileId,
+        role: reactivationCandidate.role,
+      },
+    });
+
+    if (error) {
+      let message = error.message;
+      if (error instanceof FunctionsHttpError) {
+        const result = await error.context.json().catch(() => null);
+        message = result?.error ?? message;
+      }
+      setReactivationError(message || 'Could not reactivate this user.');
+      setIsReactivatingMember(false);
+      return;
+    }
+
+    setIsReactivatingMember(false);
+    setReactivationCandidate(null);
+    setInviteEmail('');
+    setInviteMessage('');
+    setReactivationSuccess(true);
+    await loadMembers();
   }
 
   return (
@@ -271,19 +325,48 @@ export function TeamSettings({ user, role }) {
 
       {removeSuccess && (
         <div className="team-success-toast" role="status" aria-live="polite">
-          User removed
+          User deactivated
+        </div>
+      )}
+
+      {reactivationSuccess && (
+        <div className="team-success-toast" role="status" aria-live="polite">
+          User reactivated
         </div>
       )}
 
       {memberToRemove && (
         <div className="owner-settings-dialog-card team-remove-confirmation" role="dialog" aria-modal="true" aria-label="Remove team member">
           <div><strong>Remove team member</strong></div>
-          <p>Remove {memberToRemove.name} from this MSP?</p>
+          <p>Deactivate {memberToRemove.name} from this MSP?</p>
           {removeError && <p className="team-remove-error" role="alert">{removeError}</p>}
           <div className="team-remove-actions">
             <BtnSecondary type="button" disabled={isRemovingMember} onClick={() => setMemberToRemove(null)}>Cancel</BtnSecondary>
             <BtnSecondary type="button" disabled={isRemovingMember} onClick={confirmRemoveMember}>
-              {isRemovingMember ? <span className="team-remove-loader" aria-label="Removing user" /> : 'OK'}
+              {isRemovingMember ? <span className="team-remove-loader" aria-label="Deactivating user" /> : 'OK'}
+            </BtnSecondary>
+          </div>
+        </div>
+      )}
+
+      {reactivationCandidate && (
+        <div className="owner-settings-dialog-card team-remove-confirmation" role="dialog" aria-modal="true" aria-label="Reactivate team member">
+          <div><strong>Reactivate team member</strong></div>
+          <p>User exists but is deactivated. Would you like to proceed?</p>
+          {reactivationError && <p className="team-remove-error" role="alert">{reactivationError}</p>}
+          <div className="team-remove-actions">
+            <BtnSecondary
+              type="button"
+              disabled={isReactivatingMember}
+              onClick={() => {
+                setReactivationCandidate(null);
+                setInviteOpen(true);
+              }}
+            >
+              Cancel
+            </BtnSecondary>
+            <BtnSecondary type="button" disabled={isReactivatingMember} onClick={confirmReactivateMember}>
+              {isReactivatingMember ? <span className="team-remove-loader" aria-label="Reactivating user" /> : 'OK'}
             </BtnSecondary>
           </div>
         </div>

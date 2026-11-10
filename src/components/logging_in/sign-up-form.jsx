@@ -4,6 +4,7 @@ import { abnFiller } from "@/utils/abnFiller.js"
 import { CardContent } from "@/components/ui/card-content"
 import { CardHeader } from "@/components/ui/card-header"
 import { BtnMain } from "@/components/ui/buttons/btn-main"
+import TermsAndConditions from '@/components/screens/TermsAndConditions.jsx'
 import "./styles/sign-up-form.css"
 
 export default function SignUpForm({ onSignInClick }) {
@@ -20,6 +21,8 @@ export default function SignUpForm({ onSignInClick }) {
     const [error, setError] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
     const [success, setSuccess] = useState(false)
+    const [termsAccepted, setTermsAccepted] = useState(false)
+    const [termsOpen, setTermsOpen] = useState(false)
 
     const handleAbnLookup = async () => {
         setLookupError(null)
@@ -74,6 +77,11 @@ export default function SignUpForm({ onSignInClick }) {
             return
         }
 
+        if (!termsAccepted) {
+            setError('Please accept the Terms and Conditions to create an account.')
+            return
+        }
+
         if (!mspName.trim()) {
             setError('Enter an MSP name or look up an ABN first.')
             return
@@ -114,6 +122,10 @@ export default function SignUpForm({ onSignInClick }) {
         } finally {
             setIsLoading(false)
         }
+    }
+
+    if (termsOpen) {
+        return <TermsAndConditions onClose={() => setTermsOpen(false)} />
     }
 
     return (
@@ -209,6 +221,24 @@ export default function SignUpForm({ onSignInClick }) {
                         </div>
 
                         {error && <p className="form-error">{error}</p>}
+
+                        <label className="signup-terms">
+                            <input
+                                type="checkbox"
+                                checked={termsAccepted}
+                                onChange={(event) => {
+                                    setTermsAccepted(event.target.checked)
+                                    setError(null)
+                                }}
+                                required
+                            />
+                            <span>
+                                I agree to the{' '}
+                                <button className="signup-terms-link" type="button" onClick={() => setTermsOpen(true)}>
+                                    Terms and Conditions
+                                </button>
+                            </span>
+                        </label>
 
                         <BtnMain className="signup-submit" type="submit" disabled={isLoading}>
                             {isLoading ? 'Creating account...' : 'Create MSP Account'}

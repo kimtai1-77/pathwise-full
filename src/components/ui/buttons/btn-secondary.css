@@ -2,8 +2,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 4.2rem;
-  padding: 0.9rem 1.6rem;
+  min-height: 4.4rem;
+  padding: 0.8rem 1.6rem;
   border: 1px solid var(--nt-400);
   border-radius: 0.7rem;
   color: var(--sc-800);
@@ -44,10 +44,10 @@
 
 .btn-secondary.btn-medium {
   width: 16rem;
-  height: 4.2rem;
+  height: 4.4rem;
 }
 
 .btn-secondary.btn-large {
   width: 20rem;
-  height: 5rem;
+  height: 5.2rem;
 }

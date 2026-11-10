@@ -40,7 +40,7 @@ const authenticatedHandler = withSupabase({ auth: 'user' }, async (req, ctx) => 
 
   const { data: profile, error: profileError } = await ctx.supabase
     .from('profiles')
-    .select('id, msp_id, role')
+    .select('id, msp_id, role, deactivated_at')
     .eq('id', callerId)
     .maybeSingle()
 
@@ -49,12 +49,36 @@ const authenticatedHandler = withSupabase({ auth: 'user' }, async (req, ctx) => 
     return Response.json({ error: 'Could not verify inviter permissions' }, { status: 500 })
   }
 
-  if (!profile || (profile.role !== 'owner' && profile.role !== 'msp_admin')) {
+  if (!profile || profile.deactivated_at || (profile.role !== 'owner' && profile.role !== 'msp_admin')) {
     return Response.json({ error: 'You are not allowed to send invitations' }, { status: 403 })
   }
 
   if (profile.role === 'msp_admin' && role !== 'technician') {
     return Response.json({ error: 'Administrators can only invite technicians' }, { status: 403 })
+  }
+
+  const { data: existingProfile, error: existingProfileError } = await ctx.supabaseAdmin
+    .from('profiles')
+    .select('id, deactivated_at')
+    .eq('msp_id', profile.msp_id)
+    .eq('email', email)
+    .maybeSingle()
+
+  if (existingProfileError) {
+    console.error('Could not check existing profile email', existingProfileError)
+    return Response.json({ error: 'Could not verify the email address' }, { status: 500 })
+  }
+
+  if (existingProfile?.deactivated_at) {
+    return Response.json({
+      code: 'USER_DEACTIVATED',
+      profile_id: existingProfile.id,
+      error: 'User exists but is deactivated. Would you like to proceed?',
+    }, { status: 409 })
+  }
+
+  if (existingProfile) {
+    return Response.json({ error: `A record already exists for ${email}. Please use another email address.` }, { status: 409 })
   }
 
   const { data: inviter, error: inviterError } = await ctx.supabaseAdmin.auth.admin.getUserById(callerId)
@@ -68,19 +92,6 @@ const authenticatedHandler = withSupabase({ auth: 'user' }, async (req, ctx) => 
     return Response.json({ error: 'Could not verify the email address' }, { status: 500 })
   }
   if (authUsers.users.some((authUser) => authUser.email?.toLowerCase() === email)) {
-    return Response.json({ error: `A record already exists for ${email}. Please use another email address.` }, { status: 409 })
-  }
-
-  const { data: existingProfile, error: existingProfileError } = await ctx.supabaseAdmin
-    .from('profiles')
-    .select('id')
-    .eq('email', email)
-    .maybeSingle()
-  if (existingProfileError) {
-    console.error('Could not check existing profile email', existingProfileError)
-    return Response.json({ error: 'Could not verify the email address' }, { status: 500 })
-  }
-  if (existingProfile) {
     return Response.json({ error: `A record already exists for ${email}. Please use another email address.` }, { status: 409 })
   }
 

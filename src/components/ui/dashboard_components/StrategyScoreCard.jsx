@@ -4,10 +4,11 @@ import './styles/StrategyScoreCard.css';
 
 export function StrategyScoreCard({  
   strategyName,
-  maturityLevel,
   complianceStatus = 'low', // 'high' (green), 'medium' (yellow), or 'low' (red)
   maxControls = 0,
-  missingItems = 0
+  missingItems = 0,
+  satisfiedControlsCount = 0,
+  onOpenSatisfiedControls,
 }) {
   const score = calculateStrategyScore(maxControls, missingItems) ?? 0;
 
@@ -48,10 +49,23 @@ export function StrategyScoreCard({
 
       {/* Right Column: Content Container */}
       <div className="strategy-card-cont">
-        <div className="strategy-card-heading">
-          <span className="badge">MAT LEVEL {maturityLevel}</span>
-        </div>
         <h5 className="strategy-name">{strategyName}</h5>
+        <div className="strategy-card-heading">
+          {satisfiedControlsCount > 0 ? (
+            <button
+              className="badge satisfied-controls-toggle"
+              type="button"
+              aria-label={`View ${satisfiedControlsCount} satisfied controls for ${strategyName}`}
+              onClick={onOpenSatisfiedControls}
+            >
+              Compliant controls: {satisfiedControlsCount}
+            </button>
+          ) : (
+            <span className="badge satisfied-controls-toggle is-empty">
+              Compliant controls: 0
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
