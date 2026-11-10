@@ -25,7 +25,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
-  padding: 24px 26px 18px;
+  padding: 24px 28px 20px;
 }
 
 .profile-settings-eyebrow {
@@ -36,7 +36,7 @@
 }
 
 .profile-settings-header h2 {
-  margin: 5px 0 0;
+  margin: 4px 0 0;
   color: var(--nt-900);
   font-size: 22px;
   line-height: 1.2;
@@ -61,19 +61,22 @@
 }
 
 .profile-settings-close svg {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
 }
 
 .profile-settings-tabs {
   display: flex;
-  gap: 22px;
-  padding: 0 26px;
+  gap: 24px;
+  overflow-x: auto;
+  padding: 0 28px;
   border-bottom: 1px solid var(--nt-100);
+  scrollbar-width: thin;
 }
 
 .profile-settings-tabs button {
-  min-height: 42px;
+  flex: 0 0 auto;
+  min-height: 44px;
   padding: 0 2px;
   border: 0;
   border-bottom: 2px solid transparent;
@@ -93,14 +96,14 @@
 }
 
 .profile-settings-content {
-  padding: 24px 26px 26px;
+  padding: 24px 28px 44px;
 }
 
 .profile-settings-form,
 .profile-settings-security {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 .profile-settings-section-heading h3 {
@@ -111,7 +114,7 @@
 }
 
 .profile-settings-section-heading p {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   color: var(--nt-700);
   line-height: 1.45;
 }
@@ -119,15 +122,15 @@
 .profile-settings-field {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
   color: var(--nt-900);
   font-weight: 600;
 }
 
 .profile-settings-field input {
   width: 100%;
-  min-height: 42px;
-  padding: 9px 11px;
+  min-height: 44px;
+  padding: 8px 12px;
   border: 1px solid var(--nt-100);
   border-radius: 5px;
   outline: none;
@@ -151,7 +154,7 @@
 .profile-settings-security-action {
   align-self: flex-start;
   min-height: 40px;
-  padding: 0 13px;
+  padding: 0 12px;
   border: 1px solid var(--p-300);
   border-radius: 5px;
   background: var(--p-300);
@@ -191,7 +194,7 @@
 
 .profile-settings-message {
   margin: 0;
-  padding: 10px 11px;
+  padding: 12px 12px;
   border-radius: 5px;
   font-size: 12px;
   line-height: 1.45;
@@ -223,14 +226,14 @@
 .profile-settings-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 9px;
+  gap: 8px;
   margin-top: 2px;
 }
 
 .profile-settings-cancel,
 .profile-settings-submit {
-  min-height: 38px;
-  padding: 0 13px;
+  min-height: 40px;
+  padding: 0 12px;
   border-radius: 5px;
   font: inherit;
   font-weight: 650;
@@ -270,7 +273,7 @@
 .profile-settings-cancel:focus-visible,
 .profile-settings-submit:focus-visible {
   outline: 2px solid var(--p-300);
-  outline-offset: 3px;
+  outline-offset: 4px;
 }
 
 .profile-settings-dialog.is-owner,
@@ -280,7 +283,7 @@
 
 .profile-settings-dialog.is-owner .profile-settings-tabs,
 .profile-settings-dialog.is-msp-admin .profile-settings-tabs {
-  gap: 18px;
+  gap: 20px;
   overflow-x: auto;
   scrollbar-width: thin;
 }
@@ -305,7 +308,7 @@
 
 .owner-settings-section-heading p,
 .owner-settings-panel-heading p {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   color: var(--nt-700);
   line-height: 1.45;
 }
@@ -318,9 +321,9 @@
 }
 
 .owner-settings-panel-heading .profile-settings-submit {
-  min-width: 118px;
-  min-height: 42px;
-  padding-inline: 18px;
+  min-width: 120px;
+  min-height: 44px;
+  padding-inline: 20px;
   flex: 0 0 auto;
   white-space: nowrap;
 }
@@ -330,7 +333,7 @@
 }
 
 .is-msp-admin-team .owner-settings-table-row {
-  grid-template-columns: minmax(240px, 2fr) minmax(110px, 0.8fr) 90px;
+  grid-template-columns: minmax(240px, 2fr) minmax(112px, 0.8fr) 92px;
 }
 
 .is-msp-admin-team .owner-settings-table-row > span:nth-child(4) {
@@ -339,22 +342,22 @@
 
 .owner-settings-table-row {
   display: grid;
-  grid-template-columns: minmax(180px, 1.5fr) minmax(100px, 0.7fr) 90px minmax(150px, 0.8fr);
+  grid-template-columns: minmax(180px, 1.5fr) minmax(100px, 0.7fr) 92px minmax(152px, 0.8fr);
   gap: 12px;
   align-items: center;
-  min-height: 58px;
+  min-height: 60px;
   border-bottom: 1px solid var(--nt-100);
 }
 
 .owner-settings-table-row small {
   display: block;
-  margin-top: 3px;
+  margin-top: 4px;
   color: var(--nt-700);
   font-size: 11px;
 }
 
 .owner-settings-table-head {
-  min-height: 34px;
+  min-height: 36px;
   color: var(--nt-700);
   font-size: 10px;
   font-weight: 700;
@@ -364,8 +367,8 @@
 .owner-settings-status {
   display: inline-flex;
   align-items: center;
-  min-height: 22px;
-  padding: 0 7px;
+  min-height: 24px;
+  padding: 0 8px;
   border-radius: 4px;
   background: var(--nt-100);
   color: var(--nt-700);
@@ -419,19 +422,258 @@
   text-align: center;
 }
 
-.owner-settings-dialog-card {
-  position: absolute;
-  right: 26px;
-  bottom: 26px;
-  width: min(330px, calc(100% - 52px));
+.tenant-settings-panel {
+  gap: 20px;
+}
+
+.tenant-settings-count {
+  flex: 0 0 auto;
+  color: var(--nt-700);
+  font-size: 11px;
+}
+
+.tenant-settings-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.tenant-settings-row {
+  min-width: 0;
+  border-bottom: 1px solid var(--nt-100);
+}
+
+.tenant-settings-row-heading {
+  display: flex;
+  min-width: 0;
+  min-height: 60px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.tenant-settings-identity {
+  display: flex;
+  min-width: 0;
+  min-height: 44px;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--nt-900);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tenant-settings-initial {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--nt-100);
+  color: var(--nt-700);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.tenant-settings-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tenant-settings-current {
+  flex: 0 0 auto;
+  color: var(--success-500);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.tenant-settings-disclosure {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--nt-100);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--nt-700);
+  cursor: pointer;
+}
+
+.tenant-settings-disclosure:hover,
+.tenant-settings-disclosure[aria-expanded='true'] {
+  border-color: var(--nt-300);
+  color: var(--nt-900);
+}
+
+.tenant-settings-arrow {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.tenant-settings-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  margin: 0 0 12px 40px;
+}
+
+.tenant-settings-actions[hidden] {
+  display: none;
+}
+
+.tenant-settings-actions button {
+  min-width: 72px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--nt-100);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--nt-700);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.tenant-settings-actions button:hover {
+  border-color: var(--nt-300);
+  background: var(--nt-050);
+  color: var(--nt-900);
+}
+
+.tenant-settings-actions .tenant-settings-remove {
+  border-color: color-mix(in srgb, var(--error-400) 32%, transparent);
+  background: color-mix(in srgb, var(--error-300) 10%, var(--nt-050));
+  color: var(--error-500);
+}
+
+.tenant-settings-actions .tenant-settings-remove:hover {
+  border-color: color-mix(in srgb, var(--error-400) 64%, transparent);
+  background: color-mix(in srgb, var(--error-300) 18%, var(--nt-050));
+  color: var(--error-500);
+}
+
+.tenant-settings-modal-backdrop {
+  position: fixed;
+  z-index: 1200;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: color-mix(in srgb, var(--nt-900) 42%, transparent);
+  backdrop-filter: blur(1px);
+}
+
+.tenant-settings-modal {
+  width: min(100%, 440px);
+  max-height: min(640px, calc(100dvh - 48px));
+  overflow: auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 18px;
+  padding: 24px;
+  border: 1px solid var(--nt-100);
+  border-radius: 8px;
+  background: var(--nt-050);
+  color: var(--nt-900);
+  box-shadow: 0 20px 56px color-mix(in srgb, var(--nt-900) 24%, transparent);
+}
+
+.tenant-settings-modal h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.tenant-settings-modal p,
+.tenant-settings-modal label {
+  margin: 0;
+  color: var(--nt-700);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.tenant-settings-modal input {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--nt-200);
+  border-radius: 5px;
+  background: white;
+  color: var(--nt-900);
+  font: inherit;
+  font-size: 14px;
+}
+
+.tenant-settings-modal input:focus {
+  outline: 2px solid var(--p-400);
+  outline-offset: 2px;
+}
+
+.tenant-settings-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.tenant-settings-modal-actions button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--nt-200);
+  border-radius: 5px;
+  background: var(--nt-050);
+  color: var(--nt-800);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tenant-settings-modal-actions button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.tenant-settings-modal-actions .tenant-settings-modal-submit {
+  border-color: var(--p-300);
+  background: var(--p-300);
+  color: var(--nt-050);
+  font-weight: 650;
+}
+
+.tenant-settings-modal-actions .tenant-settings-modal-danger {
+  border-color: var(--error-500);
+  background: var(--error-500);
+  color: white;
+  font-weight: 650;
+}
+
+.tenant-settings-modal .tenant-settings-modal-error {
+  color: var(--error-500);
+}
+
+.owner-settings-dialog-card {
+  position: absolute;
+  right: 28px;
+  bottom: 28px;
+  width: min(332px, calc(100% - 52px));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
   border: 1px solid var(--nt-100);
   border-radius: 7px;
   background: #fff;
-  box-shadow: 0 16px 50px color-mix(in srgb, var(--nt-900) 18%, transparent);
+  box-shadow: 0 16px 52px color-mix(in srgb, var(--nt-900) 18%, transparent);
 }
 
 .invite-staff-dialog {
@@ -459,7 +701,7 @@
 }
 
 .invite-role-readonly {
-  min-height: 46px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   box-sizing: border-box;
@@ -474,13 +716,13 @@
 
 .invite-staff-dialog input,
 .invite-staff-dialog select {
-  min-height: 46px;
+  min-height: 48px;
   padding: 0 12px;
   font-size: 14px;
 }
 
 .invite-staff-dialog .profile-settings-submit {
-  min-height: 46px;
+  min-height: 48px;
   font-size: 14px;
 }
 
@@ -513,14 +755,14 @@
   font-size: 12px;
   font-weight: 700;
   text-align: center;
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--success-500) 18%, transparent);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--success-500) 18%, transparent);
 }
 
 .owner-settings-dialog-card label,
 .owner-settings-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   color: var(--nt-900);
   font-weight: 650;
 }
@@ -537,6 +779,10 @@
   padding: 0 12px;
 }
 
+.owner-settings-dialog-card input:focus {
+  outline: 2px solid var(--p-200);
+}
+
 .owner-settings-select {
   position: relative;
   display: block;
@@ -544,7 +790,7 @@
 
 .owner-settings-select select {
   width: 100%;
-  padding-right: 38px;
+  padding-right: 40px;
   appearance: none;
 }
 
@@ -552,8 +798,8 @@
   position: absolute;
   top: 50%;
   right: 12px;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   transform: translateY(-50%);
   fill: none;
   stroke: var(--nt-600);
@@ -577,7 +823,7 @@
 .team-remove-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
 }
 
 .team-remove-actions .btn-secondary {
@@ -589,8 +835,8 @@
 }
 
 .team-remove-loader {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border: 2px solid var(--nt-200);
   border-top-color: var(--nt-700);
   border-radius: 50%;
@@ -607,7 +853,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 58px;
+  min-height: 60px;
   border-bottom: 1px solid var(--nt-100);
 }
 
@@ -625,15 +871,15 @@
 }
 
 .owner-settings-toggle-row input {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   accent-color: var(--p-300);
 }
 
 .owner-settings-export-status {
   display: flex;
   justify-content: space-between;
-  padding: 10px 12px;
+  padding: 12px 12px;
   border-radius: 5px;
   background: var(--nt-50);
   color: var(--nt-700);
@@ -646,7 +892,7 @@
   justify-content: space-between;
   gap: 16px;
   margin-top: 8px;
-  padding-top: 18px;
+  padding-top: 20px;
   border-top: 1px solid color-mix(in srgb, var(--error-300) 28%, var(--nt-100));
 }
 
@@ -668,7 +914,7 @@
 @media (max-width: 520px) {
   .profile-settings-overlay {
     align-items: end;
-    padding: 10px;
+    padding: 12px;
   }
 
   .profile-settings-dialog {
@@ -676,21 +922,21 @@
   }
 
   .profile-settings-header {
-    padding: 19px 18px 15px;
+    padding: 20px 20px 16px;
   }
 
   .profile-settings-tabs {
-    padding: 0 18px;
+    padding: 0 20px;
   }
 
   .profile-settings-content {
-    padding: 20px 18px 18px;
+    padding: 20px 20px 20px;
   }
 
   .owner-settings-panel-heading {
     align-items: stretch;
     flex-direction: column;
-    gap: 18px;
+    gap: 20px;
   }
 
   .owner-settings-panel-heading .profile-settings-submit {
@@ -708,5 +954,9 @@
 
   .is-msp-admin-team .owner-settings-table-row > span:nth-child(4) {
     display: none;
+  }
+
+  .tenant-settings-actions {
+    margin-left: 0;
   }
 }

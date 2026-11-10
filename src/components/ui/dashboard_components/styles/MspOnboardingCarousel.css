@@ -6,12 +6,12 @@
   box-sizing: border-box;
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto auto;
-  gap: 18px;
+  gap: 20px;
   padding: 32px 36px 28px;
   border: 1px solid var(--nt-100);
   border-radius: 8px;
   background: #fff;
-  box-shadow: 0 14px 32px color-mix(in srgb, var(--nt-900) 10%, transparent);
+  box-shadow: 0 16px 32px color-mix(in srgb, var(--nt-900) 10%, transparent);
 }
 
 .msp-onboarding__panel {
@@ -56,7 +56,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   box-sizing: border-box;
   border: 1px dashed var(--nt-100);
   border-radius: 8px;
@@ -95,13 +95,13 @@
 
 .msp-onboarding__tenant-actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   margin-top: 24px;
 }
 
 .msp-onboarding__secondary,
 .msp-onboarding__primary {
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 16px;
   border-radius: 5px;
   font: inherit;
@@ -158,7 +158,7 @@
 }
 
 .msp-onboarding__progress-track {
-  height: 3px;
+  height: 4px;
   margin-top: 8px;
   overflow: hidden;
   background: var(--nt-100);
@@ -175,7 +175,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
 }
 
 .msp-onboarding__actions .msp-onboarding__secondary {
@@ -196,7 +196,7 @@
 }
 
 .msp-onboarding__invitation-columns {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   color: var(--nt-900);
   font-size: 12px;
   font-weight: 600;
@@ -205,19 +205,19 @@
 .msp-onboarding__invitation-columns > span:nth-child(2) {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 
 .msp-onboarding__invitation-row {
   align-items: end;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .msp-onboarding__invitation-row input {
   width: 100%;
-  height: 42px;
+  height: 44px;
   box-sizing: border-box;
-  padding: 0 11px;
+  padding: 0 12px;
   border: 1px solid var(--nt-100);
   border-radius: 5px;
   background: #fff;
@@ -237,12 +237,12 @@
 
 .msp-onboarding__role-button {
   width: 100%;
-  height: 42px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
-  padding: 0 11px;
+  padding: 0 12px;
   border: 1px solid var(--nt-100);
   border-radius: 5px;
   background: #fff;
@@ -252,8 +252,8 @@
 }
 
 .msp-onboarding__role-chevron {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-right: 1px solid var(--nt-700);
   border-bottom: 1px solid var(--nt-700);
   transform: rotate(45deg) translateY(-2px);
@@ -269,7 +269,7 @@
   border: 1px solid var(--nt-100);
   border-radius: 5px;
   background: #fff;
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--nt-900) 14%, transparent);
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--nt-900) 14%, transparent);
 }
 
 .msp-onboarding__role-options button {
@@ -297,7 +297,7 @@
 .msp-onboarding__invitation-submit {
   display: flex;
   justify-content: flex-end;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 .msp-onboarding__consent {
@@ -315,7 +315,7 @@
 }
 
 .msp-onboarding__terms input {
-  margin-top: 3px;
+  margin-top: 4px;
 }
 
 .msp-onboarding__terms button {
@@ -343,7 +343,7 @@
 .msp-onboarding__role-tooltip {
   position: absolute;
   z-index: 20;
-  top: calc(100% + 10px);
+  top: calc(100% + 12px);
   left: 50%;
   width: 280px;
   display: none;
@@ -358,7 +358,7 @@
   font-weight: 400;
   line-height: 1.45;
   transform: translateX(-50%);
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--nt-900) 14%, transparent);
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--nt-900) 14%, transparent);
 }
 
 .msp-onboarding__role-tooltip strong {
@@ -372,7 +372,7 @@
 
 .msp-onboarding__remove-invitation {
   width: 36px;
-  height: 42px;
+  height: 44px;
   display: grid;
   place-items: center;
   padding: 0;
@@ -382,8 +382,8 @@
 }
 
 .msp-onboarding__remove-invitation img {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   filter: brightness(0) saturate(100%) invert(24%) sepia(10%) saturate(700%) hue-rotate(330deg);
 }
 

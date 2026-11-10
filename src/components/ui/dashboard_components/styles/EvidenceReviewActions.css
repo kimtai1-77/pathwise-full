@@ -1,9 +1,9 @@
 .pcd-review-message {
   width: 100%;
-  padding: 11px;
-  border: 1px solid var(--sc-100);
+  padding: 12px;
+  border: 1px solid var(--nt-100);
   border-radius: 7px;
-  color: var(--sc-400);
+  color: var(--nt-400);
   font-size: 11px;
   text-align: center;
 }
@@ -16,8 +16,8 @@
   flex: 1;
   align-items: center;
   justify-content: center;
-  padding: 0 14px;
-  border: 1px solid var(--sc-100);
+  padding: 0 16px;
+  border: 1px solid var(--nt-100);
   border-radius: 7px;
   cursor: pointer;
   font-size: 10px;
@@ -31,14 +31,14 @@
 }
 
 .pcd-secondary-button {
-  background: var(--sc-050);
-  color: var(--sc-600);
+  background: var(--nt-050);
+  color: var(--nt-600);
 }
 
 .pcd-approve-button {
   border: 0;
   background: var(--p-300);
-  color: var(--sc-800);
+  color: var(--nt-050);
 }
 
 .pcd-approve-button:hover:not(:disabled) {
@@ -55,13 +55,13 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .pcd-reject-form label {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   color: var(--error-500);
   font-size: 10px;
   font-weight: 700;
@@ -70,15 +70,15 @@
 .pcd-reject-form textarea {
   width: 100%;
   resize: vertical;
-  padding: 9px;
-  border: 1px solid var(--sc-100);
+  padding: 8px;
+  border: 1px solid var(--nt-100);
   border-radius: 7px;
   background: var(--nt-050);
-  color: var(--sc-600);
+  color: var(--nt-600);
   font-size: 11px;
 }
 
 .pcd-reject-form > div {
   display: flex;
-  gap: 9px;
+  gap: 8px;
 }

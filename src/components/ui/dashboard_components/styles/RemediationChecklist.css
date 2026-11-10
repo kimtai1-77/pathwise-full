@@ -1,10 +1,10 @@
 .pcd-drawer-section {
-  margin-top: 23px;
+  margin-top: 24px;
 }
 
 .pcd-drawer-section h3 {
-  margin: 0 0 11px;
-  color: var(--sc-400);
+  margin: 0 0 12px;
+  color: var(--nt-400);
   font-size: 10px;
   font-weight: 750;
   letter-spacing: 0.7px;
@@ -19,31 +19,27 @@
 
 .pcd-remediation-steps label {
   display: grid;
-  grid-template-columns: 16px 26px 1fr;
+  grid-template-columns: 16px 28px 1fr;
   align-items: start;
-  gap: 10px;
+  gap: 12px;
   padding: 12px;
-  border: 1px solid var(--sc-100);
+  border: 1px solid var(--nt-100);
   border-radius: 8px;
   background: var(--nt-050);
-  color: var(--sc-600);
+  color: var(--nt-600);
   cursor: pointer;
   font-size: 11px;
   line-height: 1.55;
 }
 
 .pcd-remediation-steps input {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   margin: 2px 0 0;
   accent-color: var(--p-400);
 }
 
 .pcd-remediation-steps b {
-  color: var(--sc-800);
+  color: var(--nt-050);
   font: 700 10px ui-monospace, monospace;
-}
-
-.pcd-theme-dark .pcd-remediation-steps b {
-  color: var(--s--p-200);
 }

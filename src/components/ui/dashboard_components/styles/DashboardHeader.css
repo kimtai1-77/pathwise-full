@@ -2,9 +2,9 @@
   position: sticky;
   top: 0;
   z-index: 20;
-  border-bottom: 1px solid var(--sc-100);
+  border-bottom: 1px solid var(--nt-100);
   background: var(--nt-050);
-  box-shadow: 0 4px 18px var(--sc-100);
+  box-shadow: 0 4px 20px var(--nt-100);
 }
 
 .dash-header-inner {
@@ -13,7 +13,7 @@
   min-height: 72px;
   align-items: center;
   justify-content: space-between;
-  gap: 22px;
+  gap: 24px;
   margin: auto;
   padding: 16px 24px;
 }
@@ -23,7 +23,7 @@
   min-width: 0;
   max-width: 300px;
   align-items: center;
-  color: var(--sc-700);
+  color: var(--nt-800);
   font-size: 16px;
   font-weight: 750;
   text-decoration: none;
@@ -38,47 +38,10 @@
 .dash-title {
   flex: 1;
   margin: 0;
-  color: var(--sc-400);
+  color: var(--nt-400);
   font-size: 12px;
   font-weight: 550;
   text-align: center;
-}
-
-.dash-theme-toggle {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 0;
-  border: 0;
-  background: none;
-  color: var(--sc-600);
-  cursor: pointer;
-  font-size: 10px;
-  white-space: nowrap;
-}
-
-.dash-theme-toggle i {
-  display: flex;
-  width: 32px;
-  height: 18px;
-  align-items: center;
-  padding: 2px;
-  border: 1px solid var(--sc-100);
-  border-radius: 12px;
-  background: var(--sc-050);
-}
-
-.dash-theme-toggle i b {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--p-300);
-  transition: transform 160ms ease;
-}
-
-.dash-theme-toggle[aria-checked='true'] i b {
-  transform: translateX(14px);
 }
 
 .dash-profile {
@@ -86,24 +49,24 @@
   min-width: 0;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
 }
 
 .dash-profile-role {
-  padding: 7px 9px;
+  padding: 8px 8px;
   border: 1px solid var(--p-300);
   border-radius: 6px;
   background: var(--p-050);
-  color: var(--sc-800);
+  color: var(--nt-050);
   cursor: pointer;
   font-size: 10px;
   white-space: nowrap;
 }
 
 .dash-profile-name {
-  max-width: 170px;
+  max-width: 172px;
   overflow: hidden;
-  color: var(--sc-700);
+  color: var(--nt-800);
   font-size: 11px;
   font-weight: 650;
   text-overflow: ellipsis;
@@ -111,11 +74,11 @@
 }
 
 .dash-signout {
-  padding: 7px 10px;
-  border: 1px solid var(--sc-100);
+  padding: 8px 12px;
+  border: 1px solid var(--nt-100);
   border-radius: 6px;
   background: var(--nt-050);
-  color: var(--sc-600);
+  color: var(--nt-600);
   cursor: pointer;
   font-size: 10px;
   white-space: nowrap;
@@ -129,7 +92,7 @@
 @media (max-width: 1120px) {
   .dash-header-inner {
     flex-wrap: wrap;
-    padding: 11px 24px;
+    padding: 12px 24px;
   }
 
   .dash-brand {
@@ -151,8 +114,8 @@
 @media (max-width: 700px) {
   .dash-header-inner {
     width: calc(100% - 28px);
-    gap: 9px;
-    padding: 11px 0;
+    gap: 8px;
+    padding: 12px 0;
   }
 
   .dash-brand {
@@ -161,26 +124,18 @@
   }
 
   .dash-profile {
-    gap: 6px;
+    gap: 8px;
   }
 
   .dash-profile-name {
-    max-width: 86px;
+    max-width: 88px;
     font-size: 10px;
   }
 
   .dash-profile-role,
   .dash-signout {
-    padding: 6px;
+    padding: 8px;
     font-size: 9px;
-  }
-
-  .dash-theme-toggle {
-    font-size: 9px;
-  }
-
-  .dash-theme-toggle i {
-    width: 30px;
   }
 
   .dash-title {

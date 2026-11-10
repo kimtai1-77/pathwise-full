@@ -27,8 +27,8 @@
 
 .progress-ring-container {
   position: relative;
-  width: 90px;
-  height: 90px;
+  width: 92px;
+  height: 92px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -84,15 +84,40 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 4px 12px;
   background-color: var(--sc-800);
   border: 1px solid var(--sc-500);
-  border-radius: 6px;
-  font-size: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   color: var(--sc-200);
   text-transform: uppercase;
+}
+
+.satisfied-controls-toggle {
+  font-family: inherit;
+  text-align: left;
+  text-transform: none;
+}
+
+button.satisfied-controls-toggle {
+  cursor: pointer;
+}
+
+button.satisfied-controls-toggle:hover {
+  border-color: var(--sc-300);
+  background-color: var(--sc-700);
+  color: var(--nt-050);
+}
+
+button.satisfied-controls-toggle:focus-visible {
+  outline: 2px solid var(--p-300);
+  outline-offset: 2px;
+}
+
+.satisfied-controls-toggle.is-empty {
+  opacity: 0.75;
 }
 
 .strategy-name {

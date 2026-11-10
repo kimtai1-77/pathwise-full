@@ -1,8 +1,8 @@
 .pcd-drawer-status {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 5px 12px;
-  padding: 14px;
+  gap: 4px 12px;
+  padding: 16px;
   border: 1px solid var(--error-500);
   border-radius: 8px;
   background: var(--error-100);
@@ -20,7 +20,7 @@
 
 .pcd-drawer-status small {
   align-self: center;
-  color: var(--sc-600);
+  color: var(--nt-600);
   font-size: 10px;
 }
 

@@ -25,7 +25,7 @@
 
 /* --- Left: Branding --- */
 .name-wrapper {
-  gap: 2px;
+  gap: 12px;
   min-width: 0;
   justify-self: start;
 }
@@ -48,12 +48,41 @@
   height: 32px;
 }
 
+.logo-cont img {
+  width: 100%;
+  height: 100%;
+  border-radius: 9px;
+  object-fit: contain;
+  background: #fff;
+}
+
+.logo-cont.has-company-logo {
+  width: auto;
+  min-width: 36px;
+  max-width: 140px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.logo-cont.has-company-logo img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 140px;
+  max-height: 40px;
+  border-radius: 9px;
+  background: transparent;
+}
+
 .msp-name {
   display: flex;
   min-width: 0;
   flex-direction: column;
   justify-content: center;
-  gap: 2px;
+  gap: 8px;
 }
 
 .brand-title {
@@ -64,7 +93,26 @@
   color: var(--nt-050);
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin: 2px 0;
+  margin: 0;
+}
+
+.brand-title-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.brand-title-button:hover {
+  color: var(--p-200);
+}
+
+.brand-title-button:focus-visible {
+  outline: 2px solid var(--p-300);
+  outline-offset: 4px;
 }
 
 .acsc-text {
@@ -94,7 +142,7 @@
   color: var(--nt-200);
   font-size: 13px;
   font-weight: 500;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -110,14 +158,14 @@
   background-color: var(--p-300);
   color: var(--sc-900);
   font-weight: 700;
-  box-shadow: 0 0 10px color-mix(in srgb, var(--p-500) 25%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--p-500) 25%, transparent);
 }
 
 /* --- Right: User Profile Button --- */
 .profile-wrapper {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   justify-self: end;
 }
 
@@ -128,10 +176,10 @@
 .profile-cont {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background-color: var(--sc-800);
   border: 1px solid var(--sc-600);
-  padding: 4px 6px;
+  padding: 4px 8px;
   border-radius: 12px;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease;
@@ -199,8 +247,8 @@
 }
 
 .user-icon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   fill: none;
   stroke: currentColor;
 }
@@ -208,7 +256,7 @@
 .profile-cont:focus-visible,
 .level-cont:focus-visible {
   outline: 2px solid var(--success-200);
-  outline-offset: 3px;
+  outline-offset: 4px;
 }
 
 .profile-cont:focus-visible {
@@ -216,8 +264,8 @@
 }
 
 .profile-menu-chevron {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   color: var(--nt-200);
   transition: transform 0.2s ease;
 }
@@ -229,7 +277,7 @@
 .profile-menu-panel {
   position: absolute;
   z-index: 20;
-  top: calc(100% + 10px);
+  top: calc(100% + 12px);
   right: 0;
   width: min(248px, calc(100vw - 24px));
   box-sizing: border-box;
@@ -243,8 +291,8 @@
 .profile-menu-identity {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 10px 10px 14px;
+  gap: 4px;
+  padding: 12px 12px 16px;
   border-bottom: 1px solid var(--sc-600);
 }
 
@@ -277,7 +325,7 @@
   width: 100%;
   min-height: 44px;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   padding: 0 12px;
   border: 0;
   border-radius: 4px;
@@ -374,7 +422,7 @@
 }
 
 .msp-dashboard .level-wrapper {
-  gap: 3px;
+  gap: 4px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -415,7 +463,7 @@
 
 .msp-dashboard .profile-menu-panel {
   border-color: var(--nt-100);
-  box-shadow: 0 14px 32px color-mix(in srgb, var(--nt-900) 14%, transparent);
+  box-shadow: 0 16px 32px color-mix(in srgb, var(--nt-900) 14%, transparent);
 }
 
 .msp-dashboard .profile-menu-signout,
@@ -433,7 +481,7 @@
     grid-template-areas:
       'brand profile'
       'levels levels';
-    gap: 14px 20px;
+    gap: 16px 20px;
   }
 
   .name-wrapper {
@@ -459,7 +507,7 @@
   }
 
   .name-wrapper {
-    gap: 9px;
+    gap: 8px;
   }
 
   .logo-cont {
@@ -468,12 +516,24 @@
     border-radius: 8px;
   }
 
+  .logo-cont.has-company-logo {
+    max-width: min(96px, 24vw);
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .logo-cont.has-company-logo img {
+    max-width: 100%;
+    max-height: 36px;
+    border-radius: 7px;
+  }
+
   .brand-title {
     font-size: 14px;
   }
 
   .acsc-text {
-    max-width: 190px;
+    max-width: 192px;
     font-size: 10px;
   }
 
@@ -516,16 +576,16 @@
   }
 
   .acsc-text {
-    max-width: 145px;
+    max-width: 144px;
   }
 
   .level-wrapper {
     gap: 2px;
-    padding: 3px;
+    padding: 4px;
   }
 
   .level-cont {
-    padding: 7px 5px;
+    padding: 8px 4px;
     font-size: 11px;
     white-space: normal;
   }

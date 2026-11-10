@@ -1,7 +1,7 @@
 .pcd-evidence-card {
-  margin-top: 22px;
-  padding: 14px;
-  border: 1px solid var(--sc-100);
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid var(--nt-100);
   border-radius: 8px;
   background: var(--nt-050);
 }
@@ -17,35 +17,35 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
 .pcd-evidence-heading strong {
   overflow-wrap: anywhere;
-  color: var(--sc-700);
+  color: var(--nt-800);
   font-size: 11px;
 }
 
 .pcd-evidence-card > p {
-  margin: 6px 0 0;
-  color: var(--sc-400);
+  margin: 8px 0 0;
+  color: var(--nt-400);
   font-size: 10px;
 }
 
 .pcd-evidence-card blockquote {
   margin: 12px 0 0;
-  padding: 9px 11px;
+  padding: 8px 12px;
   border-left: 2px solid var(--p-400);
-  background: var(--sc-050);
-  color: var(--sc-600);
+  background: var(--nt-050);
+  color: var(--nt-600);
   font-size: 10px;
 }
 
 .pcd-evidence-state {
-  padding: 4px 7px;
-  border: 1px solid var(--sc-100);
+  padding: 4px 8px;
+  border: 1px solid var(--nt-100);
   border-radius: 16px;
-  color: var(--sc-600);
+  color: var(--nt-600);
   font-size: 9px;
   text-transform: capitalize;
   white-space: nowrap;
@@ -71,7 +71,7 @@
 }
 
 .pcd-rejection-note {
-  padding: 9px;
+  padding: 8px;
   border: 1px solid;
   border-radius: 6px;
 }
