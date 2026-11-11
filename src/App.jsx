@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import LoginForm from "@/components/logging_in/LoginForm.jsx"
 import SignUpForm from "@/components/logging_in/sign-up-form.jsx"
-import InviteeLoginForm from '@/components/logging_in/InviteeLoginForm.jsx'
+import InviteeSignupForm from '@/components/logging_in/InviteeSignupForm.jsx'
 import ForgotPasswordForm from '@/components/logging_in/forgotPasswordForm.jsx'
 import UpdatePasswordForm from '@/components/logging_in/updatePasswordForm.jsx'
 import MspDashboard from '@/components/screens/MspDashboard.jsx'
@@ -119,7 +119,7 @@ function App() {
           <p role='status'>Your account has been deactivated. Contact your MSP owner for access.</p>
         )}
         {inviteePreview ? (
-          <InviteeLoginForm
+          <InviteeSignupForm
             invitation={{ invitation: true, msp_name: 'Acme Managed Services', msp_id: 'preview', role: 'technician' }}
             onComplete={() => undefined}
           />
@@ -134,7 +134,7 @@ function App() {
             }}
           />
         ) : user && !inviteeSetupComplete && invitationLink && user.user_metadata?.invitation === true ? (
-          <InviteeLoginForm
+          <InviteeSignupForm
             user={user}
             onComplete={(completedUser) => {
               clearInvitationCallback()

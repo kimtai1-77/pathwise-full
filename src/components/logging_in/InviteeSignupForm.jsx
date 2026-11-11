@@ -1,29 +1,31 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { supabase } from '@/lib/supabaseClient.js'
 import { CardContent } from '@/components/ui/card-content'
 import { CardHeader } from '@/components/ui/card-header'
 import { BtnMain } from '@/components/ui/buttons/btn-main'
-import './styles/InviteeLoginForm.css'
+import './styles/InviteeSignupForm.css'
 
 const roleLabels = {
     msp_admin: 'MSP Administrator',
     technician: 'Technician',
 }
 
-export default function InviteeLoginForm({ user, invitation, onComplete, onSignInClick }) {
+export default function InviteeSignupForm({ user, invitation, onComplete, onSignInClick }) {
     const preview = !user
     const metadata = user?.user_metadata ?? {}
     const invitationMetadata = invitation ?? metadata
-    const [fullName, setFullName] = useState(metadata.full_name || '')
+    const [nameState, setNameState] = useState(() => ({
+        source: metadata.full_name,
+        value: metadata.full_name || '',
+    }))
+    const fullName = nameState.source === metadata.full_name
+        ? nameState.value
+        : metadata.full_name || ''
     const invitedEmail = user?.email || metadata.email || (preview ? 'jane@example.com' : '')
     const [password, setPassword] = useState('')
     const [repeatPassword, setRepeatPassword] = useState('')
     const [error, setError] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
-
-    useEffect(() => {
-        setFullName(metadata.full_name || '')
-    }, [metadata.full_name])
 
     async function handleInviteeLogin(event) {
         event.preventDefault()
@@ -123,7 +125,10 @@ export default function InviteeLoginForm({ user, invitation, onComplete, onSignI
                             placeholder="Jane Doe"
                             name="fullName"
                             value={fullName}
-                            onChange={(event) => setFullName(event.target.value)}
+                            onChange={(event) => setNameState({
+                                source: metadata.full_name,
+                                value: event.target.value,
+                            })}
                             required
                         />
 
