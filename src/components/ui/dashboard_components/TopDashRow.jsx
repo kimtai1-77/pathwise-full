@@ -2,7 +2,7 @@
 import { OverallScoreCard } from './OverallScoreCard.jsx';
 import './styles/TopDashRow.css';
 
-export default function TopDashRow({ tenantName, scores = [] }) {
+export function TopDashRow({ tenantName, scores = [] }) {
   return (
     <div className="top-row-wrapper">
       <div className="top-row-cont">

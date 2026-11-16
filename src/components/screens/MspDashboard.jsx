@@ -7,9 +7,9 @@ import { DashNavbar } from '@/components/ui/dashboard_components/DashNavbar.jsx'
 import { OrgSettings } from '@/components/ui/dashboard_components/OrgSettings.jsx';
 import { OnboardingLightbox } from '@/components/ui/Lightboxes/OnboardingLightbox.jsx';
 import { OwnerProfileSettingsDialog } from '@/components/ui/dashboard_components/OwnerProfileSettingsDialog.jsx';
-import { MaturityLevelGuardDialog } from '@/components/ui/dashboard_components/MaturityLevelGuardDialog.jsx';
+import { MaturityLevelGuardDialog } from '@/components/ui/Lightboxes/MaturityLevelGuardDialog.jsx';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
-import TopDashRow from '@/components/ui/dashboard_components/TopDashRow.jsx';
+import { TopDashRow } from '@/components/ui/dashboard_components/TopDashRow.jsx';
 import './MspDashboard.css';
 
 const strategyNames = [
