@@ -150,11 +150,29 @@ export function ControlsSatisfied({
                   )}
                 </div>
 
-                {satisfiedAt && (
-                  <p className="controls-satisfied-meta">
-                    Satisfied by {control.satisfiedByName || 'Unknown user'} · {satisfiedAt}
-                  </p>
-                )}
+                <div className="controls-satisfied-meta-row">
+                  {satisfiedAt && (
+                    <p className="controls-satisfied-meta">
+                      Satisfied by {control.satisfiedByName || 'Unknown user'} · {satisfiedAt}
+                    </p>
+                  )}
+                  <button
+                    className="controls-satisfied-disclosure"
+                    type="button"
+                    aria-expanded={isExpanded}
+                    aria-controls={`satisfied-control-${control.tenantControlId}`}
+                    onClick={() => setExpandedControlId(isExpanded ? '' : control.tenantControlId)}
+                  >
+                    <span>{isExpanded ? 'Close evidence' : 'View evidence'}</span>
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      {isExpanded ? (
+                        <path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z" />
+                      ) : (
+                        <path d="m7.41 8.59 4.59 4.58 4.59-4.58L18 10l-6 6-6-6z" />
+                      )}
+                    </svg>
+                  </button>
+                </div>
 
                 {resetConfirmationId === control.tenantControlId && (
                   <div className="controls-satisfied-confirm" role="group" aria-label={`Confirm reset for ${control.control_code}`}>
