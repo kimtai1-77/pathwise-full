@@ -15,7 +15,9 @@
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: space-between;
+  gap: 1.2rem;
+  width: 100%;
   margin: 0 0 1.2rem;
   color: var(--t-50);
   font-size: 0.85rem;
@@ -24,10 +26,31 @@
   text-transform: uppercase;
 }
 
+.missing-card-heading-title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.missing-card-heading-title h6 {
+  margin: 0;
+  font-weight: 600;
+  color: currentColor;
+}
+
+.missing-card-notification-count {
+  flex: 0 0 auto;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+
 .missing-card-heading > * {
   margin: 0;
-  color: currentColor;
-  font-weight: 600;
+  font-weight: 300;
 }
 
 .missing-card-heading svg {
@@ -457,6 +480,10 @@
 
 .msp-dashboard .missing-card-heading {
   color: var(--error-500);
+}
+
+.msp-dashboard .missing-card-notification-count {
+  color: var(--p-900);
 }
 
 .msp-dashboard .missing-card-ism {

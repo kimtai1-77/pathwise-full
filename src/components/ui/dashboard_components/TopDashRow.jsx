@@ -14,7 +14,7 @@ export function TopDashRow({ tenantName, scores = [], activeMagicLink, onOpenMag
         <h1 className="top-row-heading">{tenantName}</h1>
 
         <p className="top-row-text">
-          Tracking the tenant's risk posture in real time.
+          Tracking the tenant's compliance status in real time.
         </p>
         {activeMagicLink && (
           <button

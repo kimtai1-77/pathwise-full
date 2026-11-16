@@ -98,7 +98,6 @@
 }
 
 .compliance-state-wrapper {
-  border: 1px solid var(--nt-100);
   border-radius: 6px;
   padding: 1.6rem;
   display: flex;
@@ -354,6 +353,40 @@
 
 .start-fix-evidence-message.is-error {
   color: var(--error-500);
+}
+
+.start-fix-satisfaction-error {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--error-500) 20%, var(--error-100));
+  border-radius: 4px;
+  background: var(--error-100);
+}
+
+.start-fix-satisfaction-error button {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-top: -3px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--error-500) 20%, white);
+  border-radius: 4px;
+  background: white;
+  color: inherit;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.start-fix-satisfaction-error button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .start-fix-evidence-message.is-success {

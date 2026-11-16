@@ -360,7 +360,7 @@ export function StartFixDrawer({
               <button
                 className="start-fix-control-satisfaction"
                 type="button"
-                disabled={updatingSatisfaction}
+                disabled={updatingSatisfaction || (control.tenantControlStatus !== 'satisfied' && evidenceLoading)}
                 onClick={toggleControlSatisfaction}
               >
                 {updatingSatisfaction
@@ -370,7 +370,18 @@ export function StartFixDrawer({
                     : 'Mark control satisfied'}
               </button>
             )}
-            {satisfactionError && <p className="start-fix-evidence-message is-error" role="alert">{satisfactionError}</p>}
+            {satisfactionError && (
+              <div className="start-fix-evidence-message is-error start-fix-satisfaction-error" role="alert">
+                <span>{satisfactionError}</span>
+                <button
+                  type="button"
+                  aria-label="Dismiss error"
+                  onClick={() => setSatisfactionError('')}
+                >
+                  ×
+                </button>
+              </div>
+            )}
             {satisfactionSuccess && <p className="start-fix-evidence-message is-success" role="status">{satisfactionSuccess}</p>}
           </div>
         </div>

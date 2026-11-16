@@ -21,7 +21,8 @@ export function StrategyRow({
   userId,
   reviewerRole,
   readOnly = false,
-  onScoreChange
+  onScoreChange,
+  onNotificationStateChange,
 }) {
   const isReadOnly = readOnly || reviewerRole === 'external_viewer';
   const [controls, setControls] = useState([]);
@@ -497,6 +498,11 @@ export function StrategyRow({
 
   const complianceStatus = getComplianceStatus();
 
+  function refreshEvidenceStatuses() {
+    setEvidenceRefreshKey((refreshKey) => refreshKey + 1);
+    onNotificationStateChange?.();
+  }
+
   async function handleSubmitEvidence(file, supersedesEvidenceId = null, validityDays) {
     if (!fixControl || !file) {
       return { success: false, error: 'Select a control and file before submitting.' };
@@ -519,7 +525,7 @@ export function StrategyRow({
         validityDays,
       });
 
-      if (result.success) setEvidenceRefreshKey((refreshKey) => refreshKey + 1);
+      if (result.success) refreshEvidenceStatuses();
       return result;
     } catch (error) {
       console.error('Unable to prepare evidence upload:', error);
@@ -555,7 +561,7 @@ export function StrategyRow({
       return { success: false, error: 'Unable to renew this evidence. Please try again.' };
     }
 
-    setEvidenceRefreshKey((refreshKey) => refreshKey + 1);
+    refreshEvidenceStatuses();
     setExpiryClock(Date.now());
     return { success: true };
   }
@@ -582,7 +588,7 @@ export function StrategyRow({
       return { success: false, error: 'Unable to save this review. Please try again.' };
     }
 
-    setEvidenceRefreshKey((refreshKey) => refreshKey + 1);
+    refreshEvidenceStatuses();
     return { success: true };
   }
 
@@ -611,7 +617,7 @@ export function StrategyRow({
       return { success: false, error: 'Unable to save this note. Please try again.' };
     }
 
-    setEvidenceRefreshKey((refreshKey) => refreshKey + 1);
+    refreshEvidenceStatuses();
     return { success: true };
   }
 
@@ -629,7 +635,7 @@ export function StrategyRow({
       return { success: false, error: 'Unable to save the evidence read status.' };
     }
 
-    setEvidenceRefreshKey((refreshKey) => refreshKey + 1);
+    refreshEvidenceStatuses();
     return { success: true };
   }
 
@@ -645,13 +651,26 @@ export function StrategyRow({
       return { success: false, error: 'Unable to save the note read status.' };
     }
 
-    setEvidenceRefreshKey((refreshKey) => refreshKey + 1);
+    refreshEvidenceStatuses();
     return { success: true };
   }
 
   async function updateControlSatisfaction(tenantControlId, isSatisfied) {
     if (!canReviewEvidence || !userId || !tenantId || !tenantControlId) {
       return { success: false, error: 'You are not allowed to update this control.' };
+    }
+
+    if (isSatisfied) {
+      const control = controls.find((item) => item.tenantControlId === tenantControlId);
+      if (evidenceStatusState.queryKey !== evidenceQueryKey) {
+        return { success: false, error: 'Evidence is still loading. Please wait before satisfying this control.' };
+      }
+      if (evidenceStatusState.error) {
+        return { success: false, error: evidenceStatusState.error };
+      }
+      if (!control || (evidenceByControl[control.id] || []).length === 0) {
+        return { success: false, error: 'At least one evidence file is required before this control can be marked satisfied.' };
+      }
     }
 
     const satisfactionFields = isSatisfied

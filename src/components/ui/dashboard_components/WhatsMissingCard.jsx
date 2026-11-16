@@ -5,6 +5,16 @@ import ControlsImplemented from './ControlsImplemented.jsx';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
 import './styles/WhatsMissingCard.css';
 
+function countControlNotifications(evidenceFiles) {
+  return evidenceFiles.reduce((count, evidence) => (
+    count
+    + Number(evidence.approvalStatus === 'pending_approval' && evidence.isUnread)
+    + Number(evidence.isRejectedUnresolved)
+    + Number(evidence.approvalStatus === 'approved' && evidence.isUnread)
+    + (evidence.notes?.filter((note) => note.isUnread).length || 0)
+  ), 0);
+}
+
 export function WhatsMissingCard({ 
   whatsMissing = [], 
   loading = false, 
@@ -22,6 +32,9 @@ export function WhatsMissingCard({
   const noteDialogRef = useRef(null);
   const missingListRef = useRef(null);
   const missingListId = useId();
+  const notificationCount = whatsMissing.reduce((count, control) => (
+    count + countControlNotifications(evidenceByControl[control.id] || [])
+  ), 0);
   useBodyScrollLock(Boolean(selectedNote));
 
   useEffect(() => {
@@ -89,13 +102,18 @@ export function WhatsMissingCard({
   return (
     <div className="missing-card-cont">
       <div className="missing-card-heading">
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          viewBox="0 -960 960 960"
-          >
-          <path d="M508.5-331.5Q520-343 520-360t-11.5-28.5Q497-400 480-400t-28.5 11.5Q440-377 440-360t11.5 28.5Q463-320 480-320t28.5-11.5ZM440-480h80v-200h-80v200Zm40 400q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Zm0-84q104-33 172-132t68-220v-189l-240-90-240 90v189q0 121 68 220t172 132Zm0-316Z"/>
-        </svg>
-        <h6>Missing Controls ({whatsMissing.length})</h6> 
+        <div className="missing-card-heading-title">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+            >
+            <path d="M508.5-331.5Q520-343 520-360t-11.5-28.5Q497-400 480-400t-28.5 11.5Q440-377 440-360t11.5 28.5Q463-320 480-320t28.5-11.5ZM440-480h80v-200h-80v200Zm40 400q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Zm0-84q104-33 172-132t68-220v-189l-240-90-240 90v189q0 121 68 220t172 132Zm0-316Z"/>
+          </svg>
+          <h6>Missing Controls ({whatsMissing.length})</h6>
+        </div>
+        {notificationCount > 0 && (
+          <span className="missing-card-notification-count">Notifications: {notificationCount}</span>
+        )}
       </div>
       {evidenceError && (
         <p className="missing-card-evidence-error" role="alert">{evidenceError}</p>

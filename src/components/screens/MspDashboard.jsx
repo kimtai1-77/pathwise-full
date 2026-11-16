@@ -12,6 +12,7 @@ import { MagicLinkSender } from '@/components/ui/Lightboxes/MagicLinkSender.jsx'
 import { MagicLinkViewer } from '@/components/ui/Lightboxes/MagicLinkViewer.jsx';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
 import { TopDashRow } from '@/components/ui/dashboard_components/TopDashRow.jsx';
+import { fetchTenantNotifications } from '@/utils/tenantNotifications.js';
 import './MspDashboard.css';
 
 const strategyNames = [
@@ -24,9 +25,10 @@ const strategyNames = [
   'Restrict Microsoft Office Macros',
   'User Application Hardening',
 ];
-
 export default function MspDashboard({ user, profile, onSignOut, viewerTenantId = '', previewTenantId = '' }) {
   const [tenants, setTenants] = useState([]);
+  const [tenantNotificationsState, setTenantNotificationsState] = useState({ queryKey: '', byTenant: {} });
+  const [notificationRefreshKey, setNotificationRefreshKey] = useState(0);
   const [selectedTenantId, setSelectedTenantId] = useState('');
   const [strategyScores, setStrategyScores] = useState({});
   const [activeMaturityLevel, setActiveMaturityLevel] = useState(1);
@@ -182,6 +184,43 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
       },
     }));
   }, [selectedTenantId]);
+
+  const handleNotificationStateChange = useCallback(() => {
+    setNotificationRefreshKey((refreshKey) => refreshKey + 1);
+  }, []);
+
+  const tenantIdsKey = tenants.map((tenant) => tenant.id).join(',');
+  const notificationQueryKey = JSON.stringify([
+    isReadOnlyViewer,
+    user?.id || '',
+    tenantIdsKey,
+    notificationRefreshKey,
+  ]);
+
+  useEffect(() => {
+    if (isReadOnlyViewer || !user?.id || !tenantIdsKey) return undefined;
+
+    let isCancelled = false;
+
+    fetchTenantNotifications(tenantIdsKey.split(','), user.id)
+      .then((notifications) => {
+        if (!isCancelled) {
+          setTenantNotificationsState({ queryKey: notificationQueryKey, byTenant: notifications });
+        }
+      })
+      .catch((error) => {
+        console.error('Unable to load tenant notifications:', error);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isReadOnlyViewer, notificationQueryKey, tenantIdsKey, user?.id]);
+
+  const tenantNotifications = tenantNotificationsState.queryKey === notificationQueryKey
+    ? tenantNotificationsState.byTenant
+    : {};
+  const hasTenantNotifications = Object.values(tenantNotifications).some((statuses) => statuses.length > 0);
 
   const handleMaturityLevelSelect = useCallback((requestedLevel) => {
     if (requestedLevel === 1) {
@@ -511,6 +550,7 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
               onClick={() => setTenantsCollapsed((collapsed) => !collapsed)}
               data-tooltip={tenantsCollapsed ? 'Open sidebar' : 'Close sidebar'}
             >
+              {hasTenantNotifications && <span className="msp-dashboard-sidebar-notification" aria-hidden="true" />}
               <svg viewBox="0 -960 960 960" aria-hidden="true" focusable="false">
                 <path d={tenantsCollapsed
                   ? 'M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z'
@@ -573,22 +613,42 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
           </div>
 
           <nav className="msp-dashboard-tenants-list" aria-label="Tenants">
-            {visibleTenants.map((tenant) => (
-              <button
-                className={`msp-dashboard-tenants-item${selectedTenantId === tenant.id ? ' is-selected' : ''}`}
-                key={tenant.id}
-                type="button"
-                aria-current={selectedTenantId === tenant.id ? 'true' : undefined}
-                aria-label={tenant.display_name}
-                title={tenant.display_name}
-                onClick={() => selectTenant(tenant.id)}
-              >
-                <span className="msp-dashboard-tenants-item-initial" aria-hidden="true">
-                  {tenant.display_name.trim().charAt(0).toUpperCase()}
-                </span>
-                <span className="msp-dashboard-tenants-item-name">{tenant.display_name}</span>
-              </button>
-            ))}
+            {visibleTenants.map((tenant) => {
+              const notificationTypes = tenantNotifications[tenant.id] || [];
+              const notificationLabels = notificationTypes.map((type) => ({
+                pending: 'Pending evidence',
+                rejected: 'Rejected evidence',
+                approved: 'Approved evidence',
+                note: 'Unread admin note',
+              })[type]);
+              const accessibleName = notificationLabels.length
+                ? `${tenant.display_name}, notifications: ${notificationLabels.join(', ')}`
+                : tenant.display_name;
+
+              return (
+                <button
+                  className={`msp-dashboard-tenants-item${selectedTenantId === tenant.id ? ' is-selected' : ''}`}
+                  key={tenant.id}
+                  type="button"
+                  aria-current={selectedTenantId === tenant.id ? 'true' : undefined}
+                  aria-label={accessibleName}
+                  title={accessibleName}
+                  onClick={() => selectTenant(tenant.id)}
+                >
+                  <span className="msp-dashboard-tenants-item-initial" aria-hidden="true">
+                    {tenant.display_name.trim().charAt(0).toUpperCase()}
+                  </span>
+                  <span className="msp-dashboard-tenants-item-name">{tenant.display_name}</span>
+                  {!tenantsCollapsed && notificationTypes.length > 0 && (
+                    <span className="msp-dashboard-tenant-notifications" aria-hidden="true">
+                      {notificationTypes.map((type) => (
+                        <span className={`msp-dashboard-tenant-notification is-${type}`} key={type} />
+                      ))}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
             {!tenantsCollapsed && tenantsLoading && (
               <p className="msp-dashboard-tenants-empty">Loading tenants...</p>
             )}
@@ -635,6 +695,7 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
                 userId={user?.id}
                 reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
+                onNotificationStateChange={handleNotificationStateChange}
               />
 
               <StrategyRow
@@ -646,6 +707,7 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
                 userId={user?.id}
                 reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
+                onNotificationStateChange={handleNotificationStateChange}
               />
 
               <StrategyRow
@@ -657,6 +719,7 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
                 userId={user?.id}
                 reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
+                onNotificationStateChange={handleNotificationStateChange}
               />
 
               <StrategyRow
@@ -668,6 +731,7 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
                 userId={user?.id}
                 reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
+                onNotificationStateChange={handleNotificationStateChange}
               />
 
               <StrategyRow
@@ -679,6 +743,7 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
                 userId={user?.id}
                 reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
+                onNotificationStateChange={handleNotificationStateChange}
               />
 
               <StrategyRow
@@ -690,6 +755,7 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
                 userId={user?.id}
                 reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
+                onNotificationStateChange={handleNotificationStateChange}
               />
 
               <StrategyRow
@@ -701,6 +767,7 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
                 userId={user?.id}
                 reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
+                onNotificationStateChange={handleNotificationStateChange}
               />
 
               <StrategyRow
@@ -712,6 +779,7 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
                 userId={user?.id}
                 reviewerRole={profileRole}
                 onScoreChange={handleStrategyScoreChange}
+                onNotificationStateChange={handleNotificationStateChange}
               />
             </div>
               </section>
