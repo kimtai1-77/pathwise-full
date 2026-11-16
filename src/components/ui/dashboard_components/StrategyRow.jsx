@@ -20,8 +20,10 @@ export function StrategyRow({
   mspId,
   userId,
   reviewerRole,
+  readOnly = false,
   onScoreChange
 }) {
+  const isReadOnly = readOnly || reviewerRole === 'external_viewer';
   const [controls, setControls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -197,7 +199,7 @@ export function StrategyRow({
           if (chainError) throw chainError;
           evidenceChainRows = chainData || [];
 
-          if (userId) {
+          if (userId && !isReadOnly) {
             const { data: evidenceReadData, error: evidenceReadError } = await supabase
               .from('evidence_reads')
               .select('evidence_id, read_at')
@@ -256,7 +258,7 @@ export function StrategyRow({
 
         const notesWithReadState = notes.map((note) => ({
           ...note,
-          isUnread: note.created_by !== userId && !readNoteIds.has(note.id),
+          isUnread: !isReadOnly && note.created_by !== userId && !readNoteIds.has(note.id),
         }));
 
         const happenedAfterRead = (eventAt, readAt) => (
@@ -278,7 +280,7 @@ export function StrategyRow({
         ].filter(Boolean))];
         let profilesById = {};
 
-        if (profileIds.length > 0) {
+        if (profileIds.length > 0 && !isReadOnly) {
           const { data: profileData, error: profileError } = await supabase
             .from('profiles')
             .select('id, full_name, deactivated_at')
@@ -304,7 +306,7 @@ export function StrategyRow({
             : reviewer?.full_name?.trim();
           const evidenceNotes = notesByEvidence[evidence.id] || [];
           const readAt = evidenceReadAtById.get(evidence.id);
-          const isUnread = Boolean(userId && (
+          const isUnread = Boolean(!isReadOnly && userId && (
             (evidence.uploaded_by !== userId && happenedAfterRead(evidence.created_at, readAt))
             || (latestReview && latestReview.reviewed_by !== userId && happenedAfterRead(latestReview.reviewed_at, readAt))
           ));
@@ -423,7 +425,7 @@ export function StrategyRow({
     return () => {
       isMounted = false;
     };
-  }, [controls, evidenceQueryKey, evidenceRefreshKey, strategyName, tenantId, userId]);
+  }, [controls, evidenceQueryKey, evidenceRefreshKey, isReadOnly, strategyName, tenantId, userId]);
 
   // Derived Metrics
   const rawEvidenceByControl = evidenceStatusState.queryKey === evidenceQueryKey
@@ -808,12 +810,13 @@ export function StrategyRow({
         evidenceError={evidenceStatusState.queryKey === evidenceQueryKey ? evidenceStatusState.error : ''}
         evidenceNoteError={evidenceStatusState.queryKey === evidenceQueryKey ? evidenceStatusState.notesError : ''}
         reviewerRole={reviewerRole}
+        readOnly={isReadOnly}
         onClose={() => setFixControl(null)}
         onSubmitEvidence={handleSubmitEvidence}
         onReviewEvidence={handleReviewEvidence}
         onAddEvidenceNote={handleAddEvidenceNote}
-        onMarkEvidenceRead={handleMarkEvidenceRead}
-        onMarkNoteRead={handleMarkNoteRead}
+        onMarkEvidenceRead={isReadOnly ? undefined : handleMarkEvidenceRead}
+        onMarkNoteRead={isReadOnly ? undefined : handleMarkNoteRead}
         onSetControlSatisfied={handleSetControlSatisfied}
         onOpenEvidenceFile={handleOpenEvidenceFile}
         onOpenEvidenceHistory={setHistoryEvidenceId}
@@ -826,11 +829,11 @@ export function StrategyRow({
           evidenceLoading={evidenceStatusState.queryKey !== evidenceQueryKey}
           evidenceError={evidenceStatusState.queryKey === evidenceQueryKey ? evidenceStatusState.error : ''}
           canReset={canReviewEvidence}
-          onResetControl={handleResetSatisfiedControl}
+          onResetControl={isReadOnly ? undefined : handleResetSatisfiedControl}
           onOpenEvidenceFile={handleOpenEvidenceFile}
           onOpenEvidenceHistory={setHistoryEvidenceId}
-          onMarkEvidenceRead={handleMarkEvidenceRead}
-          onMarkNoteRead={handleMarkNoteRead}
+          onMarkEvidenceRead={isReadOnly ? undefined : handleMarkEvidenceRead}
+          onMarkNoteRead={isReadOnly ? undefined : handleMarkNoteRead}
           onClose={() => setControlsSatisfiedOpen(false)}
         />
       )}
@@ -839,10 +842,11 @@ export function StrategyRow({
           strategyName={strategyName}
           status={expiryDrawerStatus}
           evidenceFiles={allEvidenceFiles}
+          readOnly={isReadOnly}
           onClose={() => setExpiryDrawerStatus('')}
           onOpenEvidenceFile={handleOpenEvidenceFile}
-          onUpdateEvidence={handleUpdateEvidence}
-          onRenewEvidence={handleRenewEvidence}
+          onUpdateEvidence={isReadOnly ? undefined : handleUpdateEvidence}
+          onRenewEvidence={isReadOnly ? undefined : handleRenewEvidence}
           onOpenHistory={setHistoryEvidenceId}
         />
       )}

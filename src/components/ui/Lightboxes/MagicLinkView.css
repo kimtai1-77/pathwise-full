@@ -1,0 +1,166 @@
+.magic-link-details {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--nt-200);
+}
+
+.magic-link-view-close {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--nt-200);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.magic-link-view-close:hover {
+  background: var(--nt-100);
+}
+
+.magic-link-view-close img {
+  display: block;
+  width: 17px;
+  height: 17px;
+  filter: brightness(0) opacity(0.58);
+}
+
+.magic-link-view-close:focus-visible {
+  outline: 2px solid var(--sc-200);
+  outline-offset: 2px;
+}
+
+.magic-link-details > div {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.7fr) minmax(0, 1.3fr);
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--nt-200);
+}
+
+.magic-link-details dt {
+  color: var(--nt-600);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.magic-link-details dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--nt-900);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.magic-link-details time {
+  color: inherit;
+}
+
+.magic-link-revoked-message {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--success-300);
+  border-radius: 4px;
+  background: var(--success-100);
+  color: var(--success-500);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.magic-link-confirmation-overlay {
+  position: fixed;
+  z-index: 1480;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: color-mix(in srgb, var(--nt-900) 54%, transparent);
+}
+
+.magic-link-confirmation-dialog {
+  display: flex;
+  width: min(100%, 390px);
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--nt-200);
+  border-radius: 6px;
+  background: var(--nt-050);
+  color: var(--nt-900);
+  box-shadow: 0 20px 56px color-mix(in srgb, var(--nt-900) 24%, transparent);
+}
+
+.magic-link-confirmation-dialog h3 {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.magic-link-confirmation-dialog > p {
+  margin: 0;
+  color: var(--nt-600);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.magic-link-confirmation-dialog .magic-link-error {
+  color: var(--error-500);
+}
+
+.magic-link-confirmation-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.magic-link-confirmation-actions button {
+  min-width: 82px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--nt-200);
+  border-radius: 4px;
+  background: white;
+  color: var(--nt-800);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.magic-link-confirmation-actions .magic-link-confirm-revoke {
+  border-color: var(--error-500);
+  background: var(--error-500);
+  color: white;
+}
+
+.magic-link-confirmation-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.magic-link-actions .magic-link-revoke {
+  border-color: var(--error-500);
+  background: var(--error-500);
+  color: white;
+}
+
+.magic-link-actions .magic-link-revoke:hover {
+  border-color: color-mix(in srgb, var(--error-500) 82%, black);
+  background: color-mix(in srgb, var(--error-500) 82%, black);
+}
+
+.magic-link-actions .magic-link-revoke:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 400px) {
+  .magic-link-details > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+}

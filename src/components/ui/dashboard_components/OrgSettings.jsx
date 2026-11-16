@@ -23,15 +23,19 @@ export function OrgSettings({
   selectedTenantId,
   onRenameTenant,
   onRemoveTenant,
+  onCreateExternalLink,
   tenantsLoading,
   tenantsError,
 }) {
   useBodyScrollLock(true);
 
   const isOwner = role?.toLowerCase() === 'owner';
+  const isTechnician = role?.toLowerCase() === 'technician';
   const canManageTeam = isOwner || role?.toLowerCase() === 'msp_admin';
-  const [activeTab, setActiveTab] = useState(isOwner ? 'organization' : 'team');
-  const tabs = canManageTeam ? [
+  const [activeTab, setActiveTab] = useState(isOwner ? 'organization' : isTechnician ? 'tenants' : 'team');
+  const tabs = isTechnician ? [
+    { id: 'tenants', label: 'Tenants' },
+  ] : canManageTeam ? [
     { id: 'organization', label: 'Organization', ownerOnly: true },
     { id: 'team', label: 'Team' },
     { id: 'tenants', label: 'Tenants' },
@@ -108,12 +112,13 @@ export function OrgSettings({
             </div>
           )}
           {activeTab === 'team' && canManageTeam && <TeamSettings user={user} role={role?.toLowerCase()} />}
-          {activeTab === 'tenants' && canManageTeam && (
+          {activeTab === 'tenants' && (canManageTeam || isTechnician) && (
             <TenantSettings
               tenants={tenants}
               selectedTenantId={selectedTenantId}
-              onAddTenant={onAddTenant}
+              onAddTenant={isTechnician ? undefined : onAddTenant}
               canManageTenants={isOwner}
+              onCreateExternalLink={onCreateExternalLink}
               onRenameTenant={onRenameTenant}
               onRemoveTenant={onRemoveTenant}
               tenantsLoading={tenantsLoading}

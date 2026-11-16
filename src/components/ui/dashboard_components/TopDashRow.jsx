@@ -2,7 +2,7 @@
 import { OverallScoreCard } from './OverallScoreCard.jsx';
 import './styles/TopDashRow.css';
 
-export function TopDashRow({ tenantName, scores = [] }) {
+export function TopDashRow({ tenantName, scores = [], activeMagicLink, onOpenMagicLink }) {
   return (
     <div className="top-row-wrapper">
       <div className="top-row-cont">
@@ -16,6 +16,16 @@ export function TopDashRow({ tenantName, scores = [] }) {
         <p className="top-row-text">
           Tracking the tenant's risk posture in real time.
         </p>
+        {activeMagicLink && (
+          <button
+            className="top-row-magic-link-status"
+            type="button"
+            onClick={onOpenMagicLink}
+            aria-label={`External viewer link active for ${activeMagicLink.recipient_email}. View link details.`}
+          >
+            External viewer link active
+          </button>
+        )}
       </div>
 
       <div className="overall-score-card-placeholder">

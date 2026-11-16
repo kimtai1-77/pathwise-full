@@ -7,7 +7,9 @@ import { DashNavbar } from '@/components/ui/dashboard_components/DashNavbar.jsx'
 import { OrgSettings } from '@/components/ui/dashboard_components/OrgSettings.jsx';
 import { OnboardingLightbox } from '@/components/ui/Lightboxes/OnboardingLightbox.jsx';
 import { OwnerProfileSettingsDialog } from '@/components/ui/dashboard_components/OwnerProfileSettingsDialog.jsx';
-import { MaturityLevelGuardDialog } from '@/components/ui/Lightboxes/MaturityLevelGuardDialog.jsx';
+import { MaturityLevelGuardDialog } from '@/components/ui/Lightboxes/MaturityLevelGuard.jsx';
+import { MagicLinkSender } from '@/components/ui/Lightboxes/MagicLinkSender.jsx';
+import { MagicLinkView } from '@/components/ui/Lightboxes/MagicLinkView.jsx';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
 import { TopDashRow } from '@/components/ui/dashboard_components/TopDashRow.jsx';
 import './MspDashboard.css';
@@ -23,7 +25,7 @@ const strategyNames = [
   'User Application Hardening',
 ];
 
-export default function MspDashboard({ user, profile, onSignOut }) {
+export default function MspDashboard({ user, profile, onSignOut, viewerTenantId = '', previewTenantId = '' }) {
   const [tenants, setTenants] = useState([]);
   const [selectedTenantId, setSelectedTenantId] = useState('');
   const [strategyScores, setStrategyScores] = useState({});
@@ -38,14 +40,25 @@ export default function MspDashboard({ user, profile, onSignOut }) {
   const [mspLogoUrl, setMspLogoUrl] = useState('');
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState('');
+  const [magicLink, setMagicLink] = useState(null);
+  const [magicLinkSenderOpen, setMagicLinkSenderOpen] = useState(false);
+  const [magicLinkTenantId, setMagicLinkTenantId] = useState('');
+  const [magicLinkViewOpen, setMagicLinkViewOpen] = useState(false);
+  const [linkClock, setLinkClock] = useState(() => Date.now());
   const [profileName, setProfileName] = useState(profile?.full_name || '');
-  const profileRole = profile?.role || '';
+  const isExternalViewer = Boolean(viewerTenantId);
+  const isReadOnlyPreview = Boolean(previewTenantId);
+  const isReadOnlyViewer = isExternalViewer || isReadOnlyPreview;
+  const tenantViewId = viewerTenantId || previewTenantId;
+  const profileRole = isReadOnlyViewer ? 'external_viewer' : profile?.role || '';
   const profileMspId = profile?.msp_id || '';
+  const canManageLinks = !isReadOnlyViewer && ['owner', 'msp_admin', 'technician'].includes(profileRole);
   const [mspDisplayName, setMspDisplayName] = useState('');
   const [tenantsLoading, setTenantsLoading] = useState(false);
   const [tenantsLoaded, setTenantsLoaded] = useState(false);
   const [tenantsError, setTenantsError] = useState('');
-  const showTenantSetupLightbox = profileRole === 'owner'
+  const showTenantSetupLightbox = !isReadOnlyViewer
+    && profileRole === 'owner'
     && tenantsLoaded
     && !tenantsLoading
     && !tenantsError
@@ -54,7 +67,7 @@ export default function MspDashboard({ user, profile, onSignOut }) {
   useBodyScrollLock(showTenantSetupLightbox);
 
   useEffect(() => {
-    if (!profileMspId) return;
+    if (!profileMspId && !tenantViewId) return;
 
     let isCancelled = false;
 
@@ -65,8 +78,8 @@ export default function MspDashboard({ user, profile, onSignOut }) {
 
       const { data, error } = await supabase
         .from('tenants')
-        .select('id, name, display_name')
-        .eq('msp_id', profileMspId)
+        .select('id, name, display_name, msp_id')
+        .eq(tenantViewId ? 'id' : 'msp_id', tenantViewId || profileMspId)
         .order('created_at', { ascending: true });
 
       if (isCancelled) return;
@@ -74,7 +87,9 @@ export default function MspDashboard({ user, profile, onSignOut }) {
       if (error) {
         setTenants([]);
         setSelectedTenantId('');
-        setTenantsError('Unable to load tenants.');
+        setTenantsError(isExternalViewer
+          ? 'This external viewer link is unavailable.'
+          : isReadOnlyPreview ? 'Unable to preview this tenant.' : 'Unable to load tenants.');
       } else {
         const tenantRecords = (data || []).map((tenant) => ({
           ...tenant,
@@ -82,10 +97,17 @@ export default function MspDashboard({ user, profile, onSignOut }) {
         }));
         setTenants(tenantRecords);
         setSelectedTenantId((currentTenantId) => (
-          tenantRecords.some((tenant) => tenant.id === currentTenantId)
-            ? currentTenantId
-            : tenantRecords[0]?.id || ''
+          tenantViewId
+            ? tenantRecords.some((tenant) => tenant.id === tenantViewId) ? tenantViewId : ''
+            : tenantRecords.some((tenant) => tenant.id === currentTenantId)
+              ? currentTenantId
+              : tenantRecords[0]?.id || ''
         ));
+        if (isReadOnlyViewer && tenantRecords.length === 0) {
+          setTenantsError(isExternalViewer
+            ? 'This external viewer link has expired or been revoked.'
+            : 'Unable to preview this tenant.');
+        }
       }
       setTenantsLoaded(true);
       setTenantsLoading(false);
@@ -96,10 +118,10 @@ export default function MspDashboard({ user, profile, onSignOut }) {
     return () => {
       isCancelled = true;
     };
-  }, [profileMspId]);
+  }, [isExternalViewer, isReadOnlyPreview, isReadOnlyViewer, profileMspId, tenantViewId]);
 
   useEffect(() => {
-    if (!profileMspId) return;
+    if (!profileMspId || isReadOnlyViewer) return;
 
     let isCancelled = false;
 
@@ -125,10 +147,10 @@ export default function MspDashboard({ user, profile, onSignOut }) {
 
     fetchMspLogo();
     return () => { isCancelled = true; };
-  }, [profileMspId]);
+  }, [isReadOnlyViewer, profileMspId]);
 
   useEffect(() => {
-    if (!profileMspId) return;
+    if (!profileMspId || isReadOnlyViewer) return;
 
     let isCancelled = false;
     const fallbackName = user?.user_metadata?.display_name || user?.user_metadata?.msp_name || 'MSP';
@@ -146,7 +168,7 @@ export default function MspDashboard({ user, profile, onSignOut }) {
 
     fetchMspDisplayName();
     return () => { isCancelled = true; };
-  }, [profileMspId, user?.user_metadata?.display_name, user?.user_metadata?.msp_name]);
+  }, [isReadOnlyViewer, profileMspId, user?.user_metadata?.display_name, user?.user_metadata?.msp_name]);
 
   const handleStrategyScoreChange = useCallback((strategyName, score, maturityLevel) => {
     setStrategyScores((tenantScores) => ({
@@ -182,6 +204,47 @@ export default function MspDashboard({ user, profile, onSignOut }) {
   const visibleTenants = tenantsCollapsed
     ? tenants.filter((tenant) => tenant.id === selectedTenantId)
     : tenants.filter((tenant) => tenant.display_name.toLowerCase().includes(normalizedTenantSearch));
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => setLinkClock(Date.now()), 30_000);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (!canManageLinks || !selectedTenantId) return undefined;
+
+    let isCancelled = false;
+
+    async function fetchActiveMagicLink() {
+      const { data, error } = await supabase
+        .from('external_viewer_links')
+        .select('id, tenant_id, recipient_email, created_at, expires_at, revoked_at, sender:profiles!external_viewer_links_created_by_fkey(full_name, email)')
+        .eq('tenant_id', selectedTenantId)
+        .is('revoked_at', null)
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (isCancelled) return;
+      if (error) {
+        console.error('Unable to load external viewer link:', error);
+        setMagicLink(null);
+        return;
+      }
+      setMagicLink(data ? { ...data, tenantName: selectedTenantDisplayName } : null);
+    }
+
+    fetchActiveMagicLink();
+    return () => { isCancelled = true; };
+  }, [canManageLinks, selectedTenantDisplayName, selectedTenantId]);
+
+  const activeMagicLink = canManageLinks && magicLink
+    && magicLink.tenant_id === selectedTenantId
+    && !magicLink.revoked_at
+    && new Date(magicLink.expires_at).getTime() > linkClock
+    ? magicLink
+    : null;
 
   async function handleSignOut() {
     if (!onSignOut || signingOut) return;
@@ -331,20 +394,96 @@ export default function MspDashboard({ user, profile, onSignOut }) {
     return { success: true };
   }
 
+  async function sendMagicLink({ email, tenantId, expiresInDays }) {
+    const tenant = tenants.find((item) => item.id === tenantId);
+    if (!canManageLinks || !tenant || !profileMspId || !user?.id) {
+      throw new Error('You are not allowed to share this tenant.');
+    }
+
+    const expiresAt = new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000).toISOString();
+    const { data: createdLink, error: createError } = await supabase
+      .from('external_viewer_links')
+      .insert({
+        tenant_id: tenantId,
+        msp_id: profileMspId,
+        recipient_email: email,
+        created_by: user.id,
+        expires_at: expiresAt,
+      })
+      .select('id')
+      .single();
+
+    if (createError) throw new Error(createError.message || 'Unable to create the viewer link.');
+
+    const redirectUrl = new URL('/', window.location.origin);
+    redirectUrl.searchParams.set('external_viewer', tenantId);
+    const { error: sendError } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: redirectUrl.toString(),
+        shouldCreateUser: true,
+      },
+    });
+
+    if (sendError) {
+      await supabase
+        .from('external_viewer_links')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('id', createdLink.id);
+      throw new Error(sendError.message || 'Supabase could not send the magic link.');
+    }
+
+    const revokedAt = new Date().toISOString();
+    const { error: oldLinkError } = await supabase
+      .from('external_viewer_links')
+      .update({ revoked_at: revokedAt })
+      .eq('tenant_id', tenantId)
+      .neq('id', createdLink.id)
+      .is('revoked_at', null);
+
+    if (oldLinkError) console.error('Unable to revoke an older external viewer link:', oldLinkError);
+
+    if (tenantId === selectedTenantId) {
+      setMagicLink({
+        id: createdLink.id,
+        tenant_id: tenantId,
+        tenantName: tenant.display_name,
+        recipient_email: email,
+        created_at: new Date().toISOString(),
+        expires_at: expiresAt,
+        revoked_at: null,
+        sender: { full_name: profileName, email: user.email },
+      });
+    }
+  }
+
+  async function revokeMagicLink(linkId) {
+    const revokedAt = new Date().toISOString();
+    const { error } = await supabase
+      .from('external_viewer_links')
+      .update({ revoked_at: revokedAt })
+      .eq('id', linkId);
+
+    if (error) throw new Error(error.message || 'Unable to revoke this link.');
+    setMagicLink((currentLink) => currentLink?.id === linkId
+      ? { ...currentLink, revoked_at: revokedAt }
+      : currentLink);
+  }
+
   return (
     <div className="msp-dashboard">
       <DashNavbar
         activeLevel={activeMaturityLevel}
         onLevelSelect={handleMaturityLevelSelect}
-        mspName={mspDisplayName || user?.user_metadata?.display_name || user?.user_metadata?.msp_name || 'MSP'}
+        mspName={isReadOnlyViewer ? 'Shared dashboard' : mspDisplayName || user?.user_metadata?.display_name || user?.user_metadata?.msp_name || 'MSP'}
         mspLogoUrl={mspLogoUrl}
-        onOrgSettings={['owner', 'msp_admin'].includes(profileRole) ? () => setOrgSettingsOpen(true) : undefined}
-        onProfileEdit={() => setProfileSettingsOpen(true)}
+        onOrgSettings={canManageLinks ? () => setOrgSettingsOpen(true) : undefined}
+        onProfileEdit={isReadOnlyViewer ? undefined : () => setProfileSettingsOpen(true)}
         onSignOut={handleSignOut}
         signingOut={signingOut}
         signOutError={signOutError}
         userProfile={{
-          name: profileName || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'Admin',
+          name: isReadOnlyViewer ? user?.email || 'External viewer' : profileName || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'Admin',
           email: user?.email,
           role: profileRole || 'Loading...'
         }}
@@ -414,19 +553,23 @@ export default function MspDashboard({ user, profile, onSignOut }) {
           )}
 
           <div className="msp-dashboard-tenants-form">
-            <button
-              className="msp-dashboard-tenants-add"
-              type="button"
-              onClick={() => {
-                setTenantError('');
-                setTenantFormOpen(true);
-              }}
-              aria-label="Add tenant"
-              title="Add tenant"
-            >
-              <span className="msp-dashboard-tenants-add-label">Add tenant</span>
-              <span className="msp-dashboard-tenants-add-icon" aria-hidden="true">+</span>
-            </button>
+                {!isReadOnlyViewer && (
+              <>
+                <button
+                  className="msp-dashboard-tenants-add"
+                  type="button"
+                  onClick={() => {
+                    setTenantError('');
+                    setTenantFormOpen(true);
+                  }}
+                  aria-label="Add tenant"
+                  title="Add tenant"
+                >
+                  <span className="msp-dashboard-tenants-add-label">Add tenant</span>
+                  <span className="msp-dashboard-tenants-add-icon" aria-hidden="true">+</span>
+                </button>
+              </>
+            )}
           </div>
 
           <nav className="msp-dashboard-tenants-list" aria-label="Tenants">
@@ -459,12 +602,20 @@ export default function MspDashboard({ user, profile, onSignOut }) {
         </aside>
 
         <section className="msp-dashboard-workspace" aria-label="Compliance overview">
-          <TopDashRow
-            tenantName={selectedTenantDisplayName}
-            scores={Object.values(selectedTenantScores)}
-          />
+          {isReadOnlyViewer && !selectedTenantId ? (
+            <p className="msp-dashboard-viewer-status" role="alert">
+              {tenantsError || 'This external viewer link is unavailable.'}
+            </p>
+          ) : (
+            <>
+              <TopDashRow
+                tenantName={selectedTenantDisplayName}
+                scores={Object.values(selectedTenantScores)}
+                activeMagicLink={activeMagicLink}
+                onOpenMagicLink={() => setMagicLinkViewOpen(true)}
+              />
 
-          <section className="msp-dashboard-strategies" aria-labelledby="msp-dashboard-strategies-title">
+              <section className="msp-dashboard-strategies" aria-labelledby="msp-dashboard-strategies-title">
             <div className="msp-dashboard-strategies-heading">
               <div>
                 <h2 className="msp-dashboard-strategies-title" id="msp-dashboard-strategies-title">
@@ -563,7 +714,9 @@ export default function MspDashboard({ user, profile, onSignOut }) {
                 onScoreChange={handleStrategyScoreChange}
               />
             </div>
-          </section>
+              </section>
+            </>
+          )}
         </section>
       </main>
 
@@ -619,6 +772,12 @@ export default function MspDashboard({ user, profile, onSignOut }) {
           selectedTenantId={selectedTenantId}
           onRenameTenant={renameTenant}
           onRemoveTenant={removeTenant}
+          onCreateExternalLink={(tenantId) => {
+            setSelectedTenantId(tenantId);
+            setMagicLinkTenantId(tenantId);
+            setOrgSettingsOpen(false);
+            setMagicLinkSenderOpen(true);
+          }}
           tenantsLoading={tenantsLoading}
           tenantsError={tenantsError}
         />
@@ -629,6 +788,33 @@ export default function MspDashboard({ user, profile, onSignOut }) {
           onAddTenant={() => {
             setTenantError('');
             setTenantFormOpen(true);
+          }}
+        />
+      )}
+
+      {magicLinkSenderOpen && canManageLinks && (
+        <MagicLinkSender
+          tenants={tenants}
+          activeTenantId={magicLinkTenantId || selectedTenantId}
+          onCancel={() => setMagicLinkSenderOpen(false)}
+          onSend={sendMagicLink}
+          onPreview={(tenantId) => {
+            const previewUrl = new URL('/', window.location.origin);
+            previewUrl.searchParams.set('external_viewer_preview', tenantId);
+            window.open(previewUrl.toString(), '_blank', 'noopener,noreferrer');
+          }}
+        />
+      )}
+
+      {magicLinkViewOpen && magicLink && (
+        <MagicLinkView
+          link={magicLink}
+          onClose={() => setMagicLinkViewOpen(false)}
+          onRevoke={revokeMagicLink}
+          onPreview={(tenantId) => {
+            const previewUrl = new URL('/', window.location.origin);
+            previewUrl.searchParams.set('external_viewer_preview', tenantId);
+            window.open(previewUrl.toString(), '_blank', 'noopener,noreferrer');
           }}
         />
       )}

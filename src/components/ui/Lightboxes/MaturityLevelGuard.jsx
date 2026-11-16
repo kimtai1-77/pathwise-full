@@ -1,6 +1,6 @@
 import { BtnMain } from '@/components/ui/buttons/btn-main.jsx'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js'
-import './MaturityLevelGuardDialog.css'
+import './MaturityLevelGuard.css'
 
 export function MaturityLevelGuardDialog({ requiredLevel, onClose }) {
   useBodyScrollLock(true)

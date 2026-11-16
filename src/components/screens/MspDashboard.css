@@ -87,6 +87,17 @@
   grid-template-columns: 64px minmax(0, 1fr);
 }
 
+.msp-dashboard-viewer-status {
+  align-self: start;
+  margin: 0;
+  padding: 18px 20px;
+  border: 1px solid var(--error-300);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--error-100) 45%, white);
+  color: var(--error-500);
+  font-size: 1.4rem;
+}
+
 .msp-dashboard-tenants-panel {
   display: flex;
   min-width: 0;

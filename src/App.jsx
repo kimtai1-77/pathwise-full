@@ -5,6 +5,7 @@ import InviteeSignupForm from '@/components/logging_in/InviteeSignupForm.jsx'
 import ForgotPasswordForm from '@/components/logging_in/forgotPasswordForm.jsx'
 import UpdatePasswordForm from '@/components/logging_in/updatePasswordForm.jsx'
 import MspDashboard from '@/components/screens/MspDashboard.jsx'
+import ViewedLinkPage from '@/components/screens/ViewedLinkPage.jsx'
 import { safeNextPath } from '@/lib/safe-next-path.js'
 import { supabase } from '@/lib/supabaseClient.js'
 import './App.css'
@@ -19,6 +20,8 @@ function clearInvitationCallback() {
 function App() {
   const inviteePreview = new URLSearchParams(window.location.search).get('invitee') === '1'
   const invitationLink = new URLSearchParams(window.location.search).get('auth') === 'invitee'
+  const externalViewerTenantId = new URLSearchParams(window.location.search).get('external_viewer') || ''
+  const externalViewerPreviewTenantId = new URLSearchParams(window.location.search).get('external_viewer_preview') || ''
   const [view, setView] = useState(() => {
     const auth = new URLSearchParams(window.location.search).get('auth')
     if (auth === 'confirmed' || auth === 'sign-in') return 'sign-in'
@@ -137,6 +140,19 @@ function App() {
               event.preventDefault()
               setView('sign-in')
             }}
+          />
+        ) : user && externalViewerTenantId ? (
+          <ViewedLinkPage
+            user={user}
+            onSignOut={handleSignOut}
+            tenantId={externalViewerTenantId}
+          />
+        ) : user && externalViewerPreviewTenantId ? (
+          <ViewedLinkPage
+            user={user}
+            onSignOut={handleSignOut}
+            tenantId={externalViewerPreviewTenantId}
+            isPreview
           />
         ) : user && !inviteeSetupComplete && invitationLink && user.user_metadata?.invitation === true ? (
           <InviteeSignupForm

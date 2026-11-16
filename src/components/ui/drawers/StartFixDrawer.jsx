@@ -27,6 +27,7 @@ export function StartFixDrawer({
   evidenceError = '',
   evidenceNoteError = '',
   reviewerRole = '',
+  readOnly = false,
   onClose,
   onSubmitEvidence,
   onReviewEvidence,
@@ -467,7 +468,7 @@ export function StartFixDrawer({
                       >
                         {fileOpeningId === evidence.id ? 'Opening...' : 'Open file'}
                       </button>
-                      {evidence.approvalStatus === 'rejected' && !evidence.supersededById && (
+                      {!readOnly && evidence.approvalStatus === 'rejected' && !evidence.supersededById && (
                         <button
                           className="start-fix-evidence-action is-supersede"
                           type="button"
@@ -637,7 +638,7 @@ export function StartFixDrawer({
         </dialog>
 
         {/* Upload Section */}
-        <div className="upload-cont" ref={uploadSectionRef}>
+        {!readOnly && <div className="upload-cont" ref={uploadSectionRef}>
           {supersedingEvidenceId && (
             <div className="start-fix-superseding-banner">
               <span>Creating a superseder for {evidenceFiles.find((item) => item.id === supersedingEvidenceId)?.fileName || 'rejected evidence'}.</span>
@@ -684,10 +685,10 @@ export function StartFixDrawer({
               />
             </div>
           </div>
-        </div>
+        </div>}
 
         {/* Action Button Footer */}
-        <div className="drawer-actions">
+        {!readOnly && <div className="drawer-actions">
           {submitError && <p className="evidence-submit-message is-error" role="alert">{submitError}</p>}
           {submitSuccess && <p className="evidence-submit-message is-success" role="status">{submitSuccess}</p>}
           <BtnMain
@@ -696,7 +697,7 @@ export function StartFixDrawer({
           >
             {isSubmitting ? 'Uploading...' : supersedingEvidenceId ? 'Submit Superseder' : 'Submit Evidence'}
           </BtnMain>
-        </div>
+        </div>}
 
         {notesEvidenceId && (
           <NotesViewer

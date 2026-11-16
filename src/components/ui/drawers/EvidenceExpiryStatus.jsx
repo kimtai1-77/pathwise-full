@@ -20,6 +20,7 @@ export function EvidenceExpiryStatus({
   strategyName,
   status,
   evidenceFiles = [],
+  readOnly = false,
   onClose,
   onOpenEvidenceFile,
   onUpdateEvidence,
@@ -154,46 +155,50 @@ export function EvidenceExpiryStatus({
                   <span className={`evidence-expiry-approval is-${evidence.approvalStatus}`}>
                     {approvalLabels[evidence.approvalStatus] || 'Unknown status'}
                   </span>
-                  <button
-                    className="evidence-expiry-renew"
-                    type="button"
-                    disabled={Boolean(workingEvidenceId)}
-                    onClick={() => {
-                      setRenewingEvidence(evidence);
-                    }}
-                  >
-                    Renew
-                  </button>
+                  {!readOnly && (
+                    <button
+                      className="evidence-expiry-renew"
+                      type="button"
+                      disabled={Boolean(workingEvidenceId)}
+                      onClick={() => setRenewingEvidence(evidence)}
+                    >
+                      Renew
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="evidence-expiry-row-actions">
                 <button type="button" disabled={Boolean(workingEvidenceId)} onClick={() => void openEvidenceFile(evidence)}>
                   {workingEvidenceId === evidence.id ? 'Opening...' : 'Open'}
                 </button>
-                <button
-                  type="button"
-                  disabled={Boolean(workingEvidenceId)}
-                  onClick={() => fileInputs.current.get(evidence.id)?.click()}
-                >
-                  Update
-                </button>
-                <input
-                  ref={(element) => {
-                    if (element) fileInputs.current.set(evidence.id, element);
-                    else fileInputs.current.delete(evidence.id);
-                  }}
-                  className="evidence-expiry-file-input"
-                  type="file"
-                  accept={FILE_ACCEPT}
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    event.target.value = '';
-                    if (file) {
-                      setError('');
-                      setPendingUpdate({ evidence, file });
-                    }
-                  }}
-                />
+                {!readOnly && (
+                  <>
+                    <button
+                      type="button"
+                      disabled={Boolean(workingEvidenceId)}
+                      onClick={() => fileInputs.current.get(evidence.id)?.click()}
+                    >
+                      Update
+                    </button>
+                    <input
+                      ref={(element) => {
+                        if (element) fileInputs.current.set(evidence.id, element);
+                        else fileInputs.current.delete(evidence.id);
+                      }}
+                      className="evidence-expiry-file-input"
+                      type="file"
+                      accept={FILE_ACCEPT}
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        event.target.value = '';
+                        if (file) {
+                          setError('');
+                          setPendingUpdate({ evidence, file });
+                        }
+                      }}
+                    />
+                  </>
+                )}
                 <span className="evidence-expiry-uploaded-by">
                   Uploaded by {evidence.uploadedBy} · {formatDate(evidence.uploadedAt)}
                 </span>

@@ -6,6 +6,7 @@ export function TenantSettings({
   selectedTenantId = '',
   onAddTenant,
   canManageTenants = false,
+  onCreateExternalLink,
   onRenameTenant,
   onRemoveTenant,
   tenantsLoading = false,
@@ -93,7 +94,7 @@ export function TenantSettings({
       <div className="owner-settings-panel-heading">
         <div>
           <h3>Tenants</h3>
-          <p>Review and manage the tenants in your organisation.</p>
+          <p>{canManageTenants ? 'Review and manage the tenants in your organisation.' : 'Create external viewer links for your organisation tenants.'}</p>
         </div>
         <div className="tenant-settings-heading-actions">
           <span className="tenant-settings-count">{tenants.length} tenants</span>
@@ -108,6 +109,7 @@ export function TenantSettings({
           const tenantName = tenant.display_name?.trim() || tenant.name;
           const tenantId = tenant.id;
           const isExpanded = expandedTenantId === tenantId;
+          const canExpandTenant = canManageTenants || Boolean(onCreateExternalLink);
           const actionsId = `tenant-actions-${index}`;
 
           return (
@@ -117,9 +119,9 @@ export function TenantSettings({
                   className="tenant-settings-identity"
                   type="button"
                   aria-current={selectedTenantId === tenantId ? 'true' : undefined}
-                  aria-expanded={canManageTenants && tenantId ? isExpanded : undefined}
-                  aria-controls={canManageTenants && tenantId ? actionsId : undefined}
-                  disabled={!canManageTenants || !tenantId}
+                  aria-expanded={canExpandTenant && tenantId ? isExpanded : undefined}
+                  aria-controls={canExpandTenant && tenantId ? actionsId : undefined}
+                  disabled={!canExpandTenant || !tenantId}
                   onClick={() => setExpandedTenantId(isExpanded ? null : tenantId)}
                 >
                   <span className="tenant-settings-initial" aria-hidden="true">
@@ -128,7 +130,7 @@ export function TenantSettings({
                   <span className="tenant-settings-name">{tenantName}</span>
                   {selectedTenantId === tenantId && <span className="tenant-settings-current">Current</span>}
                 </button>
-                {canManageTenants && tenantId && (
+                {canExpandTenant && tenantId && (
                   <button
                     className="tenant-settings-disclosure"
                     type="button"
@@ -154,12 +156,29 @@ export function TenantSettings({
                 aria-label={`${tenantName} actions`}
                 hidden={!isExpanded}
               >
-                <button type="button" onClick={() => beginRename(tenant, tenantName)}>Rename</button>
-                <button className="tenant-settings-remove" type="button" onClick={() => {
-                  setRemoveTarget({ id: tenantId, name: tenantName });
-                  setRemoveError('');
-                  setExpandedTenantId(null);
-                }}>Remove</button>
+                <div className="tenant-settings-primary-actions">
+                  {canManageTenants && (
+                    <button type="button" onClick={() => beginRename(tenant, tenantName)}>Rename</button>
+                  )}
+                  {onCreateExternalLink && (
+                    <button
+                      className="tenant-settings-create-link"
+                      type="button"
+                      onClick={() => onCreateExternalLink(tenantId)}
+                    >
+                      Create external link
+                    </button>
+                  )}
+                </div>
+                {canManageTenants && (
+                  <div className="tenant-settings-destructive-actions">
+                    <button className="tenant-settings-remove" type="button" onClick={() => {
+                      setRemoveTarget({ id: tenantId, name: tenantName });
+                      setRemoveError('');
+                      setExpandedTenantId(null);
+                    }}>Remove</button>
+                  </div>
+                )}
               </div>
             </div>
           );

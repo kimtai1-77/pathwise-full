@@ -85,6 +85,35 @@
   color: var(--nt-200);
 }
 
+.top-row-magic-link-status {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 5px 9px;
+  border: 1px solid color-mix(in srgb, var(--success-500) 44%, var(--nt-200));
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--success-100) 64%, white);
+  color: var(--success-500);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.top-row-magic-link-status:hover {
+  border-color: var(--success-500);
+  background: white;
+}
+
+.top-row-magic-link-status:focus-visible {
+  outline: 2px solid var(--sc-300);
+  outline-offset: 2px;
+}
+
 .msp-dashboard .tag-dot {
   background-color: var(--sc-400);
   animation: none;

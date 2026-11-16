@@ -522,8 +522,10 @@
 
 .tenant-settings-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 12px;
   min-height: 48px;
   margin: 0 0 12px 40px;
 }
@@ -551,6 +553,60 @@
   color: var(--nt-900);
 }
 
+.tenant-settings-primary-actions,
+.tenant-settings-destructive-actions {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.tenant-settings-create-link,
+.tenant-settings-viewer-action button {
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--sc-600);
+  font: inherit;
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.tenant-settings-actions .tenant-settings-create-link {
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--sc-600);
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tenant-settings-create-link:hover {
+  transform: scale(1.02);
+}
+
+.tenant-settings-viewer-action button:hover {
+  background: transparent;
+  color: var(--nt-900);
+}
+
+.tenant-settings-create-link:focus-visible,
+.tenant-settings-viewer-action button:focus-visible {
+  outline: 2px solid var(--p-300);
+  outline-offset: 2px;
+}
+
+.tenant-settings-viewer-action {
+  min-height: 40px;
+  margin: 0 0 12px 44px;
+}
+
 .tenant-settings-actions .tenant-settings-remove {
   border-color: color-mix(in srgb, var(--error-400) 32%, transparent);
   background: color-mix(in srgb, var(--error-300) 10%, var(--nt-050));
@@ -561,6 +617,11 @@
   border-color: color-mix(in srgb, var(--error-400) 64%, transparent);
   background: color-mix(in srgb, var(--error-300) 18%, var(--nt-050));
   color: var(--error-500);
+}
+
+.tenant-settings-destructive-actions {
+  padding-left: 12px;
+  border-left: 1px solid var(--nt-200);
 }
 
 .tenant-settings-modal-backdrop {
