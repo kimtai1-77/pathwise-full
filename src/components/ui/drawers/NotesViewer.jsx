@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
-import './NotesViewer.css';
+import './styles/NotesViewer.css';
 
 function formatNoteDate(value) {
   const date = new Date(value);

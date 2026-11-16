@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
 import { NotesViewer } from './NotesViewer.jsx';
-import './ControlsSatisfied.css';
+import './styles/ControlsSatisfied.css';
 
 const evidenceStatusLabels = {
   pending_approval: 'Pending approval',
@@ -24,6 +24,7 @@ export function ControlsSatisfied({
   canReset = false,
   onResetControl,
   onOpenEvidenceFile,
+  onOpenEvidenceHistory,
   onMarkEvidenceRead,
   onMarkNoteRead,
   onClose,
@@ -184,13 +185,35 @@ export function ControlsSatisfied({
                       <ul className="controls-satisfied-evidence-list">
                         {evidenceFiles.map((evidence) => {
                           const unreadNotesCount = evidence.notes?.filter((note) => note.isUnread).length ?? 0;
+                          const expiryLabel = evidence.expiryStatus === 'expiring'
+                              ? `(expires in ${evidence.expiryDays} ${evidence.expiryDays === 1 ? 'day' : 'days'})`
+                            : evidence.expiryStatus === 'expired'
+                              ? `(expired ${evidence.expiryDays} ${evidence.expiryDays === 1 ? 'day' : 'days'} ago)`
+                              : '';
                           return (
-                          <li className="controls-satisfied-evidence" key={evidence.id}>
+                          <li className="controls-satisfied-evidence" id={`satisfied-evidence-${control.tenantControlId}-${evidence.id}`} key={evidence.id}>
                             <div className="controls-satisfied-evidence-heading">
-                              <strong>{evidence.fileName}</strong>
-                              <span className={`controls-satisfied-evidence-status is-${evidence.approvalStatus}`}>
-                                {evidenceStatusLabels[evidence.approvalStatus] || 'Unknown status'}
-                              </span>
+                              <strong className="controls-satisfied-evidence-filename">
+                                {evidence.fileName}
+                                {evidence.supersededById ? (
+                                  <button
+                                    className="controls-satisfied-updated-link"
+                                    type="button"
+                                    onClick={() => document.getElementById(`satisfied-evidence-${control.tenantControlId}-${evidence.supersededById}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                                  >
+                                    (updated)
+                                  </button>
+                                ) : expiryLabel ? (
+                                  <span className={`controls-satisfied-expiry-label is-${evidence.expiryStatus}`}>
+                                    {expiryLabel}
+                                  </span>
+                                ) : null}
+                              </strong>
+                              <div className="controls-satisfied-evidence-aside">
+                                <span className={`controls-satisfied-evidence-status is-${evidence.approvalStatus}`}>
+                                  {evidenceStatusLabels[evidence.approvalStatus] || 'Unknown status'}
+                                </span>
+                              </div>
                             </div>
                             <p>Uploaded by {evidence.uploadedBy} · {formatDate(evidence.uploadedAt)}</p>
                             {evidence.approvedBy && evidence.approvedAt && (
@@ -204,13 +227,22 @@ export function ControlsSatisfied({
                               <p><strong>Reason:</strong> {evidence.reviewReason}</p>
                             )}
                             <div className="controls-satisfied-evidence-actions">
-                              <button
-                                type="button"
-                                disabled={Boolean(fileOpeningId)}
-                                onClick={() => void openEvidenceFile(evidence)}
-                              >
-                                {fileOpeningId === evidence.id ? 'Opening...' : 'Open file'}
-                              </button>
+                              <div className="controls-satisfied-evidence-primary-actions">
+                                <button
+                                  type="button"
+                                  disabled={Boolean(fileOpeningId)}
+                                  onClick={() => void openEvidenceFile(evidence)}
+                                >
+                                  {fileOpeningId === evidence.id ? 'Opening...' : 'Open file'}
+                                </button>
+                                <button
+                                  className="controls-satisfied-history-link"
+                                  type="button"
+                                  onClick={() => onOpenEvidenceHistory?.(evidence.id)}
+                                >
+                                  Show history
+                                </button>
+                              </div>
                               {evidence.notes?.length > 0 && (
                                 <button type="button" onClick={() => setNotesEvidenceId(evidence.id)}>
                                   View notes{unreadNotesCount > 0 ? ` (${unreadNotesCount})` : ''}
