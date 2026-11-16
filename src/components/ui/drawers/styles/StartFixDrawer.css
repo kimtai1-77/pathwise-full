@@ -269,6 +269,31 @@
   font-weight: 750;
 }
 
+.start-fix-evidence-updated-link {
+  margin-left: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sc-600);
+  font: inherit;
+  font-size: 0.9em;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.start-fix-evidence-expiry-label {
+  margin-left: 6px;
+  color: var(--warning-500);
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.start-fix-evidence-expiry-label.is-expired {
+  color: var(--error-500);
+}
+
 .start-fix-evidence-status {
   flex: 0 0 auto;
   padding: 0.4rem 0.8rem;
@@ -278,6 +303,26 @@
   color: var(--nt-700);
   font-size: 1.1rem;
   line-height: 1.35;
+}
+
+.start-fix-evidence-status-column {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.start-fix-evidence-history-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sc-600);
+  font: inherit;
+  font-size: 1.1rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 
 .start-fix-evidence-status.is-pending_approval {

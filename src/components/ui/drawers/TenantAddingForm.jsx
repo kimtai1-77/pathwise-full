@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { abnFiller } from '@/utils/abnFiller.js';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
-import './TenantAddingForm.css';
+import './styles/TenantAddingForm.css';
 
 export const TenantAddingForm = ({ onClose, onSubmit, error: tenantError, onClearError }) => {
   useBodyScrollLock(true);

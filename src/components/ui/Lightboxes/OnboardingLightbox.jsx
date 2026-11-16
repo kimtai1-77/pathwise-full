@@ -1,6 +1,6 @@
 import logoMain from '@/assets/logos/logo_main.png';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
-import './styles/OnboardingLightbox.css';
+import './OnboardingLightbox.css';
 
 export function OnboardingLightbox({ onAddTenant }) {
   useBodyScrollLock(true);

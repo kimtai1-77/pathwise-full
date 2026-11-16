@@ -120,6 +120,47 @@ button.satisfied-controls-toggle:focus-visible {
   opacity: 0.75;
 }
 
+.strategy-evidence-expiry-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.strategy-evidence-expiry-count {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 9px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.strategy-evidence-expiry-count span:first-child {
+  font-variant-numeric: tabular-nums;
+}
+
+.strategy-evidence-expiry-count.is-warning {
+  border-color: color-mix(in srgb, var(--warning-400) 62%, transparent);
+  background: color-mix(in srgb, var(--warning-100) 18%, var(--sc-800));
+  color: var(--warning-100);
+}
+
+.strategy-evidence-expiry-count.is-error {
+  border-color: color-mix(in srgb, var(--error-400) 72%, transparent);
+  background: color-mix(in srgb, var(--error-500) 22%, var(--sc-800));
+  color: var(--error-100);
+}
+
+.strategy-evidence-expiry-count:focus-visible {
+  outline: 2px solid var(--p-300);
+  outline-offset: 2px;
+}
+
 .strategy-name {
   margin: 0;
   font-weight: 600;

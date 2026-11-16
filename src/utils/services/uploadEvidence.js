@@ -20,8 +20,9 @@ export async function uploadEvidenceFile({
   mspId,
   userId,
   supersedesEvidenceId,
+  validityDays,
 }) {
-  if (!file || !fileHash || !controlId || !tenantId || !mspId || !userId) {
+  if (!file || !fileHash || !controlId || !tenantId || !mspId || !userId || !Number.isInteger(validityDays) || validityDays < 1) {
     return { success: false, error: 'Missing required evidence upload details.' };
   }
 
@@ -54,6 +55,7 @@ export async function uploadEvidenceFile({
       description: null,
       uploaded_by: userId,
       file_hash: fileHash,
+      validity_days: validityDays,
     };
 
     if (supersedesEvidenceId) {

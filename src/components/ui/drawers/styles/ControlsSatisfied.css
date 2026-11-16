@@ -205,6 +205,45 @@
   overflow-wrap: anywhere;
 }
 
+.controls-satisfied-evidence-filename {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+}
+
+.controls-satisfied-updated-link,
+.controls-satisfied-history-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sc-600);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.controls-satisfied-expiry-label {
+  color: var(--warning-500);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.controls-satisfied-expiry-label.is-expired {
+  color: var(--error-500);
+}
+
+.controls-satisfied-evidence-aside {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
 .controls-satisfied-evidence-status {
   flex: 0 0 auto;
   color: var(--nt-600);
@@ -241,6 +280,12 @@
   margin-top: 12px;
 }
 
+.controls-satisfied-evidence-primary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .controls-satisfied-evidence-actions button,
 .controls-satisfied-confirm-actions button {
   min-height: 36px;
@@ -252,6 +297,10 @@
   font: inherit;
   font-size: 12px;
   cursor: pointer;
+}
+
+.controls-satisfied-evidence-actions .controls-satisfied-history-link {
+  border: 0;
 }
 
 .controls-satisfied-evidence-actions button:hover:not(:disabled),

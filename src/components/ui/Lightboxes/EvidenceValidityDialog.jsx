@@ -1,0 +1,45 @@
+import { useState } from 'react';
+import './EvidenceValidityDialog.css';
+
+export function EvidenceValidityDialog({ title = 'Set evidence validity', saving = false, error = '', onSet, onSkip }) {
+  const [periodDays, setPeriodDays] = useState('30');
+  const parsedDays = Number.parseInt(periodDays, 10);
+  const isValid = Number.isInteger(parsedDays) && parsedDays > 0 && String(parsedDays) === periodDays;
+
+  return (
+    <div className="evidence-validity-overlay">
+      <form
+        className="evidence-validity-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="evidence-validity-title"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (isValid) onSet?.(parsedDays);
+        }}
+      >
+        <h2 id="evidence-validity-title">{title}</h2>
+        <label htmlFor="evidence-validity-days">Validity period</label>
+        <div className="evidence-validity-input-wrap">
+          <input
+            id="evidence-validity-days"
+            type="number"
+            min="1"
+            step="1"
+            value={periodDays}
+            onChange={(event) => setPeriodDays(event.target.value)}
+            autoFocus
+            required
+          />
+          <span>days</span>
+        </div>
+        <p>If you skip, 30 days is the default.</p>
+        {error && <p className="evidence-validity-error" role="alert">{error}</p>}
+        <div className="evidence-validity-actions">
+          <button type="button" disabled={saving} onClick={() => onSkip?.(30)}>Skip</button>
+          <button type="submit" disabled={saving || !isValid}>Set</button>
+        </div>
+      </form>
+    </div>
+  );
+}

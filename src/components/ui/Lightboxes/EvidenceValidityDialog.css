@@ -1,0 +1,110 @@
+.evidence-validity-overlay {
+  position: fixed;
+  z-index: 1450;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: color-mix(in srgb, var(--nt-900) 52%, transparent);
+  backdrop-filter: blur(1px);
+}
+
+.evidence-validity-dialog {
+  width: min(100%, 380px);
+  padding: 24px;
+  border: 1px solid var(--nt-200);
+  border-radius: 6px;
+  background: var(--nt-050);
+  color: var(--nt-900);
+  box-shadow: 0 20px 56px color-mix(in srgb, var(--nt-900) 24%, transparent);
+}
+
+.evidence-validity-dialog h2 {
+  margin: 0 0 20px;
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.evidence-validity-dialog label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--nt-700);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.evidence-validity-input-wrap {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  border: 1px solid var(--nt-300);
+  border-radius: 4px;
+  background: white;
+}
+
+.evidence-validity-input-wrap:focus-within {
+  outline: 2px solid var(--sc-300);
+  outline-offset: 2px;
+}
+
+.evidence-validity-input-wrap input {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--nt-900);
+  font: inherit;
+}
+
+.evidence-validity-input-wrap input:focus {
+  outline: 0;
+}
+
+.evidence-validity-input-wrap span {
+  padding: 0 12px;
+  color: var(--nt-600);
+  font-size: 12px;
+}
+
+.evidence-validity-dialog > p {
+  margin: 10px 0 0;
+  color: var(--nt-600);
+  font-size: 12px;
+}
+
+.evidence-validity-dialog .evidence-validity-error {
+  color: var(--error-500);
+}
+
+.evidence-validity-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.evidence-validity-actions button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--nt-300);
+  border-radius: 4px;
+  background: var(--nt-050);
+  color: var(--nt-800);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.evidence-validity-actions button[type='submit'] {
+  border-color: var(--sc-500);
+  background: var(--sc-500);
+  color: white;
+}
+
+.evidence-validity-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

@@ -1,0 +1,65 @@
+.expired-evidence-rejection-overlay {
+  position: fixed;
+  z-index: 1400;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: color-mix(in srgb, var(--nt-900) 60%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.expired-evidence-rejection-dialog {
+  width: min(100%, 460px);
+  padding: 28px;
+  border: 1px solid var(--nt-200);
+  border-radius: 6px;
+  background: var(--nt-050);
+  color: var(--nt-900);
+  box-shadow: 0 24px 64px color-mix(in srgb, var(--nt-900) 28%, transparent);
+}
+
+.expired-evidence-rejection-eyebrow {
+  color: var(--error-500);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.expired-evidence-rejection-dialog h2 {
+  margin: 10px 0 0;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.expired-evidence-rejection-dialog p {
+  margin: 12px 0 0;
+  color: var(--nt-700);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.expired-evidence-rejection-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.expired-evidence-rejection-actions button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--nt-300);
+  border-radius: 4px;
+  background: var(--nt-050);
+  color: var(--nt-800);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.expired-evidence-rejection-actions button:last-child {
+  border-color: var(--sc-500);
+  background: var(--sc-500);
+  color: white;
+}

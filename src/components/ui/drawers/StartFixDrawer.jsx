@@ -4,8 +4,10 @@ import { useRef, useState } from 'react';
 import { BtnMain } from '@/components/ui/buttons/btn-main';
 import { BtnSecondary } from '@/components/ui/buttons/btn-secondary';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
+import { RejectionOnExpiredEvidence } from '@/components/ui/Lightboxes/RejectionOnExpiredEvidence.jsx';
+import { EvidenceValidityDialog } from '@/components/ui/Lightboxes/EvidenceValidityDialog.jsx';
 import { NotesViewer } from './NotesViewer.jsx';
-import './StartFixDrawer.css';
+import './styles/StartFixDrawer.css';
 
 const evidenceStatusLabels = {
   pending_approval: 'Pending Approval',
@@ -33,6 +35,7 @@ export function StartFixDrawer({
   onMarkNoteRead,
   onSetControlSatisfied,
   onOpenEvidenceFile,
+  onOpenEvidenceHistory,
 }) {
   const [file, setFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,6 +60,8 @@ export function StartFixDrawer({
   const [updatingSatisfaction, setUpdatingSatisfaction] = useState(false);
   const [satisfactionError, setSatisfactionError] = useState('');
   const [satisfactionSuccess, setSatisfactionSuccess] = useState('');
+  const [expiredEvidenceId, setExpiredEvidenceId] = useState('');
+  const [validityDialogOpen, setValidityDialogOpen] = useState(false);
   const fileInputRef = useRef(null);
   const uploadSectionRef = useRef(null);
   const evidenceItemRefs = useRef(new Map());
@@ -67,6 +72,7 @@ export function StartFixDrawer({
   const showControl = control && expandedControlId === control.id;
   const showEvidence = control && expandedEvidenceControlId === control.id;
   const canReviewEvidence = reviewerRole === 'owner' || reviewerRole === 'msp_admin';
+  const canAddEvidenceNote = ['owner', 'msp_admin', 'technician'].includes(reviewerRole);
   useBodyScrollLock(Boolean(control));
 
   if (!control) return null;
@@ -80,7 +86,7 @@ export function StartFixDrawer({
     onClose?.();
   };
 
-  const handleSubmitEvidence = async () => {
+  const handleSubmitEvidence = async (validityDays) => {
     if (!file || isSubmitting) return;
 
     setIsSubmitting(true);
@@ -88,7 +94,7 @@ export function StartFixDrawer({
     setSubmitSuccess('');
 
     try {
-      const result = await onSubmitEvidence?.(file, supersedingEvidenceId || null);
+      const result = await onSubmitEvidence?.(file, supersedingEvidenceId || null, validityDays);
       if (!result?.success) {
         setSubmitError(result?.error || 'Unable to upload this file.');
         return;
@@ -263,6 +269,10 @@ export function StartFixDrawer({
     try {
       const result = await onSetControlSatisfied?.(control.tenantControlStatus !== 'satisfied');
       if (!result?.success) {
+        if (result?.expiredEvidenceId) {
+          setExpiredEvidenceId(result.expiredEvidenceId);
+          return;
+        }
         setSatisfactionError(result?.error || 'Unable to update this control.');
         return;
       }
@@ -402,10 +412,31 @@ export function StartFixDrawer({
                     }}
                   >
                     <div className="start-fix-evidence-file-heading">
-                      <strong className={`start-fix-evidence-file-name${evidence.isUnread ? ' is-unread' : ''}`}>{evidence.fileName}</strong>
-                      <span className={`start-fix-evidence-status is-${evidence.approvalStatus}`}>
-                        {evidenceStatusLabels[evidence.approvalStatus] || 'Unknown Status'}
-                      </span>
+                      <strong className={`start-fix-evidence-file-name${evidence.isUnread ? ' is-unread' : ''}`}>
+                        {evidence.fileName}
+                        {evidence.supersededById ? (
+                          <button
+                            className="start-fix-evidence-updated-link"
+                            type="button"
+                            onClick={() => scrollToEvidence(evidence.supersededById)}
+                          >
+                            (updated)
+                          </button>
+                        ) : evidence.expiryStatus === 'expiring' ? (
+                          <span className="start-fix-evidence-expiry-label">
+                            (expires in {evidence.expiryDays} {evidence.expiryDays === 1 ? 'day' : 'days'})
+                          </span>
+                        ) : evidence.expiryStatus === 'expired' ? (
+                          <span className="start-fix-evidence-expiry-label is-expired">
+                            (expired {evidence.expiryDays} {evidence.expiryDays === 1 ? 'day' : 'days'} ago)
+                          </span>
+                        ) : null}
+                      </strong>
+                      <div className="start-fix-evidence-status-column">
+                        <span className={`start-fix-evidence-status is-${evidence.approvalStatus}`}>
+                          {evidenceStatusLabels[evidence.approvalStatus] || 'Unknown Status'}
+                        </span>
+                      </div>
                     </div>
                     <p className="start-fix-evidence-metadata">
                       Uploaded by {evidence.uploadedBy} · {formatEvidenceDate(evidence.uploadedAt)}
@@ -465,7 +496,7 @@ export function StartFixDrawer({
                           </button>
                         </>
                       )}
-                      {canReviewEvidence && (
+                      {canAddEvidenceNote && (
                         <BtnSecondary
                           className="btn-small drawer-note-toggle"
                           type="button"
@@ -498,8 +529,8 @@ export function StartFixDrawer({
                         </div>
                       )}
                       </div>
-                      {evidence.notes?.length > 0 && (
-                        <div className="start-fix-evidence-links" role="group" aria-label="Evidence notes">
+                      {(evidence.notes?.length > 0 || onOpenEvidenceHistory) && (
+                        <div className="start-fix-evidence-links" role="group" aria-label="Evidence links">
                           {evidence.notes?.length > 0 && (
                             <button
                               className="start-fix-evidence-link"
@@ -509,13 +540,22 @@ export function StartFixDrawer({
                               View notes{unreadNotesCount > 0 ? ` (${unreadNotesCount})` : ''}
                             </button>
                           )}
+                          {onOpenEvidenceHistory && (
+                            <button
+                              className="start-fix-evidence-link"
+                              type="button"
+                              onClick={() => onOpenEvidenceHistory(evidence.id)}
+                            >
+                              Show history
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
                     {reviewError && reviewErrorEvidenceId === evidence.id && !rejectingEvidenceId && (
                       <p className="start-fix-evidence-message is-error" role="alert">{reviewError}</p>
                     )}
-                    {noteEvidenceId === evidence.id && canReviewEvidence && (
+                    {noteEvidenceId === evidence.id && canAddEvidenceNote && (
                       <form className="start-fix-evidence-note-form" onSubmit={(event) => submitEvidenceNote(event, evidence.id)}>
                         <label className="start-fix-evidence-note-label" htmlFor={`evidence-note-subject-${evidence.id}`}>
                           Subject
@@ -651,7 +691,7 @@ export function StartFixDrawer({
           {submitError && <p className="evidence-submit-message is-error" role="alert">{submitError}</p>}
           {submitSuccess && <p className="evidence-submit-message is-success" role="status">{submitSuccess}</p>}
           <BtnMain
-            onClick={handleSubmitEvidence}
+            onClick={() => setValidityDialogOpen(true)}
             disabled={!file || isSubmitting}
           >
             {isSubmitting ? 'Uploading...' : supersedingEvidenceId ? 'Submit Superseder' : 'Submit Evidence'}
@@ -664,6 +704,32 @@ export function StartFixDrawer({
             loading={evidenceLoading}
             onClose={() => setNotesEvidenceId('')}
             onMarkRead={onMarkNoteRead}
+          />
+        )}
+
+        {expiredEvidenceId && (
+          <RejectionOnExpiredEvidence
+            evidenceFileName={evidenceFiles.find((item) => item.id === expiredEvidenceId)?.fileName}
+            onGoToFile={() => {
+              const targetEvidenceId = expiredEvidenceId;
+              setExpiredEvidenceId('');
+              scrollToEvidence(targetEvidenceId);
+            }}
+            onCancel={() => setExpiredEvidenceId('')}
+          />
+        )}
+
+        {validityDialogOpen && (
+          <EvidenceValidityDialog
+            title={supersedingEvidenceId ? 'Set replacement validity' : 'Set evidence validity'}
+            onSet={(validityDays) => {
+              setValidityDialogOpen(false);
+              void handleSubmitEvidence(validityDays);
+            }}
+            onSkip={(validityDays) => {
+              setValidityDialogOpen(false);
+              void handleSubmitEvidence(validityDays);
+            }}
           />
         )}
 

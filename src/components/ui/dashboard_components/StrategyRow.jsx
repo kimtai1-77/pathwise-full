@@ -7,7 +7,10 @@ import { StrategyScoreCard } from './StrategyScoreCard.jsx';
 import { WhatsMissingCard } from './WhatsMissingCard.jsx';
 import { StartFixDrawer } from '@/components/ui/drawers/StartFixDrawer.jsx';
 import { ControlsSatisfied } from '@/components/ui/drawers/ControlsSatisfied.jsx';
+import { EvidenceExpiryStatus } from '@/components/ui/drawers/EvidenceExpiryStatus.jsx';
+import { EvidenceHistory } from '@/components/ui/Lightboxes/EvidenceHistory.jsx';
 import { calculateStrategyScore } from '@/utils/calculateStrategyScore.js';
+import { getEvidenceExpiryState } from '@/utils/evidenceExpiry.js';
 import './styles/StrategyRow.css';
 
 export function StrategyRow({ 
@@ -25,13 +28,23 @@ export function StrategyRow({
   const [fixControl, setFixControl] = useState(null);
   const [controlsSatisfiedOpen, setControlsSatisfiedOpen] = useState(false);
   const [evidenceRefreshKey, setEvidenceRefreshKey] = useState(0);
+  const [expiryClock, setExpiryClock] = useState(() => Date.now());
+  const [expiryDrawerStatus, setExpiryDrawerStatus] = useState('');
+  const [historyEvidenceId, setHistoryEvidenceId] = useState('');
   const [profileNamesById, setProfileNamesById] = useState({});
   const [evidenceStatusState, setEvidenceStatusState] = useState({
     queryKey: '',
     byControl: {},
+    expirationEvents: [],
+    reviewEvents: [],
     error: '',
     notesError: '',
   });
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => setExpiryClock(Date.now()), 60_000);
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     // Correct guard: ensure strategyName exists and maturityLevel is not undefined/null
@@ -138,6 +151,7 @@ export function StrategyRow({
         let evidenceReadRows = [];
         let noteReadRows = [];
         let evidenceChainRows = [];
+        let expirationEvents = [];
         let notesError = '';
 
         if (evidenceIds.length > 0) {
@@ -150,6 +164,16 @@ export function StrategyRow({
 
           if (reviewError) throw reviewError;
           reviews = reviewData || [];
+
+          const { data: expirationData, error: expirationError } = await supabase
+            .from('evidence_expiration_events')
+            .select('id, evidence_id, event_type, expires_at, period_days, created_by, created_at')
+            .in('evidence_id', evidenceIds)
+            .order('created_at', { ascending: false })
+            .order('id', { ascending: false });
+
+          if (expirationError) throw expirationError;
+          expirationEvents = expirationData || [];
 
           const { data: noteData, error: noteError } = await supabase
             .from('evidence_notes')
@@ -204,6 +228,13 @@ export function StrategyRow({
         }
 
         const evidenceById = new Map(evidenceChainRows.map((evidence) => [evidence.id, evidence]));
+        const expirationEventsByEvidenceId = new Map();
+        for (const event of expirationEvents) {
+          if (!expirationEventsByEvidenceId.has(event.evidence_id)) {
+            expirationEventsByEvidenceId.set(event.evidence_id, []);
+          }
+          expirationEventsByEvidenceId.get(event.evidence_id).push(event);
+        }
         const successorByEvidenceId = new Map(
           evidenceChainRows
             .filter((evidence) => evidence.supersedes_evidence_id)
@@ -241,6 +272,7 @@ export function StrategyRow({
         const profileIds = [...new Set([
           ...evidenceRows.map((evidence) => evidence.uploaded_by),
           ...reviews.map((review) => review.reviewed_by),
+          ...expirationEvents.map((event) => event.created_by),
           ...notesWithReadState.map((note) => note.created_by),
           ...controls.map((control) => control.satisfiedBy),
         ].filter(Boolean))];
@@ -259,6 +291,7 @@ export function StrategyRow({
           [id, profile.deactivated_at ? 'Deactivated user' : profile.full_name?.trim() || 'Unknown user']
         ))));
 
+        const controlById = new Map(controls.map((control) => [control.id, control]));
         const byControl = evidenceRows.reduce((filesByControl, evidence) => {
           const latestReview = latestReviewByEvidence.get(evidence.id);
           const uploader = evidence.uploaded_by ? profilesById[evidence.uploaded_by] : null;
@@ -279,6 +312,9 @@ export function StrategyRow({
           filesByControl[evidence.control_id] ??= [];
           filesByControl[evidence.control_id].push({
             id: evidence.id,
+            controlId: evidence.control_id,
+            controlCode: controlById.get(evidence.control_id)?.control_code || '',
+            controlName: controlById.get(evidence.control_id)?.name || '',
             fileName: evidence.file_name,
             filePath: evidence.file_path,
             fileType: evidence.file_type,
@@ -289,6 +325,21 @@ export function StrategyRow({
               : 'API',
             uploadedAt: evidence.created_at,
             approvalStatus: evidence.approval_status,
+            isCurrent: !successorByEvidenceId.has(evidence.id),
+            expiresAt: expirationEventsByEvidenceId.get(evidence.id)?.[0]?.expires_at || null,
+            expirationEvents: (expirationEventsByEvidenceId.get(evidence.id) || []).map((event) => ({
+              id: event.id,
+              evidenceId: event.evidence_id,
+              eventType: event.event_type,
+              expiresAt: event.expires_at,
+              periodDays: event.period_days,
+              createdBy: event.created_by
+                ? profilesById[event.created_by]?.deactivated_at
+                  ? 'Deactivated user'
+                  : profilesById[event.created_by]?.full_name?.trim() || 'Unknown user'
+                : 'Unknown user',
+              createdAt: event.created_at,
+            })),
             isUnread,
             isRejectedUnresolved: evidence.approval_status === 'rejected' && !hasApprovedDescendant(evidence.id),
             supersedesEvidenceId: evidenceById.get(evidence.id)?.supersedes_evidence_id || null,
@@ -318,7 +369,39 @@ export function StrategyRow({
           return filesByControl;
         }, {});
 
-        setEvidenceStatusState({ queryKey: evidenceQueryKey, byControl, error: '', notesError });
+        const historyEvents = expirationEvents.map((event) => ({
+          id: event.id,
+          evidenceId: event.evidence_id,
+          eventType: event.event_type,
+          expiresAt: event.expires_at,
+          periodDays: event.period_days,
+          createdBy: event.created_by
+            ? profilesById[event.created_by]?.deactivated_at
+              ? 'Deactivated user'
+              : profilesById[event.created_by]?.full_name?.trim() || 'Unknown user'
+            : 'Unknown user',
+          createdAt: event.created_at,
+        }));
+        const historyReviews = reviews.map((review) => ({
+          id: review.id,
+          evidenceId: review.evidence_id,
+          decision: review.decision,
+          reason: review.reason?.trim() || '',
+          reviewedBy: review.reviewed_by
+            ? profilesById[review.reviewed_by]?.deactivated_at
+              ? 'Deactivated user'
+              : profilesById[review.reviewed_by]?.full_name?.trim() || 'Unknown user'
+            : 'Unknown user',
+          reviewedAt: review.reviewed_at,
+        }));
+        setEvidenceStatusState({
+          queryKey: evidenceQueryKey,
+          byControl,
+          expirationEvents: historyEvents,
+          reviewEvents: historyReviews,
+          error: '',
+          notesError,
+        });
       } catch (error) {
         console.error(`Error fetching evidence statuses for "${strategyName}":`, error);
         if (isMounted) {
@@ -326,6 +409,8 @@ export function StrategyRow({
           setEvidenceStatusState({
             queryKey: evidenceQueryKey,
             byControl: {},
+            expirationEvents: [],
+            reviewEvents: [],
             error: 'Evidence statuses are unavailable.',
             notesError: '',
           });
@@ -341,9 +426,40 @@ export function StrategyRow({
   }, [controls, evidenceQueryKey, evidenceRefreshKey, strategyName, tenantId, userId]);
 
   // Derived Metrics
+  const rawEvidenceByControl = evidenceStatusState.queryKey === evidenceQueryKey
+    ? evidenceStatusState.byControl
+    : {};
+  const evidenceByControl = Object.fromEntries(Object.entries(rawEvidenceByControl).map(([controlId, files]) => (
+    [controlId, files.map((evidence) => {
+      const expiryState = getEvidenceExpiryState(evidence.expiresAt, expiryClock);
+      return { ...evidence, expiryStatus: expiryState.status, expiryDays: expiryState.days };
+    })]
+  )));
+  const allEvidenceFiles = Object.values(evidenceByControl).flat();
+  const expiringEvidenceFiles = allEvidenceFiles.filter((evidence) => (
+    evidence.isCurrent && evidence.expiryStatus === 'expiring'
+  ));
+  const expiredEvidenceFiles = allEvidenceFiles.filter((evidence) => (
+    evidence.isCurrent && evidence.expiryStatus === 'expired'
+  ));
+  const selectedHistoryEvidence = allEvidenceFiles.find((evidence) => evidence.id === historyEvidenceId);
+  const historyEvidenceFiles = selectedHistoryEvidence
+    ? evidenceByControl[selectedHistoryEvidence.controlId] || []
+    : [];
   const maxControls = controls.length;
-  const whatsMissing = controls.filter((control) => control.tenantControlStatus !== 'satisfied');
-  const satisfiedControls = controls
+  const controlsWithEffectiveExpiry = controls.map((control) => {
+    const hasExpiredEvidence = (evidenceByControl[control.id] || []).some((evidence) => (
+      evidence.isCurrent && evidence.expiryStatus === 'expired'
+    ));
+    return hasExpiredEvidence && control.tenantControlStatus === 'satisfied'
+      ? { ...control, tenantControlStatus: 'unsatisfied', satisfiedBy: null, satisfiedOn: null, status: 'unsatisfactory' }
+      : control;
+  });
+  const effectiveFixControl = fixControl
+    ? controlsWithEffectiveExpiry.find((control) => control.id === fixControl.id) || fixControl
+    : null;
+  const whatsMissing = controlsWithEffectiveExpiry.filter((control) => control.tenantControlStatus !== 'satisfied');
+  const satisfiedControls = controlsWithEffectiveExpiry
     .filter((control) => control.tenantControlStatus === 'satisfied')
     .map((control) => ({
       ...control,
@@ -379,27 +495,29 @@ export function StrategyRow({
 
   const complianceStatus = getComplianceStatus();
 
-  async function handleSubmitEvidence(file, supersedesEvidenceId = null) {
+  async function handleSubmitEvidence(file, supersedesEvidenceId = null, validityDays) {
     if (!fixControl || !file) {
       return { success: false, error: 'Select a control and file before submitting.' };
     }
 
+    return uploadEvidenceForControl(file, fixControl.id, supersedesEvidenceId, validityDays);
+  }
+
+  async function uploadEvidenceForControl(file, controlId, supersedesEvidenceId, validityDays) {
     try {
       const fileHash = await calculateFileHash(file);
       const result = await uploadEvidenceFile({
         file,
         fileHash,
-        controlId: fixControl.id,
+        controlId,
         tenantId,
         mspId,
         userId,
         supersedesEvidenceId,
+        validityDays,
       });
 
-      if (result.success) {
-        setEvidenceRefreshKey((refreshKey) => refreshKey + 1);
-      }
-
+      if (result.success) setEvidenceRefreshKey((refreshKey) => refreshKey + 1);
       return result;
     } catch (error) {
       console.error('Unable to prepare evidence upload:', error);
@@ -407,7 +525,41 @@ export function StrategyRow({
     }
   }
 
+  async function handleUpdateEvidence(evidence, file, validityDays) {
+    if (!evidence?.controlId || !evidence.id || !file) {
+      return { success: false, error: 'Select a file before updating this evidence.' };
+    }
+    return uploadEvidenceForControl(file, evidence.controlId, evidence.id, validityDays);
+  }
+
+  async function handleRenewEvidence(evidence, periodDays) {
+    if (!userId || !evidence?.id || !Number.isInteger(periodDays) || periodDays < 1) {
+      return { success: false, error: 'Enter a valid renewal period.' };
+    }
+
+    const expiresAt = new Date(Date.now() + periodDays * 24 * 60 * 60 * 1000).toISOString();
+    const { error } = await supabase
+      .from('evidence_expiration_events')
+      .insert({
+        evidence_id: evidence.id,
+        event_type: 'renewal',
+        expires_at: expiresAt,
+        period_days: periodDays,
+        created_by: userId,
+      });
+
+    if (error) {
+      console.error('Unable to renew evidence:', error);
+      return { success: false, error: 'Unable to renew this evidence. Please try again.' };
+    }
+
+    setEvidenceRefreshKey((refreshKey) => refreshKey + 1);
+    setExpiryClock(Date.now());
+    return { success: true };
+  }
+
   const canReviewEvidence = reviewerRole === 'owner' || reviewerRole === 'msp_admin';
+  const canAddEvidenceNote = ['owner', 'msp_admin', 'technician'].includes(reviewerRole);
 
   async function handleReviewEvidence(evidenceId, decision, reason = '') {
     if (!canReviewEvidence || !userId || !evidenceId) {
@@ -433,7 +585,7 @@ export function StrategyRow({
   }
 
   async function handleAddEvidenceNote(evidenceId, subject, note) {
-    if (!canReviewEvidence || !userId || !fixControl || !evidenceId) {
+    if (!canAddEvidenceNote || !userId || !fixControl || !evidenceId) {
       return { success: false, error: 'You are not allowed to add a note here.' };
     }
     if (!subject.trim() || !note.trim()) {
@@ -522,6 +674,9 @@ export function StrategyRow({
 
     if (error || !data) {
       console.error('Unable to update tenant control satisfaction:', error);
+      if (error?.code === '23514' && error.message?.includes('Control cannot be satisfied. One or more evidence files are expired')) {
+        return { success: false, expiredEvidence: true };
+      }
       return { success: false, error: 'Unable to update this control. Please try again.' };
     }
 
@@ -550,7 +705,22 @@ export function StrategyRow({
     if (!fixControl?.tenantControlId) {
       return { success: false, error: 'Unable to identify this control.' };
     }
-    return updateControlSatisfaction(fixControl.tenantControlId, isSatisfied);
+    const controlEvidence = evidenceByControl[fixControl.id] || [];
+    const firstExpiredEvidence = controlEvidence.find((evidence) => (
+      evidence.isCurrent && evidence.expiryStatus === 'expired'
+    ));
+    if (isSatisfied && firstExpiredEvidence) {
+      return { success: false, expiredEvidenceId: firstExpiredEvidence.id };
+    }
+
+    const result = await updateControlSatisfaction(fixControl.tenantControlId, isSatisfied);
+    if (result.expiredEvidence) {
+      return {
+        success: false,
+        expiredEvidenceId: firstExpiredEvidence?.id || controlEvidence.find((evidence) => evidence.isCurrent)?.id || '',
+      };
+    }
+    return result;
   }
 
   async function handleResetSatisfiedControl(tenantControlId) {
@@ -615,12 +785,16 @@ export function StrategyRow({
         missingItems={missingItems}
         satisfiedControlsCount={satisfiedControls.length}
         onOpenSatisfiedControls={() => setControlsSatisfiedOpen(true)}
+        expiringEvidenceCount={expiringEvidenceFiles.length}
+        expiredEvidenceCount={expiredEvidenceFiles.length}
+        onOpenExpiringEvidence={() => setExpiryDrawerStatus('expiring')}
+        onOpenExpiredEvidence={() => setExpiryDrawerStatus('expired')}
       />
       <WhatsMissingCard
         whatsMissing={whatsMissing}
         loading={Boolean(tenantId) && loading}
         error={tenantId ? loadError : 'Select a tenant to load controls.'}
-        evidenceByControl={evidenceStatusState.queryKey === evidenceQueryKey ? evidenceStatusState.byControl : {}}
+        evidenceByControl={evidenceByControl}
         evidenceError={evidenceStatusState.queryKey === evidenceQueryKey ? evidenceStatusState.error : ''}
         onOpenFixDrawer={setFixControl}
         canResetControls={canReviewEvidence}
@@ -628,8 +802,8 @@ export function StrategyRow({
       />
       <StartFixDrawer
         key={fixControl?.id || 'closed'}
-        control={fixControl}
-        evidenceFiles={evidenceStatusState.queryKey === evidenceQueryKey ? evidenceStatusState.byControl[fixControl?.id] || [] : []}
+        control={effectiveFixControl}
+        evidenceFiles={evidenceByControl[fixControl?.id] || []}
         evidenceLoading={evidenceStatusState.queryKey !== evidenceQueryKey}
         evidenceError={evidenceStatusState.queryKey === evidenceQueryKey ? evidenceStatusState.error : ''}
         evidenceNoteError={evidenceStatusState.queryKey === evidenceQueryKey ? evidenceStatusState.notesError : ''}
@@ -642,20 +816,44 @@ export function StrategyRow({
         onMarkNoteRead={handleMarkNoteRead}
         onSetControlSatisfied={handleSetControlSatisfied}
         onOpenEvidenceFile={handleOpenEvidenceFile}
+        onOpenEvidenceHistory={setHistoryEvidenceId}
       />
       {controlsSatisfiedOpen && satisfiedControls.length > 0 && (
         <ControlsSatisfied
           strategyName={strategyName}
           controls={satisfiedControls}
-          evidenceByControl={evidenceStatusState.queryKey === evidenceQueryKey ? evidenceStatusState.byControl : {}}
+          evidenceByControl={evidenceByControl}
           evidenceLoading={evidenceStatusState.queryKey !== evidenceQueryKey}
           evidenceError={evidenceStatusState.queryKey === evidenceQueryKey ? evidenceStatusState.error : ''}
           canReset={canReviewEvidence}
           onResetControl={handleResetSatisfiedControl}
           onOpenEvidenceFile={handleOpenEvidenceFile}
+          onOpenEvidenceHistory={setHistoryEvidenceId}
           onMarkEvidenceRead={handleMarkEvidenceRead}
           onMarkNoteRead={handleMarkNoteRead}
           onClose={() => setControlsSatisfiedOpen(false)}
+        />
+      )}
+      {expiryDrawerStatus && (
+        <EvidenceExpiryStatus
+          strategyName={strategyName}
+          status={expiryDrawerStatus}
+          evidenceFiles={allEvidenceFiles}
+          onClose={() => setExpiryDrawerStatus('')}
+          onOpenEvidenceFile={handleOpenEvidenceFile}
+          onUpdateEvidence={handleUpdateEvidence}
+          onRenewEvidence={handleRenewEvidence}
+          onOpenHistory={setHistoryEvidenceId}
+        />
+      )}
+      {historyEvidenceId && selectedHistoryEvidence && (
+        <EvidenceHistory
+          evidenceId={historyEvidenceId}
+          evidenceFiles={historyEvidenceFiles}
+          expirationEvents={evidenceStatusState.expirationEvents}
+          reviewEvents={evidenceStatusState.reviewEvents}
+          onOpenEvidenceFile={handleOpenEvidenceFile}
+          onClose={() => setHistoryEvidenceId('')}
         />
       )}
     </article>

@@ -9,6 +9,10 @@ export function StrategyScoreCard({
   missingItems = 0,
   satisfiedControlsCount = 0,
   onOpenSatisfiedControls,
+  expiringEvidenceCount = 0,
+  expiredEvidenceCount = 0,
+  onOpenExpiringEvidence,
+  onOpenExpiredEvidence,
 }) {
   const score = calculateStrategyScore(maxControls, missingItems) ?? 0;
 
@@ -66,6 +70,32 @@ export function StrategyScoreCard({
             </span>
           )}
         </div>
+        {(expiringEvidenceCount > 0 || expiredEvidenceCount > 0) && (
+          <div className="strategy-evidence-expiry-counts">
+            {expiringEvidenceCount > 0 && (
+              <button
+                className="strategy-evidence-expiry-count is-warning"
+                type="button"
+                aria-label={`${expiringEvidenceCount} evidence files almost expiring`}
+                onClick={onOpenExpiringEvidence}
+              >
+                <span>{expiringEvidenceCount}</span>
+                <span>Almost expiring</span>
+              </button>
+            )}
+            {expiredEvidenceCount > 0 && (
+              <button
+                className="strategy-evidence-expiry-count is-error"
+                type="button"
+                aria-label={`${expiredEvidenceCount} evidence files expired`}
+                onClick={onOpenExpiredEvidence}
+              >
+                <span>{expiredEvidenceCount}</span>
+                <span>Evidence expired</span>
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
