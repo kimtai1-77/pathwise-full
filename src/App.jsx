@@ -26,6 +26,7 @@ function App() {
     return 'sign-up'
   })
   const [user, setUser] = useState(null)
+  const [profile, setProfile] = useState(null)
   const [authReady, setAuthReady] = useState(false)
   const [accountCheckUserId, setAccountCheckUserId] = useState(null)
   const [deactivatedNotice, setDeactivatedNotice] = useState(false)
@@ -63,7 +64,7 @@ function App() {
 
     void supabase
       .from('profiles')
-      .select('deactivated_at')
+      .select('deactivated_at, full_name, role, msp_id')
       .eq('id', user.id)
       .maybeSingle()
       .then(async ({ data, error }) => {
@@ -76,11 +77,13 @@ function App() {
 
         if (data?.deactivated_at) {
           setDeactivatedNotice(true)
+          setProfile(null)
           await supabase.auth.signOut({ scope: 'local' })
           return
         }
 
         setDeactivatedNotice(false)
+  setProfile({ userId: user.id, data })
         setAccountCheckUserId(user.id)
       })
 
@@ -112,6 +115,8 @@ function App() {
     setInviteeSetupComplete(false)
     setView('sign-in')
   }
+
+  const currentProfile = user?.id && profile?.userId === user.id ? profile.data : null
 
   return (
       <div className='app-cont'>
@@ -150,9 +155,9 @@ function App() {
             }}
           />
         ) : user && inviteeSetupComplete && invitationLink && user.user_metadata?.invitation === true ? (
-          <MspDashboard user={user} onSignOut={handleSignOut} />
+          <MspDashboard user={user} profile={currentProfile} onSignOut={handleSignOut} />
         ) : user ? (
-          <MspDashboard user={user} onSignOut={handleSignOut} />
+          <MspDashboard user={user} profile={currentProfile} onSignOut={handleSignOut} />
         ) : view === 'forgot-password' ? (
           <ForgotPasswordForm onSignInClick={(event) => {
             event.preventDefault()

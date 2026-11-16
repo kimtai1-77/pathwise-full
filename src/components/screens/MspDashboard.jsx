@@ -23,7 +23,7 @@ const strategyNames = [
   'User Application Hardening',
 ];
 
-export default function MspDashboard({ user, onSignOut }) {
+export default function MspDashboard({ user, profile, onSignOut }) {
   const [tenants, setTenants] = useState([]);
   const [selectedTenantId, setSelectedTenantId] = useState('');
   const [strategyScores, setStrategyScores] = useState({});
@@ -38,9 +38,9 @@ export default function MspDashboard({ user, onSignOut }) {
   const [mspLogoUrl, setMspLogoUrl] = useState('');
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState('');
-  const [profileRole, setProfileRole] = useState('');
-  const [profileName, setProfileName] = useState('');
-  const [profileMspId, setProfileMspId] = useState('');
+  const [profileName, setProfileName] = useState(profile?.full_name || '');
+  const profileRole = profile?.role || '';
+  const profileMspId = profile?.msp_id || '';
   const [mspDisplayName, setMspDisplayName] = useState('');
   const [tenantsLoading, setTenantsLoading] = useState(false);
   const [tenantsLoaded, setTenantsLoaded] = useState(false);
@@ -52,32 +52,6 @@ export default function MspDashboard({ user, onSignOut }) {
     && tenants.length === 0;
 
   useBodyScrollLock(showTenantSetupLightbox);
-
-  useEffect(() => {
-    if (!user?.id) return;
-
-    let isCancelled = false;
-
-    async function fetchProfileRole() {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('full_name, role, msp_id')
-        .eq('id', user.id)
-        .single();
-
-      if (!isCancelled) {
-        setProfileRole(error ? '' : data?.role || '');
-        setProfileName(error ? '' : data?.full_name || '');
-        setProfileMspId(error ? '' : data?.msp_id || '');
-      }
-    }
-
-    fetchProfileRole();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [user?.id]);
 
   useEffect(() => {
     if (!profileMspId) return;
