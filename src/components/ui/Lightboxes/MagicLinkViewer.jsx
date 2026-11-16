@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import closeIcon from '@/assets/icons/close.svg'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js'
-import './MagicLinkView.css'
+import './MagicLinkViewer.css'
 
 function formatDate(value) {
   const date = new Date(value)
   return Number.isNaN(date.getTime()) ? 'Unavailable' : date.toLocaleString()
 }
 
-export function MagicLinkView({ link, onClose, onRevoke, onPreview }) {
+export function MagicLinkViewer({ link, onClose, onRevoke, onPreview }) {
   const [revoking, setRevoking] = useState(false)
   const [confirmingRevoke, setConfirmingRevoke] = useState(false)
   const [revoked, setRevoked] = useState(Boolean(link.revoked_at))
@@ -42,17 +42,17 @@ export function MagicLinkView({ link, onClose, onRevoke, onPreview }) {
       }}
     >
       <section
-        className="magic-link-dialog magic-link-view-dialog"
+        className="magic-link-dialog magic-link-viewer-dialog"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="magic-link-view-title"
+        aria-labelledby="magic-link-viewer-title"
       >
         <div className="magic-link-dialog-heading">
           <div>
             <p className="magic-link-eyebrow">External access</p>
-            <h2 id="magic-link-view-title">Viewer link details</h2>
+            <h2 id="magic-link-viewer-title">Viewer link details</h2>
           </div>
-          <button className="magic-link-view-close" type="button" onClick={onClose} disabled={revoking} aria-label="Close viewer link details">
+          <button className="magic-link-viewer-close" type="button" onClick={onClose} disabled={revoking} aria-label="Close viewer link details">
             <img src={closeIcon} alt="" aria-hidden="true" />
           </button>
         </div>

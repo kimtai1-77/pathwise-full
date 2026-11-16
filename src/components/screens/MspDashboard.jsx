@@ -9,7 +9,7 @@ import { OnboardingLightbox } from '@/components/ui/Lightboxes/OnboardingLightbo
 import { OwnerProfileSettingsDialog } from '@/components/ui/dashboard_components/OwnerProfileSettingsDialog.jsx';
 import { MaturityLevelGuardDialog } from '@/components/ui/Lightboxes/MaturityLevelGuard.jsx';
 import { MagicLinkSender } from '@/components/ui/Lightboxes/MagicLinkSender.jsx';
-import { MagicLinkView } from '@/components/ui/Lightboxes/MagicLinkView.jsx';
+import { MagicLinkViewer } from '@/components/ui/Lightboxes/MagicLinkViewer.jsx';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock.js';
 import { TopDashRow } from '@/components/ui/dashboard_components/TopDashRow.jsx';
 import './MspDashboard.css';
@@ -43,7 +43,7 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
   const [magicLink, setMagicLink] = useState(null);
   const [magicLinkSenderOpen, setMagicLinkSenderOpen] = useState(false);
   const [magicLinkTenantId, setMagicLinkTenantId] = useState('');
-  const [magicLinkViewOpen, setMagicLinkViewOpen] = useState(false);
+  const [magicLinkViewerOpen, setMagicLinkViewerOpen] = useState(false);
   const [linkClock, setLinkClock] = useState(() => Date.now());
   const [profileName, setProfileName] = useState(profile?.full_name || '');
   const isExternalViewer = Boolean(viewerTenantId);
@@ -612,7 +612,7 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
                 tenantName={selectedTenantDisplayName}
                 scores={Object.values(selectedTenantScores)}
                 activeMagicLink={activeMagicLink}
-                onOpenMagicLink={() => setMagicLinkViewOpen(true)}
+                onOpenMagicLink={() => setMagicLinkViewerOpen(true)}
               />
 
               <section className="msp-dashboard-strategies" aria-labelledby="msp-dashboard-strategies-title">
@@ -806,10 +806,10 @@ export default function MspDashboard({ user, profile, onSignOut, viewerTenantId 
         />
       )}
 
-      {magicLinkViewOpen && magicLink && (
-        <MagicLinkView
+      {magicLinkViewerOpen && magicLink && (
+        <MagicLinkViewer
           link={magicLink}
-          onClose={() => setMagicLinkViewOpen(false)}
+          onClose={() => setMagicLinkViewerOpen(false)}
           onRevoke={revokeMagicLink}
           onPreview={(tenantId) => {
             const previewUrl = new URL('/', window.location.origin);

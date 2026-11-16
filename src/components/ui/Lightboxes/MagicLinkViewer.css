@@ -5,7 +5,7 @@
   border-top: 1px solid var(--nt-200);
 }
 
-.magic-link-view-close {
+.magic-link-viewer-close {
   display: grid;
   width: 34px;
   height: 34px;
@@ -17,18 +17,18 @@
   cursor: pointer;
 }
 
-.magic-link-view-close:hover {
+.magic-link-viewer-close:hover {
   background: var(--nt-100);
 }
 
-.magic-link-view-close img {
+.magic-link-viewer-close img {
   display: block;
   width: 17px;
   height: 17px;
   filter: brightness(0) opacity(0.58);
 }
 
-.magic-link-view-close:focus-visible {
+.magic-link-viewer-close:focus-visible {
   outline: 2px solid var(--sc-200);
   outline-offset: 2px;
 }
