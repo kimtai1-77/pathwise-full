@@ -29,6 +29,7 @@ export function EvidenceExpiryStatus({
 }) {
   const [renewingEvidence, setRenewingEvidence] = useState(null);
   const [pendingUpdate, setPendingUpdate] = useState(null);
+  const [updateValidityDialogOpen, setUpdateValidityDialogOpen] = useState(false);
   const [workingEvidenceId, setWorkingEvidenceId] = useState('');
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
@@ -81,6 +82,7 @@ export function EvidenceExpiryStatus({
         return;
       }
       setPendingUpdate(null);
+      setUpdateValidityDialogOpen(false);
     } catch {
       setError('Unable to upload the updated evidence. Please try again.');
     } finally {
@@ -194,6 +196,7 @@ export function EvidenceExpiryStatus({
                         if (file) {
                           setError('');
                           setPendingUpdate({ evidence, file });
+                          setUpdateValidityDialogOpen(true);
                         }
                       }}
                     />
@@ -243,15 +246,17 @@ export function EvidenceExpiryStatus({
             title="Renew evidence"
             saving={workingEvidenceId === renewingEvidence.id}
             error={error}
+            onClose={() => setRenewingEvidence(null)}
             onSet={(days) => void saveRenewal(renewingEvidence, days)}
             onSkip={(days) => void saveRenewal(renewingEvidence, days)}
           />
         )}
-        {pendingUpdate && (
+        {pendingUpdate && updateValidityDialogOpen && (
           <EvidenceValidityDialog
             title="Set replacement validity"
             saving={workingEvidenceId === pendingUpdate.evidence.id}
             error={error}
+            onClose={() => setUpdateValidityDialogOpen(false)}
             onSet={(days) => void updateEvidence(pendingUpdate.evidence, pendingUpdate.file, days)}
             onSkip={(days) => void updateEvidence(pendingUpdate.evidence, pendingUpdate.file, days)}
           />

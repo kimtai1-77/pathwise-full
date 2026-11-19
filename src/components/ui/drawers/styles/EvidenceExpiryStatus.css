@@ -106,9 +106,16 @@
 .evidence-expiry-state,
 .evidence-expiry-control,
 .evidence-expiry-uploaded-by {
-  margin: 5px 0 0;
+  margin: 4px 0 0;
   color: var(--warning-500);
   font-size: 12px;
+}
+
+.evidence-expiry-state {
+  background: var(--warning-200);
+  padding: 3px 6px;
+  border-radius: 3px;
+  width: fit-content;
 }
 
 .evidence-expiry-state.is-expired {

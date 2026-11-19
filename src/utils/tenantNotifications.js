@@ -40,12 +40,12 @@ export async function fetchTenantNotifications(tenantIds, userId) {
 
   const evidence = await fetchAllRows(() => supabase
     .from('evidence_with_approver')
-    .select('id, tenant_id, uploaded_by, created_at, approval_status')
+    .select('id, tenant_id, control_id, uploaded_by, created_at, approval_status')
     .in('tenant_id', tenantIds));
   const evidenceIds = evidence.map((item) => item.id);
   if (evidenceIds.length === 0) return notificationsByTenant;
 
-  const [reviews, notes, evidenceChain, evidenceReads] = await Promise.all([
+  const [reviews, notes, evidenceChain, evidenceReads, tenantControls] = await Promise.all([
     fetchRowsByIds('evidence_reviews', 'id, evidence_id, decision, reviewed_by, reviewed_at', 'evidence_id', evidenceIds, [
       { column: 'reviewed_at', ascending: false },
       { column: 'id', ascending: false },
@@ -56,6 +56,10 @@ export async function fetchTenantNotifications(tenantIds, userId) {
       .select('id, tenant_id, supersedes_evidence_id')
       .in('tenant_id', tenantIds)),
     fetchRowsByIds('evidence_reads', 'evidence_id, read_at', 'evidence_id', evidenceIds),
+    fetchAllRows(() => supabase
+      .from('tenant_controls')
+      .select('tenant_id, control_id, status')
+      .in('tenant_id', tenantIds)),
   ]);
 
   const latestReviewByEvidence = new Map();
@@ -70,6 +74,12 @@ export async function fetchTenantNotifications(tenantIds, userId) {
   const readNoteIds = new Set(noteReads.map((read) => read.note_id));
   const evidenceReadAtById = new Map(evidenceReads.map((read) => [read.evidence_id, read.read_at]));
   const evidenceById = new Map(evidence.map((item) => [item.id, item]));
+  const satisfiedControlsByTenant = new Map(tenantIds.map((tenantId) => [tenantId, new Set()]));
+  for (const control of tenantControls) {
+    if (control.status === 'satisfied') {
+      satisfiedControlsByTenant.get(control.tenant_id)?.add(control.control_id);
+    }
+  }
   const successorByEvidenceId = new Map(
     evidenceChain
       .filter((item) => item.supersedes_evidence_id)
@@ -104,7 +114,13 @@ export async function fetchTenantNotifications(tenantIds, userId) {
 
     if (status === 'rejected' && !hasApprovedDescendant(item.id)) tenantStatuses?.add('rejected');
     if (isUnread && status === 'pending_approval') tenantStatuses?.add('pending');
-    if (isUnread && status === 'approved') tenantStatuses?.add('approved');
+    if (
+      isUnread
+      && status === 'approved'
+      && !satisfiedControlsByTenant.get(item.tenant_id)?.has(item.control_id)
+    ) {
+      tenantStatuses?.add('approved');
+    }
   }
 
   for (const note of notes) {

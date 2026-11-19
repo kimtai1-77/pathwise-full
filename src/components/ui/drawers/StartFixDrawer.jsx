@@ -734,6 +734,8 @@ export function StartFixDrawer({
         {validityDialogOpen && (
           <EvidenceValidityDialog
             title={supersedingEvidenceId ? 'Set replacement validity' : 'Set evidence validity'}
+            saving={isSubmitting}
+            onClose={() => setValidityDialogOpen(false)}
             onSet={(validityDays) => {
               setValidityDialogOpen(false);
               void handleSubmitEvidence(validityDays);
